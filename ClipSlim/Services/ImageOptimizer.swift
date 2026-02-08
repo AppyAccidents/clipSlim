@@ -47,6 +47,7 @@ final class ImageOptimizer: Sendable {
             throw OptimizationError.fileTooLarge(originalSize)
         }
         
+<<<<<<< /Users/berkerceylan/Documents/GitHub/clipSlim/ClipSlim/Services/ImageOptimizer.swift
         guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
             throw OptimizationError.invalidImageData
         }
@@ -90,37 +91,84 @@ final class ImageOptimizer: Sendable {
             ]
             guard let thumbnail = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else {
                 throw OptimizationError.resizeFailed
+=======
+        return try autoreleasepool {
+            guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
+                throw OptimizationError.invalidImageData
+>>>>>>> /Users/berkerceylan/.windsurf/worktrees/clipSlim/clipSlim-d1f4857c/ClipSlim/Services/ImageOptimizer.swift
             }
-            cgImage = thumbnail
-        } else {
-            guard let image = CGImageSourceCreateImageAtIndex(source, 0, nil) else {
+            
+            guard CGImageSourceGetCount(source) > 0 else {
                 throw OptimizationError.invalidImageData
             }
-            cgImage = image
+            
+            let originalDimensions = getImageDimensions(source: source)
+            let hasAlpha = imageHasAlpha(source: source)
+            let inputFormat = detectInputFormat(source: source)
+            
+            let outputFormat: ImageFormat
+            if let preferred = config.preferredFormat {
+                if preferred == .jpeg && hasAlpha && !config.allowTransparencyLoss {
+                    outputFormat = .png
+                } else {
+                    outputFormat = preferred
+                }
+            } else if inputFormat == .heic || inputFormat == .tiff {
+                if hasAlpha && !config.allowTransparencyLoss {
+                    outputFormat = .png
+                } else {
+                    outputFormat = .png
+                }
+            } else if hasAlpha && !config.allowTransparencyLoss {
+                outputFormat = .png
+            } else {
+                outputFormat = .jpeg
+            }
+            
+            let cgImage: CGImage
+            let needsResize = originalDimensions.width > config.maxDimension || originalDimensions.height > config.maxDimension
+            
+            if needsResize {
+                let options: [CFString: Any] = [
+                    kCGImageSourceCreateThumbnailFromImageAlways: true,
+                    kCGImageSourceThumbnailMaxPixelSize: config.maxDimension,
+                    kCGImageSourceCreateThumbnailWithTransform: true,
+                    kCGImageSourceShouldCacheImmediately: true
+                ]
+                guard let thumbnail = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else {
+                    throw OptimizationError.resizeFailed
+                }
+                cgImage = thumbnail
+            } else {
+                guard let image = CGImageSourceCreateImageAtIndex(source, 0, nil) else {
+                    throw OptimizationError.invalidImageData
+                }
+                cgImage = image
+            }
+            
+            let optimizedDimensions = (width: cgImage.width, height: cgImage.height)
+            
+            let outputData: Data
+            switch outputFormat {
+            case .jpeg:
+                outputData = try encodeJPEG(image: cgImage, quality: config.quality, stripMetadata: config.stripMetadata, source: source)
+            case .png:
+                outputData = try encodePNG(image: cgImage, stripMetadata: config.stripMetadata, source: source)
+            }
+            
+            let duration = CFAbsoluteTimeGetCurrent() - startTime
+            
+            let result = OptimizationResult(
+                originalSize: originalSize,
+                optimizedSize: outputData.count,
+                format: outputFormat,
+                duration: duration,
+                originalDimensions: originalDimensions,
+                optimizedDimensions: optimizedDimensions
+            )
+            
+            return (outputData, result)
         }
-        
-        let optimizedDimensions = (width: cgImage.width, height: cgImage.height)
-        
-        let outputData: Data
-        switch outputFormat {
-        case .jpeg:
-            outputData = try encodeJPEG(image: cgImage, quality: config.quality, stripMetadata: config.stripMetadata, source: source)
-        case .png:
-            outputData = try encodePNG(image: cgImage, stripMetadata: config.stripMetadata, source: source)
-        }
-        
-        let duration = CFAbsoluteTimeGetCurrent() - startTime
-        
-        let result = OptimizationResult(
-            originalSize: originalSize,
-            optimizedSize: outputData.count,
-            format: outputFormat,
-            duration: duration,
-            originalDimensions: originalDimensions,
-            optimizedDimensions: optimizedDimensions
-        )
-        
-        return (outputData, result)
     }
     
     // MARK: - Private Helpers
@@ -153,6 +201,24 @@ final class ImageOptimizer: Sendable {
     }
     
     private func imageHasAlpha(source: CGImageSource) -> Bool {
+        // Try to determine alpha from properties first (faster, no decode)
+        if let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any] {
+            // Check PNG alpha
+            if let pngProps = properties[kCGImagePropertyPNGDictionary] as? [CFString: Any],
+               let interlaceType = pngProps[kCGImagePropertyPNGInterlaceType] {
+                // PNG with alpha typically has specific properties
+            }
+            // Check if hasAlpha property exists
+            if let hasAlpha = properties[kCGImagePropertyHasAlpha] as? Bool {
+                return hasAlpha
+            }
+            // Check depth - 32-bit often means alpha
+            if let depth = properties[kCGImagePropertyDepth] as? Int, depth == 32 {
+                // Could have alpha, need to verify with image
+            }
+        }
+        
+        // Fallback: decode image to check alpha (only if properties inconclusive)
         guard let image = CGImageSourceCreateImageAtIndex(source, 0, nil) else {
             return false
         }

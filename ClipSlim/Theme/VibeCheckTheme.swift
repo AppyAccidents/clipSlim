@@ -80,11 +80,10 @@ enum VibeCheckTheme {
         static let xl: CGFloat = 20
     }
     
-    // MARK: - Glow Effects
-    static func neonGlow(color: Color, radius: CGFloat = 8) -> some View {
+    // MARK: - Glow Effects (simplified for performance)
+    static func neonGlow(color: Color, radius: CGFloat = 6) -> some View {
         EmptyView()
-            .shadow(color: color.opacity(0.6), radius: radius, x: 0, y: 0)
-            .shadow(color: color.opacity(0.3), radius: radius * 2, x: 0, y: 0)
+            .shadow(color: color.opacity(0.5), radius: radius, x: 0, y: 0)
     }
 }
 
@@ -108,13 +107,12 @@ extension View {
                 RoundedRectangle(cornerRadius: VibeCheckTheme.CornerRadius.md)
                     .stroke(VibeCheckTheme.Colors.borderActive.opacity(0.3), lineWidth: 1)
             )
-            .shadow(color: VibeCheckTheme.Colors.neonCyan.opacity(0.1), radius: 8, x: 0, y: 2)
     }
     
-    func neonGlow(color: Color = VibeCheckTheme.Colors.neonCyan, radius: CGFloat = 8) -> some View {
+    /// Simplified single-shadow glow for performance (background app optimization)
+    func neonGlow(color: Color = VibeCheckTheme.Colors.neonCyan, radius: CGFloat = 6) -> some View {
         self
-            .shadow(color: color.opacity(0.6), radius: radius, x: 0, y: 0)
-            .shadow(color: color.opacity(0.3), radius: radius * 2, x: 0, y: 0)
+            .shadow(color: color.opacity(0.5), radius: radius, x: 0, y: 0)
     }
 }
 

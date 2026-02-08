@@ -10,8 +10,12 @@ final class FolderWatcher {
     private var stream: FSEventStreamRef?
     private var debounceTimer: Timer?
     private var pendingPaths: Set<String> = []
-    private var processedFiles: Set<String> = []
+    private var processedFiles: [String] = [] // Array for LRU eviction
+    private var processedFilesSet: Set<String> = [] // Set for O(1) lookup
     private var preExistingFiles: Set<String> = []
+    
+    private let maxProcessedFiles = 1000
+    private let maxPreExistingFiles = 5000
     
     private let debounceInterval: TimeInterval = 0.3
     private let supportedExtensions: Set<String> = ["jpg", "jpeg", "png", "tiff", "tif", "bmp", "heic"]
@@ -77,6 +81,7 @@ final class FolderWatcher {
         debounceTimer = nil
         pendingPaths.removeAll()
         processedFiles.removeAll()
+        processedFilesSet.removeAll()
         preExistingFiles.removeAll()
         isWatching = false
         watchedPath = ""
@@ -97,8 +102,14 @@ final class FolderWatcher {
     private func catalogExistingFiles() {
         preExistingFiles.removeAll()
         guard let enumerator = FileManager.default.enumerator(atPath: watchedPath) else { return }
+        var count = 0
         while let file = enumerator.nextObject() as? String {
+            guard count < maxPreExistingFiles else {
+                log.folder("Pre-existing files limit reached (\(maxPreExistingFiles)), some files may be re-processed")
+                break
+            }
             preExistingFiles.insert((watchedPath as NSString).appendingPathComponent(file))
+            count += 1
         }
         log.folder("Cataloged \(preExistingFiles.count) pre-existing files")
     }
@@ -130,12 +141,20 @@ final class FolderWatcher {
         guard !preExistingFiles.contains(path) else { return }
         
         // Filter: skip already-processed files
-        guard !processedFiles.contains(path) else { return }
+        guard !processedFilesSet.contains(path) else { return }
         
         // Verify file exists and is readable
         guard FileManager.default.isReadableFile(atPath: path) else { return }
         
-        processedFiles.insert(path)
+        // Add to processed with LRU eviction
+        if processedFiles.count >= maxProcessedFiles {
+            if let oldest = processedFiles.first {
+                processedFiles.removeFirst()
+                processedFilesSet.remove(oldest)
+            }
+        }
+        processedFiles.append(path)
+        processedFilesSet.insert(path)
         log.folder("New image file detected: \(url.lastPathComponent)")
         onFileDetected?(url)
     }

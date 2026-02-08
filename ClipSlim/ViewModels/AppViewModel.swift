@@ -25,12 +25,24 @@ final class AppViewModel {
     
     private var hotKeyRef1: EventHotKeyRef?
     private var hotKeyRef2: EventHotKeyRef?
+<<<<<<< /Users/berkerceylan/Documents/GitHub/clipSlim/ClipSlim/ViewModels/AppViewModel.swift
+=======
+    private var imageCacheTimer: Timer?
+    private let imageCacheTimeout: TimeInterval = 300 // 5 minutes
+>>>>>>> /Users/berkerceylan/.windsurf/worktrees/clipSlim/clipSlim-d1f4857c/ClipSlim/ViewModels/AppViewModel.swift
     
     init() {
         setupClipboardWatcher()
         setupFolderWatcher()
         notificationService.requestAuthorization()
         registerGlobalHotkeys()
+<<<<<<< /Users/berkerceylan/Documents/GitHub/clipSlim/ClipSlim/ViewModels/AppViewModel.swift
+=======
+    }
+    
+    deinit {
+        imageCacheTimer?.invalidate()
+>>>>>>> /Users/berkerceylan/.windsurf/worktrees/clipSlim/clipSlim-d1f4857c/ClipSlim/ViewModels/AppViewModel.swift
     }
     
     // MARK: - Public
@@ -185,6 +197,29 @@ final class AppViewModel {
         log.app("Global hotkeys registered: ⌥1 (optimized), ⌥2 (original)")
     }
     
+<<<<<<< /Users/berkerceylan/Documents/GitHub/clipSlim/ClipSlim/ViewModels/AppViewModel.swift
+=======
+    // MARK: - Memory Management
+    
+    private func scheduleImageCacheCleanup() {
+        imageCacheTimer?.invalidate()
+        imageCacheTimer = Timer.scheduledTimer(withTimeInterval: imageCacheTimeout, repeats: false) { [weak self] _ in
+            DispatchQueue.main.async {
+                self?.clearImageCache()
+            }
+        }
+    }
+    
+    private func clearImageCache() {
+        let hadData = lastOriginalData != nil || lastOptimizedData != nil
+        lastOriginalData = nil
+        lastOptimizedData = nil
+        if hadData {
+            log.app("Cleared cached images (memory optimization)")
+        }
+    }
+    
+>>>>>>> /Users/berkerceylan/.windsurf/worktrees/clipSlim/clipSlim-d1f4857c/ClipSlim/ViewModels/AppViewModel.swift
     // MARK: - Save to Disk
     
     private func saveToDisk(originalData: Data, optimizedData: Data, format: ImageFormat, fileName: String?) {
@@ -240,10 +275,18 @@ final class AppViewModel {
             let config = ImageOptimizer.OptimizationConfig(from: settings)
             let (optimizedData, result) = try await optimizer.optimize(data: data, config: config)
             
+<<<<<<< /Users/berkerceylan/Documents/GitHub/clipSlim/ClipSlim/ViewModels/AppViewModel.swift
             // Store last original and optimized for hotkey access
             lastOriginalData = data
             lastOptimizedData = optimizedData
             lastOptimizedFormat = result.format
+=======
+            // Store last original and optimized for hotkey access (with auto-cleanup)
+            lastOriginalData = data
+            lastOptimizedData = optimizedData
+            lastOptimizedFormat = result.format
+            scheduleImageCacheCleanup()
+>>>>>>> /Users/berkerceylan/.windsurf/worktrees/clipSlim/clipSlim-d1f4857c/ClipSlim/ViewModels/AppViewModel.swift
             
             // Only write back if we actually saved space
             if result.optimizedSize < result.originalSize {
@@ -298,11 +341,19 @@ final class AppViewModel {
                 return
             }
             
+<<<<<<< /Users/berkerceylan/Documents/GitHub/clipSlim/ClipSlim/ViewModels/AppViewModel.swift
             // Store last original and optimized for hotkey access
+=======
+            // Store last original and optimized for hotkey access (with auto-cleanup)
+>>>>>>> /Users/berkerceylan/.windsurf/worktrees/clipSlim/clipSlim-d1f4857c/ClipSlim/ViewModels/AppViewModel.swift
             await MainActor.run {
                 lastOriginalData = data
                 lastOptimizedData = optimizedData
                 lastOptimizedFormat = result.format
+<<<<<<< /Users/berkerceylan/Documents/GitHub/clipSlim/ClipSlim/ViewModels/AppViewModel.swift
+=======
+                scheduleImageCacheCleanup()
+>>>>>>> /Users/berkerceylan/.windsurf/worktrees/clipSlim/clipSlim-d1f4857c/ClipSlim/ViewModels/AppViewModel.swift
             }
             
             // Build output filename
