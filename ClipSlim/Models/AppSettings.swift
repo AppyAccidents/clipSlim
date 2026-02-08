@@ -16,6 +16,19 @@ final class AppSettings {
     @ObservationIgnored @AppStorage("watchedFolderPath") var watchedFolderPath = ""
     @ObservationIgnored @AppStorage("maxFileSizeMB") var maxFileSizeMB = 50
     @ObservationIgnored @AppStorage("launchAtLogin") var launchAtLogin = false
+    @ObservationIgnored @AppStorage("saveToDisk") var saveToDisk = false
+    @ObservationIgnored @AppStorage("saveFolderPath") var saveFolderPath = ""
+    @ObservationIgnored @AppStorage("preferredOutputFormatRaw") var preferredOutputFormatRaw = ""
+    
+    var preferredOutputFormat: ImageFormat? {
+        get {
+            if preferredOutputFormatRaw.isEmpty { return nil }
+            return ImageFormat(rawValue: preferredOutputFormatRaw)
+        }
+        set {
+            preferredOutputFormatRaw = newValue?.rawValue ?? ""
+        }
+    }
     
     var currentQuality: Double {
         selectedPreset == .custom ? customQuality : selectedPreset.quality
@@ -64,6 +77,9 @@ final class AppSettings {
     }
     var launchAtLoginBinding: Binding<Bool> {
         Binding(get: { self.launchAtLogin }, set: { self.launchAtLogin = $0 })
+    }
+    var saveToDiskBinding: Binding<Bool> {
+        Binding(get: { self.saveToDisk }, set: { self.saveToDisk = $0 })
     }
     
     func applyPreset(_ preset: OptimizationPreset) {

@@ -12,6 +12,27 @@ A production-grade macOS menubar app that automatically optimizes images copied 
 - **Notifications** — Optional banner notifications with optimization stats
 - **Debug Log** — Timestamped event history with source filtering
 - **Neon Terminal UI** — Dark theme with cyan/orange neon accents and monospaced typography
+- **Automatic Conversion** — Converts less compatible formats (HEIC/TIFF) to PNG or JPEG automatically
+- **Automatic Compression** — Compresses images on the clipboard or in watched folders without user intervention
+- **Clipboard Replace Behavior** — Optimized images replace originals on the clipboard by default
+- **Save Originals and Optimized** — Saves both original and optimized images to disk in separate folders
+- **Global Hotkeys** — Option+1 to copy optimized image, Option+2 to copy original image to clipboard
+
+## Clop Parity (Target Behaviors)
+
+1. **Clipboard Auto-Optimization Flow**  
+   Detects images on the clipboard, automatically optimizes them, and replaces the clipboard content with the optimized version by default.
+
+2. **HEIC to PNG Conversion**  
+   If the input image is HEIC (from clipboard or folder), it is converted to PNG by default unless the user selects JPEG as the preferred format.
+
+3. **Save to Disk Behavior**  
+   When saving images, both the original and the optimized versions are kept. Originals are saved in an `Originals/` subfolder, and optimized outputs are saved in an `Optimized/` subfolder (or similarly named). Filenames include timestamps or suffixes to prevent overwriting.
+
+4. **Hotkeys**  
+   - `⌥1` (Option+1) copies the last optimized image to the clipboard.  
+   - `⌥2` (Option+2) copies the last original image to the clipboard.  
+   These are global hotkeys that work when the app is running.
 
 ## Requirements
 
@@ -43,13 +64,9 @@ Timer polls NSPasteboard.changeCount (0.5s)
                   └─ Log OptimizationEvent + send notification
 ```
 
-### Key Design Decisions
+### Clipboard Versions
 
-- **No third-party dependencies** — Uses only Apple frameworks (ImageIO, CoreGraphics, CryptoKit, FSEvents, UserNotifications)
-- **@Observable** — Modern Swift Observation framework (macOS 14+)
-- **Off-main-thread** — All image optimization runs on background threads via async/await
-- **Safe** — Never crashes on bad input; validates data, checks sizes, handles errors gracefully
-- **LSUIElement** — Runs as a menubar-only app (no Dock icon)
+ClipSlim keeps the last original and last optimized image in memory (or on disk if saving is enabled) so the user can switch what they paste using the global hotkeys ⌥1 (optimized) and ⌥2 (original).
 
 ## Build
 
@@ -65,6 +82,14 @@ xcodebuild -project ClipSlim.xcodeproj -scheme ClipSlim -configuration Debug bui
 | High Quality | 90%     | 3840px        | No             | No                     |
 | Small        | 60%     | 1280px        | Yes            | Yes                    |
 | Custom       | User    | User          | User           | User                   |
+
+## Hotkeys
+
+- `⌥1` Copy last optimized image to clipboard  
+- `⌥2` Copy last original image to clipboard  
+- `⌃⇧C` (optional) Manually optimize current clipboard  
+
+*Note: The manual optimize hotkey is a fallback and not required.*
 
 ## Privacy
 

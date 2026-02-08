@@ -1,5 +1,6 @@
 import Foundation
 import AppKit
+import Carbon.HIToolbox
 
 @Observable
 final class AppViewModel {
@@ -14,14 +15,22 @@ final class AppViewModel {
     private(set) var isProcessing = false
     private(set) var lastError: String?
     
+    private(set) var lastOriginalData: Data?
+    private(set) var lastOptimizedData: Data?
+    private(set) var lastOptimizedFormat: ImageFormat = .jpeg
+    
     private let optimizer = ImageOptimizer.shared
     private let notificationService = NotificationService.shared
     private let log = Logger.shared
+    
+    private var hotKeyRef1: EventHotKeyRef?
+    private var hotKeyRef2: EventHotKeyRef?
     
     init() {
         setupClipboardWatcher()
         setupFolderWatcher()
         notificationService.requestAuthorization()
+        registerGlobalHotkeys()
     }
     
     // MARK: - Public
@@ -67,6 +76,24 @@ final class AppViewModel {
     
     func clearLastError() {
         lastError = nil
+    }
+    
+    func copyLastOptimized() {
+        guard let data = lastOptimizedData else {
+            log.app("No optimized image available")
+            return
+        }
+        clipboardWatcher.writeToPasteboard(data: data, format: lastOptimizedFormat)
+        log.app("Copied last optimized image to clipboard (⌥1)")
+    }
+    
+    func copyLastOriginal() {
+        guard let data = lastOriginalData else {
+            log.app("No original image available")
+            return
+        }
+        clipboardWatcher.writeToPasteboard(data: data, format: .png)
+        log.app("Copied last original image to clipboard (⌥2)")
     }
     
     func optimizeManually(data: Data) {
@@ -120,6 +147,83 @@ final class AppViewModel {
         folderWatcher.start(path: settings.watchedFolderPath)
     }
     
+    // MARK: - Global Hotkeys
+    
+    private func registerGlobalHotkeys() {
+        let viewModelPtr = Unmanaged.passUnretained(self).toOpaque()
+        
+        var eventType = EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed))
+        
+        InstallEventHandler(GetApplicationEventTarget(), { _, event, userData -> OSStatus in
+            guard let event = event, let userData = userData else { return OSStatus(eventNotHandledErr) }
+            var hotKeyID = EventHotKeyID()
+            GetEventParameter(event, EventParamName(kEventParamDirectObject), EventParamType(typeEventHotKeyID), nil, MemoryLayout<EventHotKeyID>.size, nil, &hotKeyID)
+            
+            let vm = Unmanaged<AppViewModel>.fromOpaque(userData).takeUnretainedValue()
+            
+            DispatchQueue.main.async {
+                switch hotKeyID.id {
+                case 1:
+                    vm.copyLastOptimized()
+                case 2:
+                    vm.copyLastOriginal()
+                default:
+                    break
+                }
+            }
+            return noErr
+        }, 1, &eventType, viewModelPtr, nil)
+        
+        // ⌥1 (Option+1) — copy last optimized
+        var hotKeyID1 = EventHotKeyID(signature: OSType(0x434C5031), id: 1) // "CLP1"
+        RegisterEventHotKey(UInt32(kVK_ANSI_1), UInt32(optionKey), hotKeyID1, GetApplicationEventTarget(), 0, &hotKeyRef1)
+        
+        // ⌥2 (Option+2) — copy last original
+        var hotKeyID2 = EventHotKeyID(signature: OSType(0x434C5032), id: 2) // "CLP2"
+        RegisterEventHotKey(UInt32(kVK_ANSI_2), UInt32(optionKey), hotKeyID2, GetApplicationEventTarget(), 0, &hotKeyRef2)
+        
+        log.app("Global hotkeys registered: ⌥1 (optimized), ⌥2 (original)")
+    }
+    
+    // MARK: - Save to Disk
+    
+    private func saveToDisk(originalData: Data, optimizedData: Data, format: ImageFormat, fileName: String?) {
+        guard settings.saveToDisk else { return }
+        
+        let basePath: String
+        if settings.saveFolderPath.isEmpty {
+            let pictures = FileManager.default.urls(for: .picturesDirectory, in: .userDomainMask).first!
+            basePath = pictures.appendingPathComponent("ClipSlim").path
+        } else {
+            basePath = settings.saveFolderPath
+        }
+        
+        let originalsDir = (basePath as NSString).appendingPathComponent("Originals")
+        let optimizedDir = (basePath as NSString).appendingPathComponent("Optimized")
+        
+        do {
+            try FileManager.default.createDirectory(atPath: originalsDir, withIntermediateDirectories: true)
+            try FileManager.default.createDirectory(atPath: optimizedDir, withIntermediateDirectories: true)
+            
+            let timestamp = ISO8601DateFormatter().string(from: Date())
+                .replacingOccurrences(of: ":", with: "-")
+            let baseName = fileName ?? "clipboard-\(timestamp)"
+            let nameWithoutExt = (baseName as NSString).deletingPathExtension
+            let origExt = (baseName as NSString).pathExtension.isEmpty ? "png" : (baseName as NSString).pathExtension
+            
+            let originalPath = (originalsDir as NSString).appendingPathComponent("\(nameWithoutExt).\(origExt)")
+            let optimizedPath = (optimizedDir as NSString).appendingPathComponent("\(nameWithoutExt).\(format.fileExtension)")
+            
+            try originalData.write(to: URL(fileURLWithPath: originalPath), options: .atomic)
+            try optimizedData.write(to: URL(fileURLWithPath: optimizedPath), options: .atomic)
+            
+            log.app("Saved original to \(originalPath)")
+            log.app("Saved optimized to \(optimizedPath)")
+        } catch {
+            log.error("Failed to save to disk: \(error.localizedDescription)")
+        }
+    }
+    
     // MARK: - Processing
     
     @MainActor
@@ -136,11 +240,19 @@ final class AppViewModel {
             let config = ImageOptimizer.OptimizationConfig(from: settings)
             let (optimizedData, result) = try await optimizer.optimize(data: data, config: config)
             
+            // Store last original and optimized for hotkey access
+            lastOriginalData = data
+            lastOptimizedData = optimizedData
+            lastOptimizedFormat = result.format
+            
             // Only write back if we actually saved space
             if result.optimizedSize < result.originalSize {
                 if source == .clipboard {
                     clipboardWatcher.writeToPasteboard(data: optimizedData, format: result.format)
                 }
+                
+                // Save to disk if enabled
+                saveToDisk(originalData: data, optimizedData: optimizedData, format: result.format, fileName: fileName)
                 
                 let event = OptimizationEvent(
                     timestamp: Date(),
@@ -186,12 +298,22 @@ final class AppViewModel {
                 return
             }
             
+            // Store last original and optimized for hotkey access
+            await MainActor.run {
+                lastOriginalData = data
+                lastOptimizedData = optimizedData
+                lastOptimizedFormat = result.format
+            }
+            
             // Build output filename
             let nameWithoutExt = url.deletingPathExtension().lastPathComponent
             let outputName = "\(nameWithoutExt)-optimized.\(result.format.fileExtension)"
             let outputURL = url.deletingLastPathComponent().appendingPathComponent(outputName)
             
             try optimizedData.write(to: outputURL, options: .atomic)
+            
+            // Save to disk if enabled
+            saveToDisk(originalData: data, optimizedData: optimizedData, format: result.format, fileName: url.lastPathComponent)
             
             let event = OptimizationEvent(
                 timestamp: Date(),

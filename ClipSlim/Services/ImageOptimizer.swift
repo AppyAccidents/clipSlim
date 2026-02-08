@@ -16,19 +16,22 @@ final class ImageOptimizer: Sendable {
         let maxDimension: Int
         let stripMetadata: Bool
         let allowTransparencyLoss: Bool
+        let preferredFormat: ImageFormat?
         
         init(from settings: AppSettings) {
             self.quality = settings.currentQuality
             self.maxDimension = settings.currentMaxDimension
             self.stripMetadata = settings.currentStripMetadata
             self.allowTransparencyLoss = settings.currentAllowTransparencyLoss
+            self.preferredFormat = settings.preferredOutputFormat
         }
         
-        init(quality: Double = 0.75, maxDimension: Int = 1920, stripMetadata: Bool = true, allowTransparencyLoss: Bool = false) {
+        init(quality: Double = 0.75, maxDimension: Int = 1920, stripMetadata: Bool = true, allowTransparencyLoss: Bool = false, preferredFormat: ImageFormat? = nil) {
             self.quality = quality
             self.maxDimension = maxDimension
             self.stripMetadata = stripMetadata
             self.allowTransparencyLoss = allowTransparencyLoss
+            self.preferredFormat = preferredFormat
         }
     }
     
@@ -54,9 +57,22 @@ final class ImageOptimizer: Sendable {
         
         let originalDimensions = getImageDimensions(source: source)
         let hasAlpha = imageHasAlpha(source: source)
+        let inputFormat = detectInputFormat(source: source)
         
         let outputFormat: ImageFormat
-        if hasAlpha && !config.allowTransparencyLoss {
+        if let preferred = config.preferredFormat {
+            if preferred == .jpeg && hasAlpha && !config.allowTransparencyLoss {
+                outputFormat = .png
+            } else {
+                outputFormat = preferred
+            }
+        } else if inputFormat == .heic || inputFormat == .tiff {
+            if hasAlpha && !config.allowTransparencyLoss {
+                outputFormat = .png
+            } else {
+                outputFormat = .png
+            }
+        } else if hasAlpha && !config.allowTransparencyLoss {
             outputFormat = .png
         } else {
             outputFormat = .jpeg
@@ -116,6 +132,24 @@ final class ImageOptimizer: Sendable {
         let width = properties[kCGImagePropertyPixelWidth] as? Int ?? 0
         let height = properties[kCGImagePropertyPixelHeight] as? Int ?? 0
         return (width, height)
+    }
+    
+    enum InputFormat: String {
+        case jpeg, png, heic, tiff, bmp, gif, unknown
+    }
+    
+    private func detectInputFormat(source: CGImageSource) -> InputFormat {
+        guard let utType = CGImageSourceGetType(source) as? String else {
+            return .unknown
+        }
+        let lower = utType.lowercased()
+        if lower.contains("jpeg") || lower.contains("jpg") { return .jpeg }
+        if lower.contains("png") { return .png }
+        if lower.contains("heic") || lower.contains("heif") { return .heic }
+        if lower.contains("tiff") || lower.contains("tif") { return .tiff }
+        if lower.contains("bmp") { return .bmp }
+        if lower.contains("gif") { return .gif }
+        return .unknown
     }
     
     private func imageHasAlpha(source: CGImageSource) -> Bool {

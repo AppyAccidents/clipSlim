@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 struct GeneralTab: View {
     
@@ -54,6 +55,60 @@ struct GeneralTab: View {
             }
             
             Section {
+                Toggle("Save Originals & Optimized to Disk", isOn: viewModel.settings.saveToDiskBinding)
+                
+                if viewModel.settings.saveToDisk {
+                    HStack {
+                        VStack(alignment: .leading, spacing: VibeCheckTheme.Spacing.xs) {
+                            Text("Save Folder")
+                                .font(VibeCheckTheme.Typography.body)
+                            
+                            if viewModel.settings.saveFolderPath.isEmpty {
+                                Text("~/Pictures/ClipSlim (default)")
+                                    .font(VibeCheckTheme.Typography.caption)
+                                    .foregroundColor(VibeCheckTheme.Colors.textTertiary)
+                            } else {
+                                Text(viewModel.settings.saveFolderPath)
+                                    .font(VibeCheckTheme.Typography.caption)
+                                    .foregroundColor(VibeCheckTheme.Colors.neonCyan)
+                                    .lineLimit(1)
+                                    .truncationMode(.middle)
+                            }
+                        }
+                        
+                        Spacer()
+                        
+                        Button("Choose…") {
+                            selectSaveFolder()
+                        }
+                    }
+                }
+                
+                Text("Saves both original and optimized images in separate Originals/ and Optimized/ subfolders")
+                    .font(VibeCheckTheme.Typography.caption)
+                    .foregroundColor(VibeCheckTheme.Colors.textTertiary)
+            } header: {
+                Label("Save to Disk", systemImage: "square.and.arrow.down")
+            }
+            
+            Section {
+                Picker("Preferred Output Format", selection: Binding(
+                    get: { viewModel.settings.preferredOutputFormatRaw },
+                    set: { viewModel.settings.preferredOutputFormatRaw = $0 }
+                )) {
+                    Text("Auto").tag("")
+                    Text("JPEG").tag(ImageFormat.jpeg.rawValue)
+                    Text("PNG").tag(ImageFormat.png.rawValue)
+                }
+                
+                Text("Auto: HEIC/TIFF → PNG, others → JPEG (unless transparent). Override to force a specific format.")
+                    .font(VibeCheckTheme.Typography.caption)
+                    .foregroundColor(VibeCheckTheme.Colors.textTertiary)
+            } header: {
+                Label("Format Conversion", systemImage: "arrow.triangle.2.circlepath")
+            }
+            
+            Section {
                 Toggle("Launch at Login", isOn: viewModel.settings.launchAtLoginBinding)
                     .disabled(true)
                 
@@ -65,5 +120,18 @@ struct GeneralTab: View {
             }
         }
         .formStyle(.grouped)
+    }
+    
+    private func selectSaveFolder() {
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = false
+        panel.canChooseDirectories = true
+        panel.allowsMultipleSelection = false
+        panel.message = "Choose a folder to save original and optimized images"
+        panel.prompt = "Select Folder"
+        
+        if panel.runModal() == .OK, let url = panel.url {
+            viewModel.settings.saveFolderPath = url.path
+        }
     }
 }
