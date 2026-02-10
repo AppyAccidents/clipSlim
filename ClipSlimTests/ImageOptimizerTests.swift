@@ -8,7 +8,12 @@ final class ImageOptimizerTests: XCTestCase {
     // MARK: - Helper
     
     /// Creates a minimal valid PNG data (1x1 red pixel)
-    private func makeTestPNG(width: Int = 100, height: Int = 100, hasAlpha: Bool = false) -> Data? {
+    private func makeTestPNG(
+        width: Int = 100,
+        height: Int = 100,
+        hasAlpha: Bool = false,
+        useTransparentContent: Bool = true
+    ) -> Data? {
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         let bitmapInfo: CGBitmapInfo = hasAlpha
             ? CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)
@@ -24,11 +29,16 @@ final class ImageOptimizerTests: XCTestCase {
             bitmapInfo: bitmapInfo.rawValue
         ) else { return nil }
         
-        // Fill with a gradient for realistic compression behavior
-        context.setFillColor(red: 0.2, green: 0.6, blue: 0.8, alpha: 1.0)
-        context.fill(CGRect(x: 0, y: 0, width: width, height: height))
-        context.setFillColor(red: 1.0, green: 0.4, blue: 0.1, alpha: hasAlpha ? 0.5 : 1.0)
-        context.fillEllipse(in: CGRect(x: 10, y: 10, width: width - 20, height: height - 20))
+        if hasAlpha && useTransparentContent {
+            context.clear(CGRect(x: 0, y: 0, width: width, height: height))
+            context.setFillColor(red: 1.0, green: 0.4, blue: 0.1, alpha: 0.5)
+            context.fillEllipse(in: CGRect(x: 10, y: 10, width: width - 20, height: height - 20))
+        } else {
+            context.setFillColor(red: 0.2, green: 0.6, blue: 0.8, alpha: 1.0)
+            context.fill(CGRect(x: 0, y: 0, width: width, height: height))
+            context.setFillColor(red: 1.0, green: 0.4, blue: 0.1, alpha: 1.0)
+            context.fillEllipse(in: CGRect(x: 10, y: 10, width: width - 20, height: height - 20))
+        }
         
         guard let image = context.makeImage() else { return nil }
         
@@ -87,6 +97,18 @@ final class ImageOptimizerTests: XCTestCase {
         
         XCTAssertEqual(result.format, .jpeg, "Alpha PNG with allowTransparencyLoss=true should become JPEG")
     }
+
+    func testOpaqueAlphaChannelUsesJPEGWhenTransparencyMustBePreserved() async throws {
+        guard let pngData = makeTestPNG(hasAlpha: true, useTransparentContent: false) else {
+            XCTFail("Failed to create opaque PNG with alpha channel")
+            return
+        }
+
+        let config = ImageOptimizer.OptimizationConfig(quality: 0.75, maxDimension: 1920, stripMetadata: true, allowTransparencyLoss: false)
+        let (_, result) = try await optimizer.optimize(data: pngData, config: config)
+
+        XCTAssertEqual(result.format, .jpeg, "Opaque image with alpha channel should still use JPEG")
+    }
     
     func testResizeDownscale() async throws {
         guard let pngData = makeTestPNG(width: 3000, height: 2000) else {
@@ -112,6 +134,23 @@ final class ImageOptimizerTests: XCTestCase {
         
         XCTAssertEqual(result.optimizedDimensions.width, 200)
         XCTAssertEqual(result.optimizedDimensions.height, 150)
+    }
+
+    func testExactResizeToTargetDimensions() async throws {
+        guard let pngData = makeTestPNG(width: 640, height: 360) else {
+            XCTFail("Failed to create source PNG")
+            return
+        }
+
+        let config = ImageOptimizer.OptimizationConfig(
+            quality: 0.75,
+            maxDimension: 1920,
+            targetDimensions: (width: 128, height: 128)
+        )
+        let (_, result) = try await optimizer.optimize(data: pngData, config: config)
+
+        XCTAssertEqual(result.optimizedDimensions.width, 128)
+        XCTAssertEqual(result.optimizedDimensions.height, 128)
     }
     
     func testEmptyDataThrows() async {

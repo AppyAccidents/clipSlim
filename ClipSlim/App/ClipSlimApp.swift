@@ -11,7 +11,9 @@ struct ClipSlimApp: App {
             MenuBarView()
                 .environment(viewModel)
         } label: {
-            Label("ClipSlim", systemImage: "scissors")
+            Image(systemName: "scissors")
+                .font(.system(size: 13, weight: .semibold))
+                .accessibilityLabel("ClipSlim")
         }
         .menuBarExtraStyle(.window)
         

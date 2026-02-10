@@ -34,6 +34,16 @@
 		A1000025000000000000001F /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000025000000000000001F /* Logger.swift */; };
 		A10000260000000000000020 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10000260000000000000020 /* Assets.xcassets */; };
 		A10000270000000000000021 /* ImageOptimizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000270000000000000021 /* ImageOptimizerTests.swift */; };
+		A10000300000000000000030 /* RuleEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000300000000000000030 /* RuleEngine.swift */; };
+		A10000310000000000000031 /* IgnoreCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000310000000000000031 /* IgnoreCache.swift */; };
+		A10000320000000000000032 /* OverlayService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000320000000000000032 /* OverlayService.swift */; };
+		A10000330000000000000033 /* IAPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000330000000000000033 /* IAPService.swift */; };
+		A10000340000000000000034 /* OverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000340000000000000034 /* OverlayView.swift */; };
+		A10000350000000000000035 /* OnboardingFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000350000000000000035 /* OnboardingFlowView.swift */; };
+		A10000360000000000000036 /* RulesTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000360000000000000036 /* RulesTab.swift */; };
+		A10000370000000000000037 /* SupportTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000370000000000000037 /* SupportTab.swift */; };
+		A10000380000000000000038 /* CoreFeatureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000380000000000000038 /* CoreFeatureTests.swift */; };
+		A10000390000000000000039 /* SettingsDesign.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000390000000000000039 /* SettingsDesign.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,6 +86,16 @@
 		B10000280000000000000022 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B10000290000000000000023 /* ClipSlim.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ClipSlim.entitlements; sourceTree = "<group>"; };
 		B10000270000000000000021 /* ImageOptimizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageOptimizerTests.swift; sourceTree = "<group>"; };
+		B10000300000000000000030 /* RuleEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuleEngine.swift; sourceTree = "<group>"; };
+		B10000310000000000000031 /* IgnoreCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IgnoreCache.swift; sourceTree = "<group>"; };
+		B10000320000000000000032 /* OverlayService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayService.swift; sourceTree = "<group>"; };
+		B10000330000000000000033 /* IAPService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPService.swift; sourceTree = "<group>"; };
+		B10000340000000000000034 /* OverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayView.swift; sourceTree = "<group>"; };
+		B10000350000000000000035 /* OnboardingFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingFlowView.swift; sourceTree = "<group>"; };
+		B10000360000000000000036 /* RulesTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RulesTab.swift; sourceTree = "<group>"; };
+		B10000370000000000000037 /* SupportTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportTab.swift; sourceTree = "<group>"; };
+		B10000380000000000000038 /* CoreFeatureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreFeatureTests.swift; sourceTree = "<group>"; };
+		B10000390000000000000039 /* SettingsDesign.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsDesign.swift; sourceTree = "<group>"; };
 		F10000010000000000000001 /* ClipSlim.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClipSlim.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F10000020000000000000002 /* ClipSlimTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClipSlimTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -159,6 +179,10 @@
 				B10000090000000000000009 /* ClipboardWatcher.swift */,
 				B1000010000000000000000A /* FolderWatcher.swift */,
 				B1000011000000000000000B /* NotificationService.swift */,
+				B10000300000000000000030 /* RuleEngine.swift */,
+				B10000310000000000000031 /* IgnoreCache.swift */,
+				B10000320000000000000032 /* OverlayService.swift */,
+				B10000330000000000000033 /* IAPService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -176,6 +200,8 @@
 			children = (
 				B1000013000000000000000D /* MenuBarView.swift */,
 				B1000014000000000000000E /* DebugLogView.swift */,
+				B10000340000000000000034 /* OverlayView.swift */,
+				B10000350000000000000035 /* OnboardingFlowView.swift */,
 				D1000014000000000000000E /* Components */,
 				D1000015000000000000000F /* Settings */,
 			);
@@ -189,6 +215,7 @@
 				B10000160000000000000010 /* PresetPicker.swift */,
 				B10000170000000000000011 /* StatsRow.swift */,
 				B10000180000000000000012 /* MenuActionButton.swift */,
+				B10000390000000000000039 /* SettingsDesign.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -200,6 +227,8 @@
 				B1000020000000000000001A /* GeneralTab.swift */,
 				B1000021000000000000001B /* PresetsTab.swift */,
 				B1000022000000000000001C /* FolderTab.swift */,
+				B10000360000000000000036 /* RulesTab.swift */,
+				B10000370000000000000037 /* SupportTab.swift */,
 				B1000023000000000000001D /* AboutTab.swift */,
 			);
 			path = Settings;
@@ -235,6 +264,7 @@
 			isa = PBXGroup;
 			children = (
 				B10000270000000000000021 /* ImageOptimizerTests.swift */,
+				B10000380000000000000038 /* CoreFeatureTests.swift */,
 			);
 			path = ClipSlimTests;
 			sourceTree = "<group>";
@@ -355,6 +385,15 @@
 				A1000023000000000000001D /* AboutTab.swift in Sources */,
 				A1000024000000000000001E /* VibeCheckTheme.swift in Sources */,
 				A1000025000000000000001F /* Logger.swift in Sources */,
+				A10000300000000000000030 /* RuleEngine.swift in Sources */,
+				A10000310000000000000031 /* IgnoreCache.swift in Sources */,
+				A10000320000000000000032 /* OverlayService.swift in Sources */,
+				A10000330000000000000033 /* IAPService.swift in Sources */,
+				A10000340000000000000034 /* OverlayView.swift in Sources */,
+				A10000350000000000000035 /* OnboardingFlowView.swift in Sources */,
+				A10000360000000000000036 /* RulesTab.swift in Sources */,
+				A10000370000000000000037 /* SupportTab.swift in Sources */,
+				A10000390000000000000039 /* SettingsDesign.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -363,6 +402,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A10000270000000000000021 /* ImageOptimizerTests.swift in Sources */,
+				A10000380000000000000038 /* CoreFeatureTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

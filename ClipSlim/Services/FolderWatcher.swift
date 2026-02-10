@@ -1,44 +1,89 @@
 import Foundation
 import CoreServices
 
+struct BookmarkResolution {
+    let url: URL
+    let isStale: Bool
+}
+
+enum FolderBookmarkManager {
+    static func makeWatchedFolder(from url: URL) throws -> WatchedFolder {
+        let bookmarkData = try url.bookmarkData(options: [.withSecurityScope], includingResourceValuesForKeys: nil, relativeTo: nil)
+        return WatchedFolder(displayName: url.lastPathComponent, bookmarkData: bookmarkData)
+    }
+
+    static func resolve(_ watchedFolder: WatchedFolder) throws -> BookmarkResolution {
+        var stale = false
+        let url = try URL(
+            resolvingBookmarkData: watchedFolder.bookmarkData,
+            options: [.withSecurityScope],
+            relativeTo: nil,
+            bookmarkDataIsStale: &stale
+        )
+        return BookmarkResolution(url: url, isStale: stale)
+    }
+}
+
 @Observable
 final class FolderWatcher {
-    
+
     private(set) var isWatching = false
-    private(set) var watchedPath: String = ""
-    
+    private(set) var watchedPaths: [String] = []
+
     private var stream: FSEventStreamRef?
     private var debounceTimer: Timer?
     private var pendingPaths: Set<String> = []
-    private var processedFiles: [String] = [] // Array for LRU eviction
-    private var processedFilesSet: Set<String> = [] // Set for O(1) lookup
+    private var processedFiles: [String] = []
+    private var processedFilesSet: Set<String> = []
     private var preExistingFiles: Set<String> = []
-    
-    private let maxProcessedFiles = 1000
-    private let maxPreExistingFiles = 5000
-    
+    private var securityScopedURLs: [URL] = []
+
+    private let maxProcessedFiles = 2000
+    private let maxPreExistingFiles = 20000
+
     private let debounceInterval: TimeInterval = 0.3
     private let supportedExtensions: Set<String> = ["jpg", "jpeg", "png", "tiff", "tif", "bmp", "heic"]
-    private let optimizedSuffix = "-optimized"
+    // Chosen strategy to avoid self-processing loops: outputs go into "Optimized" subfolder.
+    private let optimizedOutputSubfolder = "Optimized"
     private let log = Logger.shared
-    
+
     var onFileDetected: ((URL) -> Void)?
-    
-    func start(path: String) {
-        guard !isWatching, !path.isEmpty else { return }
-        
-        let expandedPath = NSString(string: path).expandingTildeInPath
-        
-        var isDirectory: ObjCBool = false
-        guard FileManager.default.fileExists(atPath: expandedPath, isDirectory: &isDirectory),
-              isDirectory.boolValue else {
-            log.folder("Invalid directory path: \(expandedPath)", type: .error)
-            return
+    var onBookmarkNeedsRefresh: ((WatchedFolder) -> Void)?
+
+    func start(folders: [WatchedFolder]) {
+        stop()
+        guard !folders.isEmpty else { return }
+
+        var resolvedPaths: [String] = []
+
+        for folder in folders {
+            do {
+                let resolution = try FolderBookmarkManager.resolve(folder)
+                if resolution.url.startAccessingSecurityScopedResource() {
+                    securityScopedURLs.append(resolution.url)
+                }
+
+                if resolution.isStale {
+                    onBookmarkNeedsRefresh?(folder)
+                }
+
+                var isDirectory: ObjCBool = false
+                let path = resolution.url.path
+                guard FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory), isDirectory.boolValue else {
+                    log.folder("Invalid directory path in bookmark: \(path)", type: .error)
+                    continue
+                }
+                resolvedPaths.append(path)
+            } catch {
+                log.folder("Failed to resolve bookmark for \(folder.displayName): \(error.localizedDescription)", type: .error)
+            }
         }
-        
-        watchedPath = expandedPath
+
+        guard !resolvedPaths.isEmpty else { return }
+
+        watchedPaths = resolvedPaths
         catalogExistingFiles()
-        
+
         var context = FSEventStreamContext(
             version: 0,
             info: Unmanaged.passUnretained(self).toOpaque(),
@@ -46,113 +91,115 @@ final class FolderWatcher {
             release: nil,
             copyDescription: nil
         )
-        
-        let pathsToWatch = [expandedPath] as CFArray
-        
+
         stream = FSEventStreamCreate(
             nil,
             folderWatcherCallback,
             &context,
-            pathsToWatch,
+            resolvedPaths as CFArray,
             FSEventStreamEventId(kFSEventStreamEventIdSinceNow),
             debounceInterval,
             UInt32(kFSEventStreamCreateFlagFileEvents | kFSEventStreamCreateFlagUseCFTypes)
         )
-        
-        guard let stream = stream else {
+
+        guard let stream else {
             log.folder("Failed to create FSEvent stream", type: .error)
             return
         }
-        
+
         FSEventStreamScheduleWithRunLoop(stream, CFRunLoopGetMain(), CFRunLoopMode.defaultMode.rawValue)
         FSEventStreamStart(stream)
         isWatching = true
-        log.folder("Folder watcher started: \(expandedPath)")
+        log.folder("Folder watcher started for \(resolvedPaths.count) folder(s)")
     }
-    
+
     func stop() {
-        if let stream = stream {
+        if let stream {
             FSEventStreamStop(stream)
             FSEventStreamInvalidate(stream)
             FSEventStreamRelease(stream)
             self.stream = nil
         }
+
+        securityScopedURLs.forEach { $0.stopAccessingSecurityScopedResource() }
+        securityScopedURLs.removeAll()
+
         debounceTimer?.invalidate()
         debounceTimer = nil
         pendingPaths.removeAll()
         processedFiles.removeAll()
         processedFilesSet.removeAll()
         preExistingFiles.removeAll()
+        watchedPaths.removeAll()
         isWatching = false
-        watchedPath = ""
         log.folder("Folder watcher stopped")
     }
-    
+
     func enqueueForDebounce(path: String) {
         pendingPaths.insert(path)
-        
+
         debounceTimer?.invalidate()
         debounceTimer = Timer.scheduledTimer(withTimeInterval: debounceInterval, repeats: false) { [weak self] _ in
             self?.processPendingPaths()
         }
     }
-    
+
+    func outputURL(for inputURL: URL, format: ImageFormat) -> URL {
+        let parent = inputURL.deletingLastPathComponent()
+        let optimizedDir = parent.appendingPathComponent(optimizedOutputSubfolder, isDirectory: true)
+        let nameWithoutExt = inputURL.deletingPathExtension().lastPathComponent
+        return optimizedDir.appendingPathComponent("\(nameWithoutExt)-optimized.\(format.fileExtension)")
+    }
+
     // MARK: - Private
-    
+
     private func catalogExistingFiles() {
         preExistingFiles.removeAll()
-        guard let enumerator = FileManager.default.enumerator(atPath: watchedPath) else { return }
+
         var count = 0
-        while let file = enumerator.nextObject() as? String {
-            guard count < maxPreExistingFiles else {
-                log.folder("Pre-existing files limit reached (\(maxPreExistingFiles)), some files may be re-processed")
-                break
+        for path in watchedPaths {
+            guard let enumerator = FileManager.default.enumerator(atPath: path) else { continue }
+            while let file = enumerator.nextObject() as? String {
+                guard count < maxPreExistingFiles else {
+                    log.folder("Pre-existing files limit reached (\(maxPreExistingFiles)), some files may be re-processed")
+                    return
+                }
+                preExistingFiles.insert((path as NSString).appendingPathComponent(file))
+                count += 1
             }
-            preExistingFiles.insert((watchedPath as NSString).appendingPathComponent(file))
-            count += 1
         }
+
         log.folder("Cataloged \(preExistingFiles.count) pre-existing files")
     }
-    
+
     private func processPendingPaths() {
         let paths = pendingPaths
         pendingPaths.removeAll()
-        
+
         for path in paths {
             processFile(at: path)
         }
     }
-    
+
     private func processFile(at path: String) {
         let url = URL(fileURLWithPath: path)
         let ext = url.pathExtension.lowercased()
-        
-        // Filter: supported extension
+
         guard supportedExtensions.contains(ext) else { return }
-        
-        // Filter: skip files with optimized suffix
-        let nameWithoutExt = url.deletingPathExtension().lastPathComponent
-        guard !nameWithoutExt.hasSuffix(optimizedSuffix) else {
-            log.folder("Skipping already-optimized file: \(url.lastPathComponent)")
+
+        if path.contains("/\(optimizedOutputSubfolder)/") {
             return
         }
-        
-        // Filter: skip pre-existing files
+
         guard !preExistingFiles.contains(path) else { return }
-        
-        // Filter: skip already-processed files
         guard !processedFilesSet.contains(path) else { return }
-        
-        // Verify file exists and is readable
         guard FileManager.default.isReadableFile(atPath: path) else { return }
-        
-        // Add to processed with LRU eviction
-        if processedFiles.count >= maxProcessedFiles {
-            if let oldest = processedFiles.first {
-                processedFiles.removeFirst()
-                processedFilesSet.remove(oldest)
-            }
+
+        if processedFiles.count >= maxProcessedFiles, let oldest = processedFiles.first {
+            processedFiles.removeFirst()
+            processedFilesSet.remove(oldest)
         }
+
         processedFiles.append(path)
         processedFilesSet.insert(path)
         log.folder("New image file detected: \(url.lastPathComponent)")
@@ -160,13 +207,12 @@ final class FolderWatcher {
     }
 }
 
-// MARK: - FSEvents C Callback
 private let folderWatcherCallback: FSEventStreamCallback = { _, info, numEvents, eventPaths, eventFlags, _ in
-    guard let info = info else { return }
+    guard let info else { return }
     let watcher = Unmanaged<FolderWatcher>.fromOpaque(info).takeUnretainedValue()
-    
+
     guard let cfArray = unsafeBitCast(eventPaths, to: NSArray.self) as? [String] else { return }
-    
+
     for i in 0..<numEvents {
         let flags = eventFlags[i]
         if flags & UInt32(kFSEventStreamEventFlagItemIsFile) != 0 {

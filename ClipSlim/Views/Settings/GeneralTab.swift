@@ -1,40 +1,69 @@
 import SwiftUI
-import AppKit
 
 struct GeneralTab: View {
-    
+
     @Environment(AppViewModel.self) private var viewModel
-    
+
     var body: some View {
-        Form {
-            Section {
+        VibeSettingsPage {
+            VibeSettingsCard(title: "Clipboard", icon: "doc.on.clipboard") {
                 Toggle("Enable Clipboard Watching", isOn: viewModel.settings.clipboardWatchEnabledBinding)
-                    .onChange(of: viewModel.settings.clipboardWatchEnabled) { _, newValue in
-                        if newValue {
-                            viewModel.clipboardWatcher.start()
-                        } else {
-                            viewModel.clipboardWatcher.stop()
-                        }
+                    .onChange(of: viewModel.settings.clipboardWatchEnabled) { _, _ in
+                        viewModel.refreshPauseState()
                     }
-                
-                Text("Automatically optimize images copied to the clipboard")
-                    .font(VibeCheckTheme.Typography.caption)
-                    .foregroundColor(VibeCheckTheme.Colors.textTertiary)
-            } header: {
-                Label("Clipboard", systemImage: "doc.on.clipboard")
+                VibeHintText(text: "Automatically optimize images copied to the clipboard")
             }
-            
-            Section {
+
+            VibeSettingsCard(title: "Output Format", icon: "arrow.triangle.2.circlepath") {
+                Picker("Preferred Output Format", selection: Binding(
+                    get: { viewModel.settings.preferredOutputFormat },
+                    set: { viewModel.settings.preferredOutputFormat = $0 }
+                )) {
+                    Text("JPEG").tag(ImageFormat.jpeg)
+                    Text("PNG").tag(ImageFormat.png)
+                }
+                .pickerStyle(.segmented)
+
+                VibeHintText(text: "If JPEG is preferred and input has transparency, ClipSlim forces PNG to preserve alpha.")
+            }
+
+            VibeSettingsCard(title: "Appearance", icon: "paintbrush") {
+                HStack(spacing: VibeCheckTheme.Spacing.sm) {
+                    Image(systemName: "scissors")
+                        .foregroundColor(VibeCheckTheme.Colors.neonCyan)
+                    Text("Scissors menu bar icon")
+                        .foregroundColor(VibeCheckTheme.Colors.textPrimary)
+                }
+                VibeHintText(text: "ClipSlim uses a fixed SF Symbol icon for reliable sizing in the menu bar.")
+            }
+
+            VibeSettingsCard(title: "Pause & Focus", icon: "moon.zzz") {
+                Toggle("Pause folder watcher while paused", isOn: viewModel.settings.pauseFolderWatcherBinding)
+                Toggle("Focus mode", isOn: viewModel.settings.focusModeEnabledBinding)
+                    .onChange(of: viewModel.settings.focusModeEnabled) { _, _ in
+                        viewModel.refreshPauseState()
+                    }
+
+                TextField("Focus bundle IDs (comma-separated)", text: Binding(
+                    get: { viewModel.settings.focusBundleIDsCSV },
+                    set: { viewModel.settings.focusBundleIDsCSV = $0 }
+                ))
+                .textFieldStyle(.roundedBorder)
+
+                TextField("Always ignore apps (comma-separated)", text: Binding(
+                    get: { viewModel.settings.excludedBundleIDsCSV },
+                    set: { viewModel.settings.excludedBundleIDsCSV = $0 }
+                ))
+                .textFieldStyle(.roundedBorder)
+
+                VibeHintText(text: "Focus mode pauses clipboard optimization when frontmost app matches configured bundle IDs.")
+            }
+
+            VibeSettingsCard(title: "Notifications", icon: "bell") {
                 Toggle("Show Notifications", isOn: viewModel.settings.notificationsEnabledBinding)
-                
-                Text("Display a banner when an image is optimized")
-                    .font(VibeCheckTheme.Typography.caption)
-                    .foregroundColor(VibeCheckTheme.Colors.textTertiary)
-            } header: {
-                Label("Notifications", systemImage: "bell")
             }
-            
-            Section {
+
+            VibeSettingsCard(title: "Safety", icon: "shield") {
                 HStack {
                     Text("Max Input Size")
                     Spacer()
@@ -46,82 +75,32 @@ struct GeneralTab: View {
                     }
                     .frame(width: 120)
                 }
-                
-                Text("Images larger than this will be skipped")
-                    .font(VibeCheckTheme.Typography.caption)
-                    .foregroundColor(VibeCheckTheme.Colors.textTertiary)
-            } header: {
-                Label("Safety", systemImage: "shield")
+                VibeHintText(text: "Images larger than this are skipped")
             }
-            
-            Section {
-                Toggle("Save Originals & Optimized to Disk", isOn: viewModel.settings.saveToDiskBinding)
-                
+
+            VibeSettingsCard(title: "Save to Disk", icon: "square.and.arrow.down") {
+                Toggle("Save originals and optimized files to disk", isOn: viewModel.settings.saveToDiskBinding)
                 if viewModel.settings.saveToDisk {
                     HStack {
-                        VStack(alignment: .leading, spacing: VibeCheckTheme.Spacing.xs) {
-                            Text("Save Folder")
-                                .font(VibeCheckTheme.Typography.body)
-                            
-                            if viewModel.settings.saveFolderPath.isEmpty {
-                                Text("~/Pictures/ClipSlim (default)")
-                                    .font(VibeCheckTheme.Typography.caption)
-                                    .foregroundColor(VibeCheckTheme.Colors.textTertiary)
-                            } else {
-                                Text(viewModel.settings.saveFolderPath)
-                                    .font(VibeCheckTheme.Typography.caption)
-                                    .foregroundColor(VibeCheckTheme.Colors.neonCyan)
-                                    .lineLimit(1)
-                                    .truncationMode(.middle)
-                            }
-                        }
-                        
+                        Text(viewModel.settings.saveFolderPath.isEmpty ? "~/Pictures/ClipSlim (default)" : viewModel.settings.saveFolderPath)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
                         Spacer()
-                        
-                        Button("Choose…") {
-                            selectSaveFolder()
-                        }
+                        Button("Choose…") { selectSaveFolder() }
                     }
                 }
-                
-                Text("Saves both original and optimized images in separate Originals/ and Optimized/ subfolders")
-                    .font(VibeCheckTheme.Typography.caption)
-                    .foregroundColor(VibeCheckTheme.Colors.textTertiary)
-            } header: {
-                Label("Save to Disk", systemImage: "square.and.arrow.down")
             }
-            
-            Section {
-                Picker("Preferred Output Format", selection: Binding(
-                    get: { viewModel.settings.preferredOutputFormatRaw },
-                    set: { viewModel.settings.preferredOutputFormatRaw = $0 }
-                )) {
-                    Text("Auto").tag("")
-                    Text("JPEG").tag(ImageFormat.jpeg.rawValue)
-                    Text("PNG").tag(ImageFormat.png.rawValue)
+
+            VibeSettingsCard(title: "Onboarding", icon: "sparkles") {
+                Button("Run onboarding again") {
+                    viewModel.runOnboardingAgain()
                 }
-                
-                Text("Auto: HEIC/TIFF → PNG, others → JPEG (unless transparent). Override to force a specific format.")
-                    .font(VibeCheckTheme.Typography.caption)
-                    .foregroundColor(VibeCheckTheme.Colors.textTertiary)
-            } header: {
-                Label("Format Conversion", systemImage: "arrow.triangle.2.circlepath")
-            }
-            
-            Section {
-                Toggle("Launch at Login", isOn: viewModel.settings.launchAtLoginBinding)
-                    .disabled(true)
-                
-                Text("Coming soon — requires a login item helper")
-                    .font(VibeCheckTheme.Typography.caption)
-                    .foregroundColor(VibeCheckTheme.Colors.textTertiary)
-            } header: {
-                Label("Startup", systemImage: "power")
+                .buttonStyle(.bordered)
+                VibeHintText(text: "Use onboarding to reset default format, optimization intensity, and watched folders.")
             }
         }
-        .formStyle(.grouped)
     }
-    
+
     private func selectSaveFolder() {
         let panel = NSOpenPanel()
         panel.canChooseFiles = false
@@ -129,7 +108,7 @@ struct GeneralTab: View {
         panel.allowsMultipleSelection = false
         panel.message = "Choose a folder to save original and optimized images"
         panel.prompt = "Select Folder"
-        
+
         if panel.runModal() == .OK, let url = panel.url {
             viewModel.settings.saveFolderPath = url.path
         }

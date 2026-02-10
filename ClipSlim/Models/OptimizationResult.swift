@@ -28,4 +28,26 @@ struct OptimizationResult {
     var formattedSavings: String {
         ByteCountFormatter.string(fromByteCount: Int64(savingsBytes), countStyle: .file)
     }
+
+    var preciseOriginalSize: String {
+        Self.preciseSizeString(bytes: originalSize)
+    }
+
+    var preciseOptimizedSize: String {
+        Self.preciseSizeString(bytes: optimizedSize)
+    }
+
+    private static func preciseSizeString(bytes: Int) -> String {
+        let value = Double(bytes)
+        if bytes < 1024 {
+            return "\(bytes) B"
+        }
+        if bytes < 1024 * 1024 {
+            return String(format: "%.2f KB", value / 1024.0)
+        }
+        if bytes < 1024 * 1024 * 1024 {
+            return String(format: "%.2f MB", value / (1024.0 * 1024.0))
+        }
+        return String(format: "%.2f GB", value / (1024.0 * 1024.0 * 1024.0))
+    }
 }
