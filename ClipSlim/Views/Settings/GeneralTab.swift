@@ -28,13 +28,22 @@ struct GeneralTab: View {
             }
 
             VibeSettingsCard(title: "Appearance", icon: "paintbrush") {
-                HStack(spacing: VibeCheckTheme.Spacing.sm) {
-                    Image(systemName: "scissors")
-                        .foregroundColor(VibeCheckTheme.Colors.neonCyan)
-                    Text("Scissors menu bar icon")
+                HStack {
+                    Text("Menu Bar Icon")
                         .foregroundColor(VibeCheckTheme.Colors.textPrimary)
+                    Spacer()
+                    Picker("", selection: viewModel.settings.menuBarIconStyleBinding) {
+                        ForEach(MenuBarIconStyle.allCases, id: \.self) { style in
+                            HStack(spacing: VibeCheckTheme.Spacing.xs) {
+                                Image(systemName: style.sfSymbolName)
+                                Text(style.title)
+                            }
+                            .tag(style)
+                        }
+                    }
+                    .frame(width: 160)
                 }
-                VibeHintText(text: "ClipSlim uses a fixed SF Symbol icon for reliable sizing in the menu bar.")
+                VibeHintText(text: "Choose the icon shown in the menu bar. Change takes effect immediately.")
             }
 
             VibeSettingsCard(title: "Pause & Focus", icon: "moon.zzz") {

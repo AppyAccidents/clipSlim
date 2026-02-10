@@ -28,6 +28,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
+        if response.notification.request.content.categoryIdentifier == NotificationService.donationReminderCategoryID {
+            if let url = URL(string: "https://buymeacoffee.com/appyaccidents") {
+                NSWorkspace.shared.open(url)
+            }
+        }
         completionHandler()
     }
 }

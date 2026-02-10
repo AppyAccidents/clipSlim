@@ -12,7 +12,6 @@ struct VibeSettingsPage<Content: View>: View {
         }
         .font(VibeCheckTheme.Typography.body)
         .foregroundColor(VibeCheckTheme.Colors.textPrimary)
-        .tint(VibeCheckTheme.Colors.neonCyan)
         .background(VibeCheckTheme.Colors.background)
     }
 }
@@ -27,7 +26,7 @@ struct VibeSettingsCard<Content: View>: View {
             HStack(spacing: VibeCheckTheme.Spacing.sm) {
                 Image(systemName: icon)
                     .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(VibeCheckTheme.Colors.neonCyan)
+                    .foregroundColor(Color(hex: "FB8A10"))
                 Text(title)
                     .font(VibeCheckTheme.Typography.caption)
                     .foregroundColor(VibeCheckTheme.Colors.textSecondary)

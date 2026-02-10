@@ -2,15 +2,23 @@ import Foundation
 import SwiftUI
 
 enum MenuBarIconStyle: String, Codable, CaseIterable {
-    case main
-    case lightAlternative
-    case darkAlternative
+    case scissors
+    case clipboard
+    case weight
 
     var title: String {
         switch self {
-        case .main: return "Main"
-        case .lightAlternative: return "Light Alt"
-        case .darkAlternative: return "Dark Alt"
+        case .scissors: return "Scissors"
+        case .clipboard: return "Clipboard"
+        case .weight: return "Weight"
+        }
+    }
+
+    var sfSymbolName: String {
+        switch self {
+        case .scissors: return "scissors"
+        case .clipboard: return "doc.on.clipboard"
+        case .weight: return "scalemass"
         }
     }
 }
@@ -57,63 +65,6 @@ struct WatchedFolder: Codable, Identifiable, Hashable {
     }
 }
 
-enum RuleTransparencyCondition: String, Codable, CaseIterable {
-    case any
-    case transparent
-    case opaque
-}
-
-struct OptimizationRule: Codable, Identifiable, Hashable {
-    let id: UUID
-    var name: String
-    var enabled: Bool
-    var frontmostBundleID: String
-    var minBytes: Int
-    var maxBytes: Int
-    var minDimension: Int
-    var maxDimension: Int
-    var transparencyCondition: RuleTransparencyCondition
-    var overridePresetRaw: String
-    var overrideFormatRaw: String
-    var shouldSkip: Bool
-
-    init(
-        id: UUID = UUID(),
-        name: String,
-        enabled: Bool = true,
-        frontmostBundleID: String = "",
-        minBytes: Int = 0,
-        maxBytes: Int = 0,
-        minDimension: Int = 0,
-        maxDimension: Int = 0,
-        transparencyCondition: RuleTransparencyCondition = .any,
-        overridePreset: OptimizationPreset? = nil,
-        overrideFormat: ImageFormat? = nil,
-        shouldSkip: Bool = false
-    ) {
-        self.id = id
-        self.name = name
-        self.enabled = enabled
-        self.frontmostBundleID = frontmostBundleID
-        self.minBytes = minBytes
-        self.maxBytes = maxBytes
-        self.minDimension = minDimension
-        self.maxDimension = maxDimension
-        self.transparencyCondition = transparencyCondition
-        self.overridePresetRaw = overridePreset?.rawValue ?? ""
-        self.overrideFormatRaw = overrideFormat?.rawValue ?? ""
-        self.shouldSkip = shouldSkip
-    }
-
-    var overridePreset: OptimizationPreset? {
-        OptimizationPreset(rawValue: overridePresetRaw)
-    }
-
-    var overrideFormat: ImageFormat? {
-        ImageFormat(rawValue: overrideFormatRaw)
-    }
-}
-
 @Observable
 final class AppSettings {
     static let onboardingSchemaVersion = 2
@@ -149,9 +100,9 @@ final class AppSettings {
     var focusBundleIDsCSV: String { didSet { defaults.set(focusBundleIDsCSV, forKey: Keys.focusBundleIDsCSV) } }
     var excludedBundleIDsCSV: String { didSet { defaults.set(excludedBundleIDsCSV, forKey: Keys.excludedBundleIDsCSV) } }
     var menuBarIconStyleRaw: String { didSet { defaults.set(menuBarIconStyleRaw, forKey: Keys.menuBarIconStyleRaw) } }
+    var lastDonationPromptEpoch: Double { didSet { defaults.set(lastDonationPromptEpoch, forKey: Keys.lastDonationPromptEpoch) } }
 
     private var watchedFoldersData: String { didSet { defaults.set(watchedFoldersData, forKey: Keys.watchedFoldersData) } }
-    private var rulesData: String { didSet { defaults.set(rulesData, forKey: Keys.rulesData) } }
 
     private enum Keys {
         static let clipboardWatchEnabled = "clipboardWatchEnabled"
@@ -178,8 +129,8 @@ final class AppSettings {
         static let focusBundleIDsCSV = "focusBundleIDsCSV"
         static let excludedBundleIDsCSV = "excludedBundleIDsCSV"
         static let menuBarIconStyleRaw = "menuBarIconStyleRaw"
+        static let lastDonationPromptEpoch = "lastDonationPromptEpoch"
         static let watchedFoldersData = "watchedFoldersData"
-        static let rulesData = "rulesData"
     }
 
     // Chosen behavior: if preferred output is JPEG but input has alpha, force PNG.
@@ -200,7 +151,7 @@ final class AppSettings {
 
         maxFileSizeMB = defaults.object(forKey: Keys.maxFileSizeMB) as? Int ?? 50
         launchAtLogin = defaults.object(forKey: Keys.launchAtLogin) as? Bool ?? false
-        saveToDisk = defaults.object(forKey: Keys.saveToDisk) as? Bool ?? false
+        saveToDisk = defaults.object(forKey: Keys.saveToDisk) as? Bool ?? true
         saveFolderPath = defaults.string(forKey: Keys.saveFolderPath) ?? ""
 
         preferredOutputFormatRaw = defaults.string(forKey: Keys.preferredOutputFormatRaw) ?? ImageFormat.jpeg.rawValue
@@ -216,10 +167,10 @@ final class AppSettings {
         focusModeEnabled = defaults.object(forKey: Keys.focusModeEnabled) as? Bool ?? false
         focusBundleIDsCSV = defaults.string(forKey: Keys.focusBundleIDsCSV) ?? "us.zoom.xos,com.microsoft.teams,com.microsoft.teams2"
         excludedBundleIDsCSV = defaults.string(forKey: Keys.excludedBundleIDsCSV) ?? ""
-        menuBarIconStyleRaw = defaults.string(forKey: Keys.menuBarIconStyleRaw) ?? MenuBarIconStyle.main.rawValue
+        menuBarIconStyleRaw = defaults.string(forKey: Keys.menuBarIconStyleRaw) ?? MenuBarIconStyle.scissors.rawValue
+        lastDonationPromptEpoch = defaults.object(forKey: Keys.lastDonationPromptEpoch) as? Double ?? 0
 
         watchedFoldersData = defaults.string(forKey: Keys.watchedFoldersData) ?? "[]"
-        rulesData = defaults.string(forKey: Keys.rulesData) ?? "[]"
     }
 
     var preferredOutputFormat: ImageFormat {
@@ -230,11 +181,6 @@ final class AppSettings {
     var watchedFolders: [WatchedFolder] {
         get { decodeArray(from: watchedFoldersData) }
         set { watchedFoldersData = encodeArray(newValue) }
-    }
-
-    var rules: [OptimizationRule] {
-        get { decodeArray(from: rulesData) }
-        set { rulesData = encodeArray(newValue) }
     }
 
     var pauseUntil: Date? {
@@ -277,19 +223,7 @@ final class AppSettings {
     }
 
     var menuBarIconStyle: MenuBarIconStyle {
-        get {
-            // Legacy mapping: previous light/dark choices become alternatives; system maps to main.
-            switch menuBarIconStyleRaw {
-            case "light":
-                return .lightAlternative
-            case "dark":
-                return .darkAlternative
-            case "system":
-                return .main
-            default:
-                return MenuBarIconStyle(rawValue: menuBarIconStyleRaw) ?? .main
-            }
-        }
+        get { MenuBarIconStyle(rawValue: menuBarIconStyleRaw) ?? .scissors }
         set { menuBarIconStyleRaw = newValue.rawValue }
     }
 

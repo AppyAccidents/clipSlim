@@ -307,6 +307,160 @@ final class ImageOptimizer: Sendable {
 
         return data as Data
     }
+
+    // MARK: - Crop
+
+    func cropToSquare(data: Data, side: Int) throws -> Data {
+        guard side >= 1 else { throw OptimizationError.resizeFailed }
+
+        guard let source = CGImageSourceCreateWithData(data as CFData, nil),
+              let cgImage = CGImageSourceCreateImageAtIndex(source, 0, nil) else {
+            throw OptimizationError.invalidImageData
+        }
+
+        let w = cgImage.width
+        let h = cgImage.height
+        let clampedSide = min(side, min(w, h))
+
+        let originX = (w - clampedSide) / 2
+        let originY = (h - clampedSide) / 2
+        let cropRect = CGRect(x: originX, y: originY, width: clampedSide, height: clampedSide)
+
+        guard let cropped = cgImage.cropping(to: cropRect) else {
+            throw OptimizationError.resizeFailed
+        }
+
+        let outputData = NSMutableData()
+        guard let destination = CGImageDestinationCreateWithData(outputData as CFMutableData, UTType.png.identifier as CFString, 1, nil) else {
+            throw OptimizationError.encodingFailed
+        }
+        CGImageDestinationAddImage(destination, cropped, nil)
+        guard CGImageDestinationFinalize(destination) else {
+            throw OptimizationError.encodingFailed
+        }
+        return outputData as Data
+    }
+
+    func cropToCircle(data: Data, radius: Int) throws -> Data {
+        guard radius >= 1 else { throw OptimizationError.resizeFailed }
+
+        guard let source = CGImageSourceCreateWithData(data as CFData, nil),
+              let cgImage = CGImageSourceCreateImageAtIndex(source, 0, nil) else {
+            throw OptimizationError.invalidImageData
+        }
+
+        let w = cgImage.width
+        let h = cgImage.height
+        let diameter = radius * 2
+        let clampedDiameter = min(diameter, min(w, h))
+
+        let originX = (w - clampedDiameter) / 2
+        let originY = (h - clampedDiameter) / 2
+        let cropRect = CGRect(x: originX, y: originY, width: clampedDiameter, height: clampedDiameter)
+
+        guard let squareCrop = cgImage.cropping(to: cropRect) else {
+            throw OptimizationError.resizeFailed
+        }
+
+        let size = CGSize(width: clampedDiameter, height: clampedDiameter)
+        let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)
+        guard let context = CGContext(
+            data: nil,
+            width: clampedDiameter,
+            height: clampedDiameter,
+            bitsPerComponent: 8,
+            bytesPerRow: 0,
+            space: CGColorSpaceCreateDeviceRGB(),
+            bitmapInfo: bitmapInfo.rawValue
+        ) else {
+            throw OptimizationError.resizeFailed
+        }
+
+        let circleRect = CGRect(origin: .zero, size: size)
+        context.addEllipse(in: circleRect)
+        context.clip()
+        context.draw(squareCrop, in: circleRect)
+
+        guard let circularImage = context.makeImage() else {
+            throw OptimizationError.resizeFailed
+        }
+
+        let outputData = NSMutableData()
+        guard let destination = CGImageDestinationCreateWithData(outputData as CFMutableData, UTType.png.identifier as CFString, 1, nil) else {
+            throw OptimizationError.encodingFailed
+        }
+        CGImageDestinationAddImage(destination, circularImage, nil)
+        guard CGImageDestinationFinalize(destination) else {
+            throw OptimizationError.encodingFailed
+        }
+        return outputData as Data
+    }
+
+    // MARK: - Dominant Colors
+
+    /// Extracts the top N dominant colors from image data using pixel bucketing.
+    /// Fast CoreGraphics-only implementation; scales to 80×80 thumbnail internally.
+    func dominantColors(data: Data, maxColors: Int = 3) -> [(cgColor: CGColor, hex: String)] {
+        guard let source = CGImageSourceCreateWithData(data as CFData, nil),
+              let fullImage = CGImageSourceCreateImageAtIndex(source, 0, nil) else {
+            return []
+        }
+
+        // Scale down to 80×80 for speed
+        let thumbSize = 80
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)
+        guard let ctx = CGContext(
+            data: nil, width: thumbSize, height: thumbSize,
+            bitsPerComponent: 8, bytesPerRow: thumbSize * 4,
+            space: colorSpace, bitmapInfo: bitmapInfo.rawValue
+        ) else { return [] }
+        ctx.draw(fullImage, in: CGRect(x: 0, y: 0, width: thumbSize, height: thumbSize))
+        guard let thumbImage = ctx.makeImage() else { return [] }
+
+        let w = thumbImage.width
+        let h = thumbImage.height
+        let byteCount = w * h * 4
+        var pixelBuffer = [UInt8](repeating: 0, count: byteCount)
+        guard let pixCtx = CGContext(
+            data: &pixelBuffer, width: w, height: h,
+            bitsPerComponent: 8, bytesPerRow: w * 4,
+            space: colorSpace, bitmapInfo: bitmapInfo.rawValue
+        ) else { return [] }
+        pixCtx.draw(thumbImage, in: CGRect(x: 0, y: 0, width: w, height: h))
+
+        // Quantize each RGB channel to 5 bits (32 levels) for bucketing
+        var buckets: [Int32: (count: Int, rSum: Int, gSum: Int, bSum: Int)] = [:]
+        for i in stride(from: 0, to: byteCount, by: 4) {
+            let r = pixelBuffer[i]
+            let g = pixelBuffer[i + 1]
+            let b = pixelBuffer[i + 2]
+            let a = pixelBuffer[i + 3]
+            guard a > 128 else { continue } // skip transparent pixels
+            let key = Int32(r >> 3) << 10 | Int32(g >> 3) << 5 | Int32(b >> 3)
+            if var bucket = buckets[key] {
+                bucket.count += 1
+                bucket.rSum += Int(r)
+                bucket.gSum += Int(g)
+                bucket.bSum += Int(b)
+                buckets[key] = bucket
+            } else {
+                buckets[key] = (count: 1, rSum: Int(r), gSum: Int(g), bSum: Int(b))
+            }
+        }
+
+        let sorted = buckets.values.sorted { $0.count > $1.count }.prefix(maxColors)
+        return sorted.map { bucket in
+            let n = max(bucket.count, 1)
+            let r = Double(bucket.rSum / n) / 255.0
+            let g = Double(bucket.gSum / n) / 255.0
+            let b = Double(bucket.bSum / n) / 255.0
+            let cgColor = CGColor(red: r, green: g, blue: b, alpha: 1.0)
+            let hex = String(format: "#%02X%02X%02X",
+                Int(r * 255), Int(g * 255), Int(b * 255))
+            return (cgColor: cgColor, hex: hex)
+        }
+    }
 }
 
 // MARK: - Errors

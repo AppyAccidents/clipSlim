@@ -2,6 +2,11 @@ import Foundation
 import AppKit
 import SwiftUI
 
+enum CropShape: String, CaseIterable {
+    case square = "Square"
+    case circle = "Circle"
+}
+
 struct OverlayItem {
     let originalData: Data
     let optimizedData: Data
@@ -20,6 +25,7 @@ final class OverlayService {
     var onRemoveClipboardImage: (() -> Void)?
     var onApplyFormatOverride: ((ImageFormat) -> Void)?
     var onApplyResizeOverride: ((Int, Int) -> Void)?
+    var onApplyCrop: ((CropShape, Int) -> Void)?
     var onOpenSettings: (() -> Void)?
     var onIgnoreImage: (() -> Void)?
     var onIgnoreApp: (() -> Void)?
@@ -71,7 +77,7 @@ final class OverlayService {
 
         let hosting = NSHostingView(rootView: rootView)
         let panel = NSPanel(
-            contentRect: NSRect(x: 0, y: 0, width: 392, height: 364),
+            contentRect: NSRect(x: 0, y: 0, width: 392, height: 540),
             styleMask: [.nonactivatingPanel, .fullSizeContentView],
             backing: .buffered,
             defer: false

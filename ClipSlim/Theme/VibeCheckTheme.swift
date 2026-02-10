@@ -34,10 +34,10 @@ enum VibeCheckTheme {
         // Text colors
         static let textPrimary = Color(hex: "FAFAFA")
         static let textSecondary = Color(hex: "A0A0B0")
-        static let textTertiary = Color(hex: "606070")
-        
+        static let textTertiary = Color(hex: "8080A0")
+
         // Structural
-        static let border = Color.white.opacity(0.05)
+        static let border = Color.white.opacity(0.12)
         static let borderActive = neonCyan
     }
     
@@ -127,28 +127,32 @@ struct VibeButton: View {
         case primary
         case secondary
         case danger
-        
+        case donation
+
         var backgroundColor: Color {
             switch self {
             case .primary: return VibeCheckTheme.Colors.neonCyan
             case .secondary: return VibeCheckTheme.Colors.surface
             case .danger: return VibeCheckTheme.Colors.error
+            case .donation: return Color(hex: "FB8A10")
             }
         }
-        
+
         var foregroundColor: Color {
             switch self {
             case .primary: return VibeCheckTheme.Colors.background
             case .secondary: return VibeCheckTheme.Colors.neonCyan
             case .danger: return VibeCheckTheme.Colors.textPrimary
+            case .donation: return Color(hex: "0D0D0F")
             }
         }
-        
+
         var glowColor: Color? {
             switch self {
             case .primary: return VibeCheckTheme.Colors.neonCyan
             case .secondary: return nil
             case .danger: return VibeCheckTheme.Colors.error
+            case .donation: return Color(hex: "FB8A10")
             }
         }
     }

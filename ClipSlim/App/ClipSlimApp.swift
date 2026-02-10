@@ -2,16 +2,16 @@ import SwiftUI
 
 @main
 struct ClipSlimApp: App {
-    
+
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @State private var viewModel = AppViewModel()
-    
+
     var body: some Scene {
         MenuBarExtra {
             MenuBarView()
                 .environment(viewModel)
         } label: {
-            Image(systemName: "scissors")
+            Image(systemName: viewModel.settings.menuBarIconStyle.sfSymbolName)
                 .font(.system(size: 13, weight: .semibold))
                 .accessibilityLabel("ClipSlim")
         }

@@ -1,6 +1,17 @@
 import SwiftUI
 import AppKit
 
+private let accentOrange = Color(hex: "FB8A10")
+
+private struct OrangeDivider: View {
+    var body: some View {
+        Rectangle()
+            .fill(accentOrange.opacity(0.35))
+            .frame(height: 1)
+            .padding(.vertical, 2)
+    }
+}
+
 struct OverlayView: View {
     @Environment(OverlayService.self) private var overlayService
     @Environment(\.openSettings) private var openSettings
@@ -8,18 +19,26 @@ struct OverlayView: View {
     @State private var formatSelection: ImageFormat = .jpeg
     @State private var targetWidth: Int = 512
     @State private var targetHeight: Int = 512
+    @State private var cropShape: CropShape = .square
+    @State private var cropSize: Int = 512
+    @State private var dominantHexCodes: [String] = []
+    @State private var dominantCGColors: [CGColor] = []
+    @State private var copiedHex: String? = nil
 
-    private let blockSpacing = VibeCheckTheme.Spacing.md
     private let minResizeDimension = 16
     private let maxResizeDimension = 8192
+    private let blockSpacing = VibeCheckTheme.Spacing.md
 
-    private enum SquareResizePreset: Int, CaseIterable, Identifiable {
-        case x128 = 128
-        case x256 = 256
-        case x512 = 512
-
+    private enum ResizePreset: Int, CaseIterable, Identifiable {
+        case p128 = 128, p256 = 256, p512 = 512
         var id: Int { rawValue }
-        var label: String { "\(rawValue)x\(rawValue)" }
+        var label: String { "\(rawValue)×\(rawValue)" }
+    }
+
+    private enum CropPreset: Int, CaseIterable, Identifiable {
+        case p256 = 256, p512 = 512, p1024 = 1024
+        var id: Int { rawValue }
+        var label: String { "\(rawValue)" }
     }
 
     var body: some View {
@@ -30,63 +49,70 @@ struct OverlayView: View {
         }
         .animation(NSWorkspace.shared.accessibilityDisplayShouldReduceMotion ? nil : .easeInOut(duration: 0.16), value: overlayService.currentItem?.result.optimizedSize)
         .font(VibeCheckTheme.Typography.body)
-        .tint(VibeCheckTheme.Colors.neonCyan)
+        .tint(accentOrange)
         .onHover { hovering in
-            if hovering {
-                overlayService.pauseDismiss()
-            } else {
-                overlayService.resumeDismiss()
-            }
-        }
-        .onChange(of: overlayService.currentItem?.result.format) { _, _ in
-            syncSelectionFromCurrentItem()
-        }
-        .onChange(of: overlayService.currentItem?.result.optimizedDimensions.width) { _, _ in
-            syncSelectionFromCurrentItem()
-        }
-        .onChange(of: overlayService.currentItem?.result.optimizedDimensions.height) { _, _ in
-            syncSelectionFromCurrentItem()
+            if hovering { overlayService.pauseDismiss() } else { overlayService.resumeDismiss() }
         }
         .onChange(of: overlayService.currentItem?.result.optimizedSize) { _, _ in
             syncSelectionFromCurrentItem()
+        }
+        .onChange(of: overlayService.currentItem?.optimizedData) { _, newData in
+            if let data = newData { extractColors(from: data) }
         }
     }
 
     private func content(_ item: OverlayItem) -> some View {
         VStack(alignment: .leading, spacing: blockSpacing) {
             header
-
             summary(item)
-
-            VibeDivider()
-
+            OrangeDivider()
             primaryActions
-
-            VibeDivider()
-
-            secondaryActions
+            OrangeDivider()
+            formatSection
+            OrangeDivider()
+            resizeSection
+            OrangeDivider()
+            cropSection
+            OrangeDivider()
+            colorsSection
         }
-        .padding(VibeCheckTheme.Spacing.lg)
+        .padding(VibeCheckTheme.Spacing.xl)
         .frame(width: 392)
-        .background(VibeCheckTheme.Colors.surfaceElevated)
+        .background(
+            ZStack {
+                Color(hex: "111116").opacity(0.82)
+                Rectangle().fill(.ultraThinMaterial)
+            }
+        )
         .cornerRadius(VibeCheckTheme.CornerRadius.lg)
         .overlay(
             RoundedRectangle(cornerRadius: VibeCheckTheme.CornerRadius.lg)
-                .stroke(VibeCheckTheme.Colors.borderActive.opacity(0.25), lineWidth: 1)
+                .stroke(
+                    LinearGradient(
+                        colors: [accentOrange.opacity(0.45), accentOrange.opacity(0.15)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
         )
-        .shadow(color: VibeCheckTheme.Colors.background.opacity(0.45), radius: 10, x: 0, y: 6)
+        .shadow(color: Color.black.opacity(0.55), radius: 24, x: 0, y: 8)
+        .shadow(color: accentOrange.opacity(0.08), radius: 12, x: 0, y: 0)
         .onAppear {
             syncSelectionFromCurrentItem()
+            extractColors(from: item.optimizedData)
         }
     }
 
+    // MARK: - Header
+
     private var header: some View {
         HStack(spacing: VibeCheckTheme.Spacing.sm) {
-            Image(systemName: "sparkles")
+            Image(systemName: "scissors")
                 .font(.system(size: 12, weight: .bold))
                 .foregroundColor(VibeCheckTheme.Colors.neonCyan)
 
-            Text("Optimization Complete")
+            Text("Clip has been Slimmed")
                 .font(VibeCheckTheme.Typography.headline)
                 .foregroundColor(VibeCheckTheme.Colors.textPrimary)
 
@@ -106,26 +132,23 @@ struct OverlayView: View {
         }
     }
 
+    // MARK: - Summary
+
     private func summary(_ item: OverlayItem) -> some View {
         HStack(alignment: .top, spacing: VibeCheckTheme.Spacing.md) {
             preview(data: item.optimizedData)
 
             VStack(alignment: .leading, spacing: VibeCheckTheme.Spacing.xs) {
-                Text("\(item.result.formattedOriginalSize) -> \(item.result.formattedOptimizedSize)")
+                Text("\(item.result.formattedOriginalSize) → \(item.result.formattedOptimizedSize)")
                     .font(VibeCheckTheme.Typography.body)
                     .foregroundColor(VibeCheckTheme.Colors.textPrimary)
-                    .lineLimit(1)
-
-                Text("\(item.result.preciseOriginalSize) -> \(item.result.preciseOptimizedSize)")
-                    .font(VibeCheckTheme.Typography.caption)
-                    .foregroundColor(VibeCheckTheme.Colors.textTertiary)
                     .lineLimit(1)
 
                 Text("\(formattedSavings(item.result)) smaller")
                     .font(VibeCheckTheme.Typography.caption)
                     .foregroundColor(VibeCheckTheme.Colors.statusOk)
 
-                Text("\(item.result.optimizedDimensions.width)x\(item.result.optimizedDimensions.height) · \(item.result.format.rawValue)")
+                Text("\(item.result.optimizedDimensions.width)×\(item.result.optimizedDimensions.height) · \(item.result.format.rawValue)")
                     .font(VibeCheckTheme.Typography.caption)
                     .foregroundColor(VibeCheckTheme.Colors.textSecondary)
             }
@@ -134,73 +157,163 @@ struct OverlayView: View {
         }
     }
 
+    // MARK: - Primary Actions
+
     private var primaryActions: some View {
         HStack(spacing: VibeCheckTheme.Spacing.sm) {
-            compactAction("Undo", icon: "arrow.uturn.backward") { overlayService.onUndo?() }
-            compactAction("Save As", icon: "square.and.arrow.down") { overlayService.onSaveAs?() }
-            compactAction("Remove", icon: "xmark.bin") { overlayService.onRemoveClipboardImage?() }
+            actionButton("Undo", icon: "arrow.uturn.backward", isOrange: false) {
+                overlayService.onUndo?()
+            }
+            actionButton("Save As", icon: "square.and.arrow.down", isOrange: false) {
+                overlayService.onSaveAs?()
+            }
+            actionButton("Remove", icon: "xmark.bin", isOrange: true) {
+                overlayService.onRemoveClipboardImage?()
+            }
         }
     }
 
-    private var secondaryActions: some View {
-        VStack(alignment: .leading, spacing: VibeCheckTheme.Spacing.sm) {
+    // MARK: - Format Section
+
+    private var formatSection: some View {
+        VStack(alignment: .leading, spacing: VibeCheckTheme.Spacing.xs) {
+            sectionLabel("FORMAT")
+            Picker("Format", selection: $formatSelection) {
+                Text("JPEG").tag(ImageFormat.jpeg)
+                Text("PNG").tag(ImageFormat.png)
+            }
+            .labelsHidden()
+            .pickerStyle(.segmented)
+            .frame(width: 116)
+
+            applyButton("Apply Format") {
+                overlayService.onApplyFormatOverride?(formatSelection)
+            }
+        }
+    }
+
+    // MARK: - Resize Section
+
+    private var resizeSection: some View {
+        VStack(alignment: .leading, spacing: VibeCheckTheme.Spacing.xs) {
+            sectionLabel("RESIZE")
+
             HStack(spacing: VibeCheckTheme.Spacing.sm) {
-                Picker("Format", selection: $formatSelection) {
-                    Text("JPEG").tag(ImageFormat.jpeg)
-                    Text("PNG").tag(ImageFormat.png)
+                dimensionStepper(title: "W", value: $targetWidth)
+                dimensionStepper(title: "H", value: $targetHeight)
+            }
+
+            HStack(spacing: VibeCheckTheme.Spacing.xs) {
+                ForEach(ResizePreset.allCases) { preset in
+                    let isSelected = targetWidth == preset.rawValue && targetHeight == preset.rawValue
+                    presetChip(label: preset.label, isSelected: isSelected) {
+                        targetWidth = preset.rawValue
+                        targetHeight = preset.rawValue
+                    }
+                }
+                Spacer()
+            }
+
+            applyButton("Apply Size") {
+                overlayService.onApplyResizeOverride?(targetWidth, targetHeight)
+            }
+        }
+    }
+
+    // MARK: - Crop Section
+
+    private var cropSection: some View {
+        VStack(alignment: .leading, spacing: VibeCheckTheme.Spacing.xs) {
+            sectionLabel("CROP")
+
+            HStack(spacing: VibeCheckTheme.Spacing.sm) {
+                Picker("Shape", selection: $cropShape) {
+                    ForEach(CropShape.allCases, id: \.self) { shape in
+                        Text(shape.rawValue).tag(shape)
+                    }
                 }
                 .labelsHidden()
                 .pickerStyle(.segmented)
                 .frame(width: 116)
 
-                VibeButton("Apply", style: .secondary) {
-                    overlayService.onApplyFormatOverride?(formatSelection)
-                }
-
-                Spacer()
-
-                Button("Options") {
-                    overlayService.onOpenSettings?()
-                    openSettings()
-                }
-                .buttonStyle(.borderless)
-                .font(VibeCheckTheme.Typography.caption)
-                .foregroundColor(VibeCheckTheme.Colors.textSecondary)
-            }
-
-            VStack(alignment: .leading, spacing: VibeCheckTheme.Spacing.xs) {
-                Text("Resize")
-                    .font(VibeCheckTheme.Typography.tiny)
-                    .foregroundColor(VibeCheckTheme.Colors.textTertiary)
-                    .tracking(1.2)
-
-                HStack(spacing: VibeCheckTheme.Spacing.sm) {
-                    dimensionStepper(title: "W", value: $targetWidth)
-                    dimensionStepper(title: "H", value: $targetHeight)
-
-                    VibeButton("Apply Size", style: .secondary) {
-                        overlayService.onApplyResizeOverride?(targetWidth, targetHeight)
-                    }
-                }
-
-                HStack(spacing: VibeCheckTheme.Spacing.xs) {
-                    ForEach(SquareResizePreset.allCases) { preset in
-                        squarePresetButton(preset)
-                    }
-                    Spacer()
+                Stepper(value: $cropSize, in: 16...8192, step: 16) {
+                    Text(cropShape == .square
+                         ? "\(cropSize)×\(cropSize)"
+                         : "⌀\(cropSize) px")
+                        .font(VibeCheckTheme.Typography.monospacedFont)
+                        .foregroundColor(VibeCheckTheme.Colors.textSecondary)
                 }
             }
 
-            HStack(spacing: VibeCheckTheme.Spacing.md) {
-                linkAction("Ignore Image") { overlayService.onIgnoreImage?() }
-                linkAction("Ignore App") { overlayService.onIgnoreApp?() }
+            HStack(spacing: VibeCheckTheme.Spacing.xs) {
+                ForEach(CropPreset.allCases) { preset in
+                    let isSelected = cropSize == preset.rawValue
+                    presetChip(label: preset.label, isSelected: isSelected) {
+                        cropSize = preset.rawValue
+                    }
+                }
                 Spacer()
+            }
+
+            applyButton("Apply Crop") {
+                overlayService.onApplyCrop?(cropShape, cropSize)
             }
         }
     }
 
-    private func compactAction(_ title: String, icon: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
+    // MARK: - Colors Section
+
+    private var colorsSection: some View {
+        VStack(alignment: .leading, spacing: VibeCheckTheme.Spacing.xs) {
+            sectionLabel("COLORS")
+
+            if dominantHexCodes.isEmpty {
+                Text("Extracting…")
+                    .font(VibeCheckTheme.Typography.caption)
+                    .foregroundColor(VibeCheckTheme.Colors.textTertiary)
+            } else {
+                HStack(spacing: VibeCheckTheme.Spacing.md) {
+                    ForEach(dominantHexCodes.indices, id: \.self) { i in
+                        colorSwatch(
+                            hex: dominantHexCodes[i],
+                            cgColor: i < dominantCGColors.count ? dominantCGColors[i] : nil
+                        )
+                    }
+                    Spacer()
+                }
+            }
+        }
+    }
+
+    private func colorSwatch(hex: String, cgColor: CGColor?) -> some View {
+        let swatchColor: Color = cgColor.map { Color($0) } ?? Color.gray
+        let isCopied = copiedHex == hex
+        return Button {
+            NSPasteboard.general.clearContents()
+            NSPasteboard.general.setString(hex, forType: .string)
+            copiedHex = hex
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                if copiedHex == hex { copiedHex = nil }
+            }
+        } label: {
+            HStack(spacing: VibeCheckTheme.Spacing.xs) {
+                Circle()
+                    .fill(swatchColor)
+                    .frame(width: 14, height: 14)
+                    .overlay(Circle().stroke(Color.white.opacity(0.2), lineWidth: 1))
+                Text(isCopied ? "Copied!" : hex)
+                    .font(VibeCheckTheme.Typography.caption)
+                    .foregroundColor(isCopied ? VibeCheckTheme.Colors.statusOk : VibeCheckTheme.Colors.textSecondary)
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Shared Components
+
+    private func actionButton(_ title: String, icon: String, isOrange: Bool, action: @escaping () -> Void) -> some View {
+        let color: Color = isOrange ? accentOrange : VibeCheckTheme.Colors.neonCyan
+        return Button(action: action) {
             HStack(spacing: VibeCheckTheme.Spacing.xs) {
                 Image(systemName: icon)
                     .font(.system(size: 10, weight: .semibold))
@@ -210,22 +323,49 @@ struct OverlayView: View {
             .frame(maxWidth: .infinity)
             .padding(.horizontal, VibeCheckTheme.Spacing.sm)
             .padding(.vertical, VibeCheckTheme.Spacing.sm)
-            .foregroundColor(VibeCheckTheme.Colors.neonCyan)
-            .background(VibeCheckTheme.Colors.surface)
+            .foregroundColor(color)
+            .background(Color.white.opacity(0.07))
             .cornerRadius(VibeCheckTheme.CornerRadius.sm)
             .overlay(
                 RoundedRectangle(cornerRadius: VibeCheckTheme.CornerRadius.sm)
-                    .stroke(VibeCheckTheme.Colors.neonCyan.opacity(0.4), lineWidth: 1)
+                    .stroke(color.opacity(0.55), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
     }
 
-    private func linkAction(_ title: String, action: @escaping () -> Void) -> some View {
-        Button(title, action: action)
-            .buttonStyle(.borderless)
-            .font(VibeCheckTheme.Typography.caption)
-            .foregroundColor(VibeCheckTheme.Colors.textSecondary)
+    private func applyButton(_ title: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(VibeCheckTheme.Typography.caption)
+                .foregroundColor(VibeCheckTheme.Colors.neonCyan)
+        }
+        .buttonStyle(.plain)
+        .padding(.leading, VibeCheckTheme.Spacing.xs)
+    }
+
+    private func sectionLabel(_ text: String) -> some View {
+        Text(text)
+            .font(VibeCheckTheme.Typography.tiny)
+            .foregroundColor(VibeCheckTheme.Colors.textTertiary)
+            .tracking(1.2)
+    }
+
+    private func presetChip(label: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(label)
+                .font(VibeCheckTheme.Typography.caption)
+                .foregroundColor(isSelected ? VibeCheckTheme.Colors.backgroundPrimary : VibeCheckTheme.Colors.textSecondary)
+                .padding(.horizontal, VibeCheckTheme.Spacing.sm)
+                .padding(.vertical, VibeCheckTheme.Spacing.xs)
+                .background(isSelected ? accentOrange : Color.white.opacity(0.07))
+                .cornerRadius(VibeCheckTheme.CornerRadius.sm)
+                .overlay(
+                    RoundedRectangle(cornerRadius: VibeCheckTheme.CornerRadius.sm)
+                        .stroke(isSelected ? accentOrange : Color.white.opacity(0.18), lineWidth: 1)
+                )
+        }
+        .buttonStyle(.plain)
     }
 
     private func dimensionStepper(title: String, value: Binding<Int>) -> some View {
@@ -233,38 +373,13 @@ struct OverlayView: View {
             Text(title)
                 .font(VibeCheckTheme.Typography.caption)
                 .foregroundColor(VibeCheckTheme.Colors.textTertiary)
-            Stepper(
-                value: value,
-                in: minResizeDimension...maxResizeDimension,
-                step: 16
-            ) {
+            Stepper(value: value, in: minResizeDimension...maxResizeDimension, step: 16) {
                 Text("\(value.wrappedValue) px")
                     .font(VibeCheckTheme.Typography.monospacedFont)
                     .foregroundColor(VibeCheckTheme.Colors.textSecondary)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    private func squarePresetButton(_ preset: SquareResizePreset) -> some View {
-        let isSelected = targetWidth == preset.rawValue && targetHeight == preset.rawValue
-        return Button {
-            targetWidth = preset.rawValue
-            targetHeight = preset.rawValue
-        } label: {
-            Text(preset.label)
-                .font(VibeCheckTheme.Typography.caption)
-                .foregroundColor(isSelected ? VibeCheckTheme.Colors.background : VibeCheckTheme.Colors.textSecondary)
-                .padding(.horizontal, VibeCheckTheme.Spacing.sm)
-                .padding(.vertical, VibeCheckTheme.Spacing.xs)
-                .background(isSelected ? VibeCheckTheme.Colors.neonCyan : VibeCheckTheme.Colors.surface)
-                .cornerRadius(VibeCheckTheme.CornerRadius.sm)
-                .overlay(
-                    RoundedRectangle(cornerRadius: VibeCheckTheme.CornerRadius.sm)
-                        .stroke(isSelected ? VibeCheckTheme.Colors.neonCyan.opacity(0.6) : VibeCheckTheme.Colors.border, lineWidth: 1)
-                )
-        }
-        .buttonStyle(.plain)
     }
 
     private func preview(data: Data) -> some View {
@@ -277,19 +392,21 @@ struct OverlayView: View {
                 Color.gray.opacity(0.2)
             }
         }
-        .frame(width: 80, height: 80)
-        .background(VibeCheckTheme.Colors.backgroundCard)
+        .frame(width: 72, height: 72)
+        .background(Color.white.opacity(0.06))
         .cornerRadius(VibeCheckTheme.CornerRadius.sm)
         .overlay(
             RoundedRectangle(cornerRadius: VibeCheckTheme.CornerRadius.sm)
-                .stroke(VibeCheckTheme.Colors.border, lineWidth: 1)
+                .stroke(Color.white.opacity(0.18), lineWidth: 1)
         )
     }
 
     private func formattedSavings(_ result: OptimizationResult) -> String {
-        let percent = result.savingsPercentage < 1 ? String(format: "%.2f", result.savingsPercentage) : String(format: "%.1f", result.savingsPercentage)
+        let percent = result.savingsPercentage < 1
+            ? String(format: "%.2f%%", result.savingsPercentage)
+            : String(format: "%.1f%%", result.savingsPercentage)
         let bytes = ByteCountFormatter.string(fromByteCount: Int64(result.savingsBytes), countStyle: .file)
-        return "\(percent)% (\(bytes))"
+        return "\(percent) (\(bytes))"
     }
 
     private func syncSelectionFromCurrentItem() {
@@ -297,5 +414,19 @@ struct OverlayView: View {
         formatSelection = item.formatOverrideSelection
         targetWidth = item.result.optimizedDimensions.width
         targetHeight = item.result.optimizedDimensions.height
+    }
+
+    private func extractColors(from data: Data) {
+        dominantHexCodes = []
+        dominantCGColors = []
+        Task.detached(priority: .utility) {
+            let results = ImageOptimizer.shared.dominantColors(data: data, maxColors: 3)
+            let hexes = results.map { $0.hex }
+            let colors = results.map { $0.cgColor }
+            await MainActor.run {
+                self.dominantHexCodes = hexes
+                self.dominantCGColors = colors
+            }
+        }
     }
 }

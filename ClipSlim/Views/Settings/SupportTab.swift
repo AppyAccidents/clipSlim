@@ -1,71 +1,24 @@
 import SwiftUI
-import StoreKit
+import AppKit
 
 struct SupportTab: View {
-    @Environment(AppViewModel.self) private var viewModel
 
     var body: some View {
         VibeSettingsPage {
-            VibeSettingsCard(title: "Buy me a coffee", icon: "cup.and.saucer") {
-                VibeHintText(text: "ClipSlim stays fully functional without purchases. Tips are optional.")
+            VibeSettingsCard(title: "Support ClipSlim", icon: "cup.and.saucer") {
+                VibeHintText(text: "ClipSlim is free and always will be. If it saves you time, consider buying me a coffee — it means the world!")
 
-                if viewModel.iapService.isLoading {
-                    ProgressView()
-                } else if viewModel.iapService.products.isEmpty {
-                    Text(viewModel.iapService.statusMessage)
-                        .foregroundColor(VibeCheckTheme.Colors.textTertiary)
-                } else {
-                    VStack(spacing: VibeCheckTheme.Spacing.sm) {
-                        ForEach(viewModel.iapService.products, id: \.id) { product in
-                            HStack {
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(product.displayName)
-                                        .font(VibeCheckTheme.Typography.body)
-                                        .foregroundColor(VibeCheckTheme.Colors.textPrimary)
-                                    Text(product.description)
-                                        .font(VibeCheckTheme.Typography.caption)
-                                        .foregroundColor(VibeCheckTheme.Colors.textSecondary)
-                                }
-                                Spacer()
-                                Button(product.displayPrice) {
-                                    Task {
-                                        await viewModel.iapService.buy(product)
-                                    }
-                                }
-                                .buttonStyle(.borderedProminent)
-                            }
-                            .padding(VibeCheckTheme.Spacing.sm)
-                            .background(VibeCheckTheme.Colors.backgroundCard)
-                            .cornerRadius(VibeCheckTheme.CornerRadius.sm)
-                        }
+                VibeButton("Donate on Buy Me a Coffee ☕", style: .donation) {
+                    if let url = URL(string: "https://buymeacoffee.com/appyaccidents") {
+                        NSWorkspace.shared.open(url)
                     }
                 }
-
-                HStack {
-                    Button("Refresh purchases") {
-                        Task {
-                            await viewModel.iapService.refresh()
-                        }
-                    }
-                    .buttonStyle(.bordered)
-
-                    if viewModel.iapService.didThankUser {
-                        Text("Thank you for supporting ClipSlim")
-                            .font(VibeCheckTheme.Typography.caption)
-                            .foregroundColor(VibeCheckTheme.Colors.success)
-                    }
-                }
-
-                if !viewModel.iapService.statusMessage.isEmpty {
-                    Text(viewModel.iapService.statusMessage)
-                        .font(VibeCheckTheme.Typography.caption)
-                        .foregroundColor(VibeCheckTheme.Colors.textTertiary)
-                }
+                .frame(maxWidth: .infinity)
             }
-        }
-        .task {
-            if viewModel.iapService.products.isEmpty && !viewModel.iapService.isLoading {
-                await viewModel.iapService.loadProducts()
+
+            VibeSettingsCard(title: "About This App", icon: "info.circle") {
+                VibeHintText(text: "ClipSlim is built and maintained by AppyAccidents. All processing happens locally on your Mac — no data ever leaves your device.")
+                VibeHintText(text: "Distributed via appyaccidents.com")
             }
         }
     }

@@ -24,14 +24,7 @@ struct SettingsView: View {
                     Label("Folders", systemImage: "folder")
                 }
 
-            RulesTab()
-                .environment(viewModel)
-                .tabItem {
-                    Label("Rules", systemImage: "line.3.horizontal.decrease.circle")
-                }
-
             SupportTab()
-                .environment(viewModel)
                 .tabItem {
                     Label("Support", systemImage: "cup.and.saucer")
                 }
@@ -43,7 +36,7 @@ struct SettingsView: View {
         }
         .frame(width: 560, height: 620)
         .font(VibeCheckTheme.Typography.body)
-        .tint(VibeCheckTheme.Colors.neonCyan)
+        .tint(Color(hex: "FB8A10"))
         .padding(VibeCheckTheme.Spacing.sm)
         .background(VibeCheckTheme.Colors.background)
         .preferredColorScheme(.dark)

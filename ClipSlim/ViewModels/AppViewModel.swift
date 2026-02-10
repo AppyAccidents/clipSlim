@@ -12,7 +12,6 @@ final class AppViewModel {
     let clipboardWatcher = ClipboardWatcher()
     let folderWatcher = FolderWatcher()
     let overlayService = OverlayService()
-    let iapService = IAPService()
     let ignoreCache = IgnoreCache()
 
     private(set) var events: [OptimizationEvent] = []
@@ -29,7 +28,6 @@ final class AppViewModel {
 
     private let optimizer = ImageOptimizer.shared
     private let notificationService = NotificationService.shared
-    private let ruleEngine = RuleEngine()
     private let log = Logger.shared
 
     private var hotKeyRef1: EventHotKeyRef?
@@ -59,9 +57,6 @@ final class AppViewModel {
     // MARK: - Public
 
     var pauseStatusText: String {
-        if shouldPauseClipboardForFocus() {
-            return "Paused by Focus mode"
-        }
         guard let until = settings.pauseUntil, settings.isPausedNow else { return "Active" }
         let formatter = DateFormatter()
         formatter.dateStyle = .none
@@ -83,6 +78,7 @@ final class AppViewModel {
         if settings.folderWatchEnabled && (!settings.isPausedNow || !settings.pauseFolderWatcher) {
             startFolderWatcher()
         }
+        notificationService.scheduleDonationReminderIfNeeded(settings: settings)
     }
 
     func stopServices() {
@@ -139,10 +135,9 @@ final class AppViewModel {
     }
 
     func refreshPauseState() {
-        let focusPaused = shouldPauseClipboardForFocus()
-        if settings.isPausedNow || focusPaused {
+        if settings.isPausedNow {
             clipboardWatcher.stop()
-            if settings.pauseFolderWatcher && settings.isPausedNow {
+            if settings.pauseFolderWatcher {
                 folderWatcher.stop()
             }
         } else {
@@ -261,28 +256,26 @@ final class AppViewModel {
     }
 
     func saveLastPairAs() {
-        guard let original = lastOriginalData, let optimized = lastOptimizedData else { return }
+        guard let optimized = lastOptimizedData else { return }
 
         let panel = NSOpenPanel()
         panel.canChooseFiles = false
         panel.canChooseDirectories = true
         panel.allowsMultipleSelection = false
-        panel.message = "Choose where to save original and optimized images"
+        panel.message = "Choose where to save the optimized image"
         panel.prompt = "Save"
 
         guard panel.runModal() == .OK, let base = panel.url else { return }
 
         let safeBase = safeFilenameBase(defaultName: "clipslim")
-        let originalURL = base.appendingPathComponent("\(safeBase)-original.\(lastOriginalFormat.fileExtension)")
-        let optimizedURL = base.appendingPathComponent("\(safeBase)-optimized.\(lastOptimizedFormat.fileExtension)")
+        let optimizedURL = base.appendingPathComponent("\(safeBase)_optimized.\(lastOptimizedFormat.fileExtension)")
 
         Task {
             do {
                 try await Task.detached(priority: .utility) {
-                    try original.write(to: originalURL, options: .atomic)
                     try optimized.write(to: optimizedURL, options: .atomic)
                 }.value
-                log.app("Saved original and optimized pair via Save As")
+                log.app("Saved optimized image via Save As")
             } catch {
                 log.error("Save As failed: \(error.localizedDescription)")
             }
@@ -316,6 +309,35 @@ final class AppViewModel {
                 targetDimensions: (clampedWidth, clampedHeight),
                 sourceBundleID: currentFrontmostBundleID()
             )
+        }
+    }
+
+    func applyOneOffCrop(shape: CropShape, size: Int) {
+        guard let data = lastOriginalData else { return }
+        let clampedSize = min(max(size, 1), 8192)
+        Task {
+            do {
+                let croppedData: Data
+                let cropSuffix: String
+                switch shape {
+                case .square:
+                    croppedData = try ImageOptimizer.shared.cropToSquare(data: data, side: clampedSize)
+                    cropSuffix = "squared"
+                case .circle:
+                    croppedData = try ImageOptimizer.shared.cropToCircle(data: data, radius: clampedSize / 2)
+                    cropSuffix = "circle"
+                }
+                clipboardWatcher.writeToPasteboard(data: croppedData, format: .png)
+                lastOptimizedData = croppedData
+                lastOptimizedFormat = .png
+                Task {
+                    await saveToDisk(originalData: data, optimizedData: croppedData, format: .png, fileName: nil, cropSuffix: cropSuffix)
+                }
+                log.app("Crop applied: \(shape.rawValue) size \(clampedSize)")
+            } catch {
+                lastError = error.localizedDescription
+                log.error("Crop failed: \(error.localizedDescription)", category: "optimizer")
+            }
         }
     }
 
@@ -363,6 +385,9 @@ final class AppViewModel {
         overlayService.onApplyFormatOverride = { [weak self] format in self?.applyOneOffFormatOverride(format) }
         overlayService.onApplyResizeOverride = { [weak self] width, height in
             self?.applyOneOffResizeOverride(width: width, height: height)
+        }
+        overlayService.onApplyCrop = { [weak self] shape, size in
+            self?.applyOneOffCrop(shape: shape, size: size)
         }
         overlayService.onOpenSettings = { [weak self] in self?.openSettingsWindow() }
         overlayService.onIgnoreImage = { [weak self] in self?.ignoreCurrentImage() }
@@ -482,7 +507,7 @@ final class AppViewModel {
 
     // MARK: - Save to Disk
 
-    private func saveToDisk(originalData: Data, optimizedData: Data, format: ImageFormat, fileName: String?) async {
+    private func saveToDisk(originalData: Data, optimizedData: Data, format: ImageFormat, fileName: String?, cropSuffix: String? = nil) async {
         guard settings.saveToDisk else { return }
 
         let basePath: String
@@ -493,26 +518,29 @@ final class AppViewModel {
             basePath = settings.saveFolderPath
         }
 
-        let originalsDir = (basePath as NSString).appendingPathComponent("Originals")
-        let optimizedDir = (basePath as NSString).appendingPathComponent("Optimized")
-
         let timestamp = ISO8601DateFormatter().string(from: Date())
             .replacingOccurrences(of: ":", with: "-")
         let baseName = fileName ?? "clipboard-\(timestamp)"
         let nameWithoutExt = sanitizeFilename((baseName as NSString).deletingPathExtension)
         let origExt = (baseName as NSString).pathExtension.isEmpty ? "png" : (baseName as NSString).pathExtension
 
-        let originalPath = (originalsDir as NSString).appendingPathComponent("\(nameWithoutExt).\(origExt)")
-        let optimizedPath = (optimizedDir as NSString).appendingPathComponent("\(nameWithoutExt).\(format.fileExtension)")
+        let optimizedSuffix: String
+        if let suffix = cropSuffix {
+            optimizedSuffix = "_optimized_\(suffix)"
+        } else {
+            optimizedSuffix = "_optimized"
+        }
+
+        let originalPath = (basePath as NSString).appendingPathComponent("\(nameWithoutExt).\(origExt)")
+        let optimizedPath = (basePath as NSString).appendingPathComponent("\(nameWithoutExt)\(optimizedSuffix).\(format.fileExtension)")
 
         do {
             try await Task.detached(priority: .utility) {
-                try FileManager.default.createDirectory(atPath: originalsDir, withIntermediateDirectories: true, attributes: nil)
-                try FileManager.default.createDirectory(atPath: optimizedDir, withIntermediateDirectories: true, attributes: nil)
+                try FileManager.default.createDirectory(atPath: basePath, withIntermediateDirectories: true, attributes: nil)
                 try originalData.write(to: URL(fileURLWithPath: originalPath), options: .atomic)
                 try optimizedData.write(to: URL(fileURLWithPath: optimizedPath), options: .atomic)
             }.value
-            log.app("Saved original/optimized pair to configured save folder")
+            log.app("Saved original/optimized pair to \(basePath)")
         } catch {
             log.error("Failed to save to disk: \(error.localizedDescription)")
         }
@@ -550,9 +578,7 @@ final class AppViewModel {
                 return
             }
 
-            if source == .clipboard && settings.focusModeEnabled && matchesFocusBundle(sourceBundleID) {
-                return
-            }
+            let isFocusMode = source == .clipboard && settings.focusModeEnabled && matchesFocusBundle(sourceBundleID)
 
             let sourceHash = ClipboardWatcher.hash(data)
             if source == .clipboard && ignoreCache.contains(sourceHash) {
@@ -563,20 +589,9 @@ final class AppViewModel {
             let info = await Task.detached(priority: .utility) {
                 ImageOptimizer.shared.inspect(data: data) ?? .init(dimensions: (0, 0), hasAlpha: false)
             }.value
-            let ruleContext = RuleEvaluationContext(
-                frontmostBundleID: sourceBundleID,
-                byteSize: data.count,
-                dimensions: info.dimensions,
-                hasAlpha: info.hasAlpha
-            )
-            let decision = ruleEngine.evaluate(rules: settings.rules, context: ruleContext)
-            guard decision.shouldOptimize else {
-                log.app("Skipping due to matched rule: \(decision.matchedRuleName ?? "skip")")
-                return
-            }
 
-            let effectiveFormat = outputFormatOverride ?? decision.formatOverride
-            let effectivePreset = decision.presetOverride ?? settings.selectedPreset
+            let effectiveFormat = outputFormatOverride
+            let effectivePreset = settings.selectedPreset
             let quality: Double
             if settings.overridePresetQuality {
                 quality = settings.globalQualityValue
@@ -616,7 +631,7 @@ final class AppViewModel {
 
             var bestData = optimizedData
             var bestResult = result
-            let isForcedTransformation = outputFormatOverride != nil || decision.formatOverride != nil || targetDimensions != nil
+            let isForcedTransformation = outputFormatOverride != nil || targetDimensions != nil
 
             if !isMeaningfulSavings(result),
                !isForcedTransformation {
@@ -669,13 +684,15 @@ final class AppViewModel {
 
             if source == .clipboard {
                 clipboardWatcher.writeToPasteboard(data: bestData, format: bestResult.format)
-                overlayService.show(item: OverlayItem(
-                    originalData: data,
-                    optimizedData: bestData,
-                    result: bestResult,
-                    formatOverrideSelection: bestResult.format,
-                    sourceAppBundleID: sourceBundleID
-                ))
+                if !isFocusMode {
+                    overlayService.show(item: OverlayItem(
+                        originalData: data,
+                        optimizedData: bestData,
+                        result: bestResult,
+                        formatOverrideSelection: bestResult.format,
+                        sourceAppBundleID: sourceBundleID
+                    ))
+                }
             }
 
             let event = OptimizationEvent(
@@ -818,11 +835,6 @@ final class AppViewModel {
             if bundleID.hasPrefix(focused) { return true }
         }
         return false
-    }
-
-    private func shouldPauseClipboardForFocus() -> Bool {
-        guard settings.focusModeEnabled else { return false }
-        return matchesFocusBundle(currentFrontmostBundleID())
     }
 
     private func isMeaningfulSavings(_ result: OptimizationResult) -> Bool {
