@@ -95,7 +95,7 @@ final class OverlayService {
 
     private func positionPanel() {
         guard let panel else { return }
-        guard let screen = NSScreen.main ?? NSScreen.screens.first else { return }
+        guard let screen = NSScreen.screens.first else { return }
 
         let visible = screen.visibleFrame
         let x = visible.maxX - panel.frame.width - 16

@@ -95,8 +95,11 @@ struct MenuBarView: View {
                 isOn: viewModel.settings.folderWatchEnabledBinding,
                 accentColor: VibeCheckTheme.Colors.neonOrange
             )
-            .onChange(of: viewModel.settings.folderWatchEnabled) { _, _ in
+            .onChange(of: viewModel.settings.folderWatchEnabled) { _, newValue in
                 viewModel.refreshPauseState()
+                if newValue && viewModel.settings.watchedFolders.isEmpty {
+                    viewModel.addWatchFolders()
+                }
             }
 
             QuickToggleRow(
@@ -124,15 +127,10 @@ struct MenuBarView: View {
 
             PresetPicker(selectedPreset: viewModel.settings.selectedPresetBinding)
 
-            HStack {
-                Text("Quality: \(Int(viewModel.settings.currentQuality * 100))%")
-                    .font(VibeCheckTheme.Typography.caption)
-                    .foregroundColor(VibeCheckTheme.Colors.textSecondary)
-                Spacer()
-                Text("Polling: \(String(format: "%.1fs", viewModel.clipboardWatcher.currentPollInterval))")
-                    .font(VibeCheckTheme.Typography.caption)
-                    .foregroundColor(VibeCheckTheme.Colors.textSecondary)
-            }
+            Text("Quality: \(Int(viewModel.settings.currentQuality * 100))%")
+                .font(VibeCheckTheme.Typography.caption)
+                .foregroundColor(VibeCheckTheme.Colors.textSecondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(.horizontal, VibeCheckTheme.Spacing.lg)
         .padding(.vertical, VibeCheckTheme.Spacing.md)
@@ -217,7 +215,9 @@ struct MenuBarView: View {
             }
 
             MenuActionButton(icon: "cup.and.saucer.fill", title: "Buy me a coffee…") {
-                openSettings()
+                if let url = URL(string: "https://buymeacoffee.com/appyaccidents") {
+                    NSWorkspace.shared.open(url)
+                }
             }
 
             MenuActionButton(icon: "clock.arrow.circlepath", title: "Debug Log") {

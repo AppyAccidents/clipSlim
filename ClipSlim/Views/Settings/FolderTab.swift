@@ -8,8 +8,11 @@ struct FolderTab: View {
         VibeSettingsPage {
             VibeSettingsCard(title: "Watched Folders", icon: "folder.badge.gearshape") {
                 Toggle("Enable Folder Watching", isOn: viewModel.settings.folderWatchEnabledBinding)
-                    .onChange(of: viewModel.settings.folderWatchEnabled) { _, _ in
+                    .onChange(of: viewModel.settings.folderWatchEnabled) { _, newValue in
                         viewModel.refreshPauseState()
+                        if newValue && viewModel.settings.watchedFolders.isEmpty {
+                            viewModel.addWatchFolders()
+                        }
                     }
 
                 HStack {

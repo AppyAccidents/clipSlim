@@ -169,18 +169,27 @@ final class ClipboardWatcher {
     }
 
     private func extractImageData(from pb: NSPasteboard) -> Data? {
-        let imageTypes: [NSPasteboard.PasteboardType] = [
+        let knownImageTypes: Set<NSPasteboard.PasteboardType> = [
             .png,
             .tiff,
-            NSPasteboard.PasteboardType(UTType.jpeg.identifier)
+            NSPasteboard.PasteboardType(UTType.jpeg.identifier),
+            NSPasteboard.PasteboardType(UTType.gif.identifier),
+            NSPasteboard.PasteboardType(UTType.bmp.identifier),
+            NSPasteboard.PasteboardType(UTType.heic.identifier)
         ]
 
-        for type in imageTypes {
+        let pbTypes = Set(pb.types ?? [])
+
+        // Reject non-image content (PDFs, text, HTML, etc.) up front
+        guard !pbTypes.isDisjoint(with: knownImageTypes) else { return nil }
+
+        for type in knownImageTypes {
             if let data = pb.data(forType: type), !data.isEmpty {
                 return data
             }
         }
 
+        // Fallback: only for pasteboard items already confirmed to contain image types
         if let image = NSImage(pasteboard: pb),
            let tiff = image.tiffRepresentation {
             return tiff
