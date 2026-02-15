@@ -44,3 +44,5 @@ playground.xcworkspace
 # DMG build artifacts
 *.dmg
 *.app
+*.symbolsarchive
+/reports/profiling
