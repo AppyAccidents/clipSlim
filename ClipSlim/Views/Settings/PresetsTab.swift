@@ -24,6 +24,7 @@ struct PresetsTab: View {
                     }
                 }
                 .pickerStyle(.segmented)
+                .disabled(viewModel.settings.selectedPreset != .custom)
 
                 Text(viewModel.settings.optimizationIntensity.summary)
                     .font(VibeCheckTheme.Typography.caption)
@@ -32,6 +33,7 @@ struct PresetsTab: View {
 
             VibeSettingsCard(title: "Quality", icon: "dial.medium") {
                 Toggle("Override preset quality", isOn: viewModel.settings.overridePresetQualityBinding)
+                    .disabled(viewModel.settings.selectedPreset != .custom)
 
                 HStack {
                     Text("JPEG Quality")
@@ -46,6 +48,7 @@ struct PresetsTab: View {
                     in: 0.40...0.95,
                     step: 0.01
                 )
+                .disabled(viewModel.settings.selectedPreset != .custom)
 
                 VibeHintText(text: "PNG output ignores quality setting.")
             }
@@ -81,11 +84,11 @@ struct PresetsTab: View {
     private var presetDescription: some View {
         Group {
             switch viewModel.settings.selectedPreset {
-            case .web:
+            case .webQuality:
                 Text("Optimized for web")
             case .highQuality:
                 Text("Preserve quality")
-            case .small:
+            case .compressed:
                 Text("Maximum compression")
             case .custom:
                 Text("Use sliders below to tune")

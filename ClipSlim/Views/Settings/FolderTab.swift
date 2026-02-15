@@ -4,19 +4,20 @@ struct FolderTab: View {
 
     @Environment(AppViewModel.self) private var viewModel
 
+    private var folderWatchBinding: Binding<Bool> {
+        Binding(
+            get: { viewModel.settings.folderWatchEnabled },
+            set: { viewModel.setFolderWatchEnabled($0) }
+        )
+    }
+
     var body: some View {
         VibeSettingsPage {
             VibeSettingsCard(title: "Watched Folders", icon: "folder.badge.gearshape") {
-                Toggle("Enable Folder Watching", isOn: viewModel.settings.folderWatchEnabledBinding)
-                    .onChange(of: viewModel.settings.folderWatchEnabled) { _, newValue in
-                        viewModel.refreshPauseState()
-                        if newValue && viewModel.settings.watchedFolders.isEmpty {
-                            viewModel.addWatchFolders()
-                        }
-                    }
+                Toggle("Enable Folder Watching", isOn: folderWatchBinding)
 
                 HStack {
-                    Button("Add Folder…") { viewModel.addWatchFolders() }
+                    Button("Add Folder…") { _ = viewModel.addWatchFolders() }
                         .buttonStyle(.bordered)
                     Spacer()
                     Text("\(viewModel.settings.watchedFolders.count) selected")
@@ -60,11 +61,19 @@ struct FolderTab: View {
                 .background(VibeCheckTheme.Colors.backgroundCard)
                 .cornerRadius(VibeCheckTheme.CornerRadius.sm)
 
-                VibeHintText(text: "Optimized outputs are written to an \"Optimized\" subfolder to prevent re-processing loops.")
+                VibeHintText(text: "Optimized outputs land in an \"Optimized\" subfolder, so ClipSlim doesn't eat its own tail.")
             }
 
             VibeSettingsCard(title: "Info", icon: "info.circle") {
                 Text("Supported formats: JPEG, PNG, TIFF, BMP, HEIC")
+                    .font(VibeCheckTheme.Typography.caption)
+                    .foregroundColor(VibeCheckTheme.Colors.textSecondary)
+
+                Text("PDF support: Coming soon")
+                    .font(VibeCheckTheme.Typography.caption)
+                    .foregroundColor(VibeCheckTheme.Colors.textSecondary)
+
+                Text("PDF page separation/stitching: Coming soon")
                     .font(VibeCheckTheme.Typography.caption)
                     .foregroundColor(VibeCheckTheme.Colors.textSecondary)
 

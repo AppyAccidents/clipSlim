@@ -50,6 +50,13 @@ final class FolderWatcher {
     var onFileDetected: ((URL) -> Void)?
     var onBookmarkNeedsRefresh: ((WatchedFolder) -> Void)?
 
+#if DEBUG
+    private(set) var debugStreamStartCount = 0
+    private(set) var debugStreamStopCount = 0
+    private(set) var debugDebounceTimerRecreationCount = 0
+    private(set) var debugMaxPendingPathSetSize = 0
+#endif
+
     func start(folders: [WatchedFolder]) {
         stop()
         guard !folders.isEmpty else { return }
@@ -110,6 +117,9 @@ final class FolderWatcher {
         FSEventStreamScheduleWithRunLoop(stream, CFRunLoopGetMain(), CFRunLoopMode.defaultMode.rawValue)
         FSEventStreamStart(stream)
         isWatching = true
+#if DEBUG
+        debugStreamStartCount += 1
+#endif
         log.folder("Folder watcher started for \(resolvedPaths.count) folder(s)")
     }
 
@@ -119,6 +129,9 @@ final class FolderWatcher {
             FSEventStreamInvalidate(stream)
             FSEventStreamRelease(stream)
             self.stream = nil
+#if DEBUG
+            debugStreamStopCount += 1
+#endif
         }
 
         securityScopedURLs.forEach { $0.stopAccessingSecurityScopedResource() }
@@ -135,10 +148,22 @@ final class FolderWatcher {
         log.folder("Folder watcher stopped")
     }
 
+    func shutdown() {
+        stop()
+        onFileDetected = nil
+        onBookmarkNeedsRefresh = nil
+    }
+
     func enqueueForDebounce(path: String) {
         pendingPaths.insert(path)
+#if DEBUG
+        debugMaxPendingPathSetSize = max(debugMaxPendingPathSetSize, pendingPaths.count)
+#endif
 
         debounceTimer?.invalidate()
+#if DEBUG
+        debugDebounceTimerRecreationCount += 1
+#endif
         debounceTimer = Timer.scheduledTimer(withTimeInterval: debounceInterval, repeats: false) { [weak self] _ in
             self?.processPendingPaths()
         }
@@ -211,12 +236,16 @@ private let folderWatcherCallback: FSEventStreamCallback = { _, info, numEvents,
     guard let info else { return }
     let watcher = Unmanaged<FolderWatcher>.fromOpaque(info).takeUnretainedValue()
 
-    guard let cfArray = unsafeBitCast(eventPaths, to: NSArray.self) as? [String] else { return }
+    let pathsArray = Unmanaged<CFArray>.fromOpaque(eventPaths).takeUnretainedValue() as NSArray
+    guard let stringPaths = pathsArray as? [String] else { return }
 
-    for i in 0..<numEvents {
+    let eventCount = Int(numEvents)
+    guard stringPaths.count >= eventCount else { return }
+
+    for i in 0..<eventCount {
         let flags = eventFlags[i]
         if flags & UInt32(kFSEventStreamEventFlagItemIsFile) != 0 {
-            watcher.enqueueForDebounce(path: cfArray[i])
+            watcher.enqueueForDebounce(path: stringPaths[i])
         }
     }
 }

@@ -17,7 +17,7 @@ final class NotificationService {
     func requestAuthorization() {
         let donateAction = UNNotificationAction(
             identifier: Self.donationReminderActionID,
-            title: "Open Buy Me a Coffee",
+            title: "Fuel ClipSlim with coffee",
             options: [.foreground]
         )
         let donationCategory = UNNotificationCategory(
@@ -49,8 +49,8 @@ final class NotificationService {
             guard notifSettings.authorizationStatus == .authorized else { return }
 
             let content = UNMutableNotificationContent()
-            content.title = "Enjoying ClipSlim? ☕"
-            content.body = "If ClipSlim saves you time, consider buying me a coffee!"
+            content.title = "ClipSlim survives on snacks ☕"
+            content.body = "If ClipSlim saves your day, toss a coffee into the chaos engine."
             content.categoryIdentifier = Self.donationReminderCategoryID
             content.sound = nil
 
@@ -77,16 +77,16 @@ final class NotificationService {
         guard isAuthorized else { return }
         
         let content = UNMutableNotificationContent()
-        content.title = "ClipSlim"
+        content.title = "ClipSlim did a tiny heist"
         
         let savingsStr = String(format: "%.1f%%", result.savingsPercentage)
         let sizeStr = "\(result.formattedOriginalSize) → \(result.formattedOptimizedSize)"
         
         switch source {
         case .clipboard:
-            content.body = "Clipboard optimized: \(sizeStr) (\(savingsStr) saved)"
+            content.body = "Clipboard slimmed: \(sizeStr) (\(savingsStr) rescued)"
         case .folder:
-            content.body = "File optimized: \(sizeStr) (\(savingsStr) saved)"
+            content.body = "Folder file slimmed: \(sizeStr) (\(savingsStr) rescued)"
         }
         
         content.sound = nil
@@ -108,7 +108,7 @@ final class NotificationService {
         guard isAuthorized else { return }
         
         let content = UNMutableNotificationContent()
-        content.title = "ClipSlim Error"
+        content.title = "ClipSlim hit a wall"
         content.body = message
         content.sound = .default
         

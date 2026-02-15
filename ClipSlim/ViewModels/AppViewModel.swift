@@ -39,8 +39,14 @@ final class AppViewModel {
 
     private var onboardingWindow: NSWindow?
     private var onboardingCloseObserver: NSObjectProtocol?
+    private var frontmostAppObserver: NSObjectProtocol?
     private var hasStartedServices = false
     private var lastKnownFrontmostBundleID: String = ""
+    private var hasSetupClipboardWatcher = false
+    private var hasSetupFolderWatcher = false
+    private var hasSetupOverlayActions = false
+    private var hasSetupFrontmostTracking = false
+    private var hasRegisteredHotkeys = false
 
     init() {
         setupClipboardWatcher()
@@ -51,6 +57,12 @@ final class AppViewModel {
         registerGlobalHotkeys()
         Task { @MainActor in
             self.startServices()
+        }
+    }
+
+    deinit {
+        MainActor.assumeIsolated {
+            shutdown()
         }
     }
 
@@ -75,9 +87,6 @@ final class AppViewModel {
         hasStartedServices = true
         presentOnboardingIfNeeded()
         refreshPauseState()
-        if settings.folderWatchEnabled && (!settings.isPausedNow || !settings.pauseFolderWatcher) {
-            startFolderWatcher()
-        }
         notificationService.scheduleDonationReminderIfNeeded(settings: settings)
     }
 
@@ -85,6 +94,34 @@ final class AppViewModel {
         clipboardWatcher.stop()
         folderWatcher.stop()
         hasStartedServices = false
+    }
+
+    func shutdown() {
+        if let observer = onboardingCloseObserver {
+            NotificationCenter.default.removeObserver(observer)
+            onboardingCloseObserver = nil
+        }
+        if let observer = frontmostAppObserver {
+            NSWorkspace.shared.notificationCenter.removeObserver(observer)
+            frontmostAppObserver = nil
+        }
+        if let hotKeyRef1 {
+            UnregisterEventHotKey(hotKeyRef1)
+            self.hotKeyRef1 = nil
+        }
+        if let hotKeyRef2 {
+            UnregisterEventHotKey(hotKeyRef2)
+            self.hotKeyRef2 = nil
+        }
+        hasRegisteredHotkeys = false
+        hasSetupFrontmostTracking = false
+        hasSetupClipboardWatcher = false
+        hasSetupFolderWatcher = false
+        hasSetupOverlayActions = false
+        hasStartedServices = false
+        clipboardWatcher.shutdown()
+        folderWatcher.shutdown()
+        overlayService.shutdown()
     }
 
     func clearHistory() {
@@ -135,18 +172,32 @@ final class AppViewModel {
     }
 
     func refreshPauseState() {
+        if !settings.isPausedNow {
+            settings.pauseUntil = nil
+        }
+        reconcileWatcherState()
+    }
+
+    func reconcileWatcherState() {
         if settings.isPausedNow {
             clipboardWatcher.stop()
             if settings.pauseFolderWatcher {
                 folderWatcher.stop()
+            } else if settings.folderWatchEnabled {
+                startFolderWatcher()
+            } else {
+                folderWatcher.stop()
             }
         } else {
-            settings.pauseUntil = nil
             if settings.clipboardWatchEnabled {
                 clipboardWatcher.start()
+            } else {
+                clipboardWatcher.stop()
             }
             if settings.folderWatchEnabled {
                 startFolderWatcher()
+            } else {
+                folderWatcher.stop()
             }
         }
     }
@@ -173,16 +224,18 @@ final class AppViewModel {
         refreshPauseState()
     }
 
-    func addWatchFolders() {
+    @discardableResult
+    func addWatchFolders() -> Bool {
         let panel = NSOpenPanel()
         panel.canChooseFiles = false
         panel.canChooseDirectories = true
         panel.allowsMultipleSelection = true
-        panel.message = "Choose one or more folders to watch for new images"
+        panel.message = "Pick folders for ClipSlim to watch like an over-caffeinated hawk."
         panel.prompt = "Add Folders"
 
         if panel.runModal() == .OK {
             var folders = settings.watchedFolders
+            let initialCount = folders.count
             for url in panel.urls {
                 do {
                     let watched = try FolderBookmarkManager.makeWatchedFolder(from: url)
@@ -197,24 +250,49 @@ final class AppViewModel {
             if settings.folderWatchEnabled {
                 startFolderWatcher()
             }
+            return folders.count > initialCount
         }
+
+        return false
+    }
+
+    func setFolderWatchEnabled(_ enabled: Bool) {
+        if enabled {
+            if settings.watchedFolders.isEmpty {
+                settings.folderWatchEnabled = true
+                let added = addWatchFolders()
+                if !added && settings.watchedFolders.isEmpty {
+                    settings.folderWatchEnabled = false
+                }
+            } else {
+                settings.folderWatchEnabled = true
+            }
+        } else {
+            settings.folderWatchEnabled = false
+        }
+        reconcileWatcherState()
     }
 
     func removeWatchFolder(_ folder: WatchedFolder) {
         settings.watchedFolders.removeAll { $0.id == folder.id }
-        if settings.folderWatchEnabled {
-            startFolderWatcher()
+        if settings.folderWatchEnabled && settings.watchedFolders.isEmpty {
+            settings.folderWatchEnabled = false
         }
+        reconcileWatcherState()
     }
 
     func completeOnboarding(
         preferredFormat: ImageFormat,
         optimizationIntensity: OptimizationIntensity,
-        folders: [WatchedFolder]
+        folders: [WatchedFolder],
+        saveDestinationMode: SaveDestinationMode,
+        customSaveFolderPath: String
     ) {
         settings.preferredOutputFormat = preferredFormat
         settings.applyOptimizationIntensity(optimizationIntensity)
         settings.watchedFolders = folders
+        settings.saveDestinationMode = saveDestinationMode
+        settings.saveFolderPath = customSaveFolderPath.trimmingCharacters(in: .whitespacesAndNewlines)
         settings.clipboardWatchEnabled = true
         settings.pauseUntil = nil
         if !folders.isEmpty {
@@ -224,9 +302,6 @@ final class AppViewModel {
         }
         settings.markOnboardingCompleted()
         refreshPauseState()
-        if settings.folderWatchEnabled {
-            startFolderWatcher()
-        }
     }
 
     func runOnboardingAgain() {
@@ -331,7 +406,14 @@ final class AppViewModel {
                 lastOptimizedData = croppedData
                 lastOptimizedFormat = .png
                 Task {
-                    await saveToDisk(originalData: data, optimizedData: croppedData, format: .png, fileName: nil, cropSuffix: cropSuffix)
+                    await saveToDisk(
+                        originalData: data,
+                        optimizedData: croppedData,
+                        format: .png,
+                        fileName: nil,
+                        sourceURL: nil,
+                        cropSuffix: cropSuffix
+                    )
                 }
                 log.app("Crop applied: \(shape.rawValue) size \(clampedSize)")
             } catch {
@@ -348,6 +430,8 @@ final class AppViewModel {
     // MARK: - Private Setup
 
     private func setupClipboardWatcher() {
+        guard !hasSetupClipboardWatcher else { return }
+        hasSetupClipboardWatcher = true
         clipboardWatcher.onImageDetected = { [weak self] data in
             guard let self else { return }
             let sourceBundleID = self.currentFrontmostBundleID()
@@ -365,6 +449,8 @@ final class AppViewModel {
     }
 
     private func setupFolderWatcher() {
+        guard !hasSetupFolderWatcher else { return }
+        hasSetupFolderWatcher = true
         folderWatcher.onFileDetected = { [weak self] url in
             guard let self else { return }
             Task { @MainActor in
@@ -379,6 +465,8 @@ final class AppViewModel {
     }
 
     private func setupOverlayActions() {
+        guard !hasSetupOverlayActions else { return }
+        hasSetupOverlayActions = true
         overlayService.onUndo = { [weak self] in self?.undoLastOptimization() }
         overlayService.onSaveAs = { [weak self] in self?.saveLastPairAs() }
         overlayService.onRemoveClipboardImage = { [weak self] in self?.removeImageFromClipboard() }
@@ -395,15 +483,17 @@ final class AppViewModel {
     }
 
     private func setupFrontmostAppTracking() {
+        guard !hasSetupFrontmostTracking else { return }
+        hasSetupFrontmostTracking = true
         updateFrontmostBundleID()
-        NSWorkspace.shared.notificationCenter.addObserver(
+        frontmostAppObserver = NSWorkspace.shared.notificationCenter.addObserver(
             forName: NSWorkspace.didActivateApplicationNotification,
             object: nil,
             queue: .main
         ) { [weak self] _ in
             Task { @MainActor [weak self] in
                 self?.updateFrontmostBundleID()
-                self?.refreshPauseState()
+                self?.reconcileWatcherState()
             }
         }
     }
@@ -425,6 +515,7 @@ final class AppViewModel {
         let shouldShow = force || settings.shouldPresentOnboarding
         guard shouldShow else { return }
         guard onboardingWindow == nil else { return }
+        settings.markOnboardingPresented()
 
         let view = OnboardingFlowView(onComplete: { [weak self] in
             self?.onboardingWindow?.close()
@@ -451,11 +542,13 @@ final class AppViewModel {
             object: window,
             queue: .main
         ) { [weak self] _ in
-            guard let self else { return }
-            self.onboardingWindow = nil
-            if let observer = self.onboardingCloseObserver {
-                NotificationCenter.default.removeObserver(observer)
-                self.onboardingCloseObserver = nil
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                self.onboardingWindow = nil
+                if let observer = self.onboardingCloseObserver {
+                    NotificationCenter.default.removeObserver(observer)
+                    self.onboardingCloseObserver = nil
+                }
             }
         }
     }
@@ -472,6 +565,8 @@ final class AppViewModel {
     // MARK: - Global Hotkeys
 
     private func registerGlobalHotkeys() {
+        guard !hasRegisteredHotkeys else { return }
+        hasRegisteredHotkeys = true
         let viewModelPtr = Unmanaged.passUnretained(self).toOpaque()
 
         var eventType = EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed))
@@ -507,14 +602,32 @@ final class AppViewModel {
 
     // MARK: - Save to Disk
 
-    private func saveToDisk(originalData: Data, optimizedData: Data, format: ImageFormat, fileName: String?, cropSuffix: String? = nil) async {
+    private func saveToDisk(
+        originalData: Data,
+        optimizedData: Data,
+        format: ImageFormat,
+        fileName: String?,
+        sourceURL: URL?,
+        cropSuffix: String? = nil
+    ) async {
         guard settings.saveToDisk else { return }
 
         let basePath: String
-        if settings.saveFolderPath.isEmpty {
-            let pictures = FileManager.default.urls(for: .picturesDirectory, in: .userDomainMask).first!
-            basePath = pictures.appendingPathComponent("ClipSlim").path
-        } else {
+        switch settings.saveDestinationMode {
+        case .sameFolder:
+            if let sourceURL {
+                basePath = sourceURL.deletingLastPathComponent().path
+            } else if !settings.saveFolderPath.isEmpty {
+                basePath = settings.saveFolderPath
+            } else {
+                log.app("Skip save: no custom fallback folder for clipboard image in same-folder mode")
+                return
+            }
+        case .customFolder:
+            guard !settings.saveFolderPath.isEmpty else {
+                log.app("Skip save: custom save folder is not configured")
+                return
+            }
             basePath = settings.saveFolderPath
         }
 
@@ -531,12 +644,16 @@ final class AppViewModel {
             optimizedSuffix = "_optimized"
         }
 
-        let originalPath = (basePath as NSString).appendingPathComponent("\(nameWithoutExt).\(origExt)")
-        let optimizedPath = (basePath as NSString).appendingPathComponent("\(nameWithoutExt)\(optimizedSuffix).\(format.fileExtension)")
+        let originalsPath = (basePath as NSString).appendingPathComponent("Originals")
+        let optimizedPathBase = (basePath as NSString).appendingPathComponent("Optimized")
+
+        let originalPath = (originalsPath as NSString).appendingPathComponent("\(nameWithoutExt).\(origExt)")
+        let optimizedPath = (optimizedPathBase as NSString).appendingPathComponent("\(nameWithoutExt)\(optimizedSuffix).\(format.fileExtension)")
 
         do {
             try await Task.detached(priority: .utility) {
-                try FileManager.default.createDirectory(atPath: basePath, withIntermediateDirectories: true, attributes: nil)
+                try FileManager.default.createDirectory(atPath: originalsPath, withIntermediateDirectories: true, attributes: nil)
+                try FileManager.default.createDirectory(atPath: optimizedPathBase, withIntermediateDirectories: true, attributes: nil)
                 try originalData.write(to: URL(fileURLWithPath: originalPath), options: .atomic)
                 try optimizedData.write(to: URL(fileURLWithPath: optimizedPath), options: .atomic)
             }.value
@@ -714,7 +831,13 @@ final class AppViewModel {
             }
 
             Task {
-                await saveToDisk(originalData: data, optimizedData: bestData, format: bestResult.format, fileName: fileName)
+                await saveToDisk(
+                    originalData: data,
+                    optimizedData: bestData,
+                    format: bestResult.format,
+                    fileName: fileName,
+                    sourceURL: nil
+                )
             }
 
             log.app("Optimization complete: \(bestResult.formattedOriginalSize) -> \(bestResult.formattedOptimizedSize) (\(String(format: "%.1f", bestResult.savingsPercentage))%)")
@@ -768,7 +891,13 @@ final class AppViewModel {
             }
 
             Task {
-                await saveToDisk(originalData: data, optimizedData: optimizedData, format: result.format, fileName: url.lastPathComponent)
+                await saveToDisk(
+                    originalData: data,
+                    optimizedData: optimizedData,
+                    format: result.format,
+                    fileName: url.lastPathComponent,
+                    sourceURL: url
+                )
             }
 
             log.folder("Optimized \(url.lastPathComponent) -> \(outputURL.lastPathComponent)")

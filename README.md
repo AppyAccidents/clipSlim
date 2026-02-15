@@ -6,7 +6,7 @@ A production-grade macOS menubar app that automatically optimizes images copied 
 
 - **Clipboard Optimization** — Automatically detects and optimizes images on the clipboard
 - **Folder Watcher** — Monitor a folder for new images via FSEvents and optimize them automatically
-- **Presets** — Web, High Quality, Small, and Custom optimization presets
+- **Presets** — Web quality, High quality, Compressed, and Custom optimization presets
 - **Onboarding Optimization Intensity** — Choose Aggressive, Moderate, or Light optimization during onboarding (persisted in settings)
 - **Transparency-Aware** — Preserves PNG alpha channels when needed
 - **Loop Prevention** — Triple-layer protection (changeCount, write flag, SHA256 hash) prevents infinite clipboard loops
@@ -19,6 +19,7 @@ A production-grade macOS menubar app that automatically optimizes images copied 
 - **Clipboard Replace Behavior** — Optimized images replace originals on the clipboard by default
 - **Save Originals and Optimized** — Saves both original and optimized images to disk in separate folders
 - **Global Hotkeys** — Option+1 to copy optimized image, Option+2 to copy original image to clipboard
+- **PDF Workflow (Coming Soon)** — PDF optimization plus page separation/stitching are planned but not yet implemented
 
 ## Clop Parity (Target Behaviors)
 
@@ -86,9 +87,9 @@ xcodebuild -project ClipSlim.xcodeproj -scheme ClipSlim -destination 'platform=m
 
 | Preset       | Quality | Max Dimension | Strip Metadata | Allow Transparency Loss |
 |-------------|---------|---------------|----------------|------------------------|
-| Web          | 75%     | 1920px        | Yes            | Yes                    |
-| High Quality | 90%     | 3840px        | No             | No                     |
-| Small        | 60%     | 1280px        | Yes            | Yes                    |
+| Web quality  | 75%     | 1920px        | Yes            | Yes                    |
+| High quality | 90%     | 3840px        | No             | No                     |
+| Compressed   | 60%     | 1280px        | Yes            | Yes                    |
 | Custom       | User    | User          | User           | User                   |
 
 ## Optimization Intensity

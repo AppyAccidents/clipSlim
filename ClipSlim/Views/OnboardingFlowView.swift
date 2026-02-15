@@ -8,9 +8,12 @@ struct OnboardingFlowView: View {
     @State private var selectedFormat: ImageFormat = .jpeg
     @State private var selectedIntensity: OptimizationIntensity = .moderate
     @State private var selectedFolders: [WatchedFolder] = []
+    @State private var selectedSaveDestinationMode: SaveDestinationMode = .customFolder
+    @State private var customSaveFolderPath: String = ""
 
     var onComplete: (() -> Void)?
 
+    private let totalSteps = 4
     private let contentPadding = VibeCheckTheme.Spacing.xl
     private let sectionSpacing = VibeCheckTheme.Spacing.md
 
@@ -26,13 +29,15 @@ struct OnboardingFlowView: View {
             VibeDivider()
             footer
         }
-        .frame(width: 560, height: 500)
+        .frame(width: 560, height: 540)
         .background(VibeCheckTheme.Colors.background)
         .preferredColorScheme(.dark)
         .onAppear {
             selectedFormat = viewModel.settings.preferredOutputFormat
             selectedIntensity = viewModel.settings.optimizationIntensity
             selectedFolders = viewModel.settings.watchedFolders
+            selectedSaveDestinationMode = viewModel.settings.saveDestinationMode
+            customSaveFolderPath = viewModel.settings.saveFolderPath
         }
     }
 
@@ -42,7 +47,7 @@ struct OnboardingFlowView: View {
                 .font(VibeCheckTheme.Typography.title)
                 .foregroundColor(VibeCheckTheme.Colors.textPrimary)
             Spacer()
-            Text("Step \(step)/3")
+            Text("Step \(step)/\(totalSteps)")
                 .font(VibeCheckTheme.Typography.caption)
                 .foregroundColor(VibeCheckTheme.Colors.textTertiary)
         }
@@ -68,9 +73,18 @@ struct OnboardingFlowView: View {
             stepOne
         case 2:
             stepTwo
-        default:
+        case 3:
             stepThree
+        default:
+            stepFour
         }
+    }
+
+    private var canAdvanceFromCurrentStep: Bool {
+        if step == 3 {
+            return !customSaveFolderPath.isEmpty
+        }
+        return true
     }
 
     private var footer: some View {
@@ -83,16 +97,20 @@ struct OnboardingFlowView: View {
 
             Spacer()
 
-            if step < 3 {
+            if step < totalSteps {
                 VibeButton("Next") {
+                    guard canAdvanceFromCurrentStep else { return }
                     step += 1
                 }
+                .disabled(!canAdvanceFromCurrentStep)
             } else {
                 VibeButton("Finish") {
                     viewModel.completeOnboarding(
                         preferredFormat: selectedFormat,
                         optimizationIntensity: selectedIntensity,
-                        folders: selectedFolders
+                        folders: selectedFolders,
+                        saveDestinationMode: selectedSaveDestinationMode,
+                        customSaveFolderPath: customSaveFolderPath
                     )
                     onComplete?()
                 }
@@ -104,20 +122,20 @@ struct OnboardingFlowView: View {
 
     private var stepOne: some View {
         VStack(alignment: .leading, spacing: sectionSpacing) {
-            Text("What should ClipSlim output by default?")
+            Text("How should ClipSlim export by default?")
                 .font(VibeCheckTheme.Typography.headline)
                 .foregroundColor(VibeCheckTheme.Colors.textPrimary)
 
             VStack(alignment: .leading, spacing: VibeCheckTheme.Spacing.sm) {
                 formatCard(format: .jpeg, subtitle: "Smaller files, no transparency")
-                formatCard(format: .png, subtitle: "Larger files, preserves transparency")
+                formatCard(format: .png, subtitle: "Larger files, keeps transparency")
             }
 
-            Text("If JPEG is selected and an image has transparency, ClipSlim forces PNG to preserve alpha.")
+            Text("If JPEG is selected and an image has transparency, ClipSlim force-switches to PNG.")
                 .font(VibeCheckTheme.Typography.caption)
                 .foregroundColor(VibeCheckTheme.Colors.textTertiary)
 
-            Text("How aggressively should ClipSlim optimize JPEG output?")
+            Text("How intense should JPEG optimization be?")
                 .font(VibeCheckTheme.Typography.headline)
                 .foregroundColor(VibeCheckTheme.Colors.textPrimary)
                 .padding(.top, VibeCheckTheme.Spacing.sm)
@@ -132,11 +150,11 @@ struct OnboardingFlowView: View {
 
     private var stepTwo: some View {
         VStack(alignment: .leading, spacing: sectionSpacing) {
-            Text("Watch folders?")
+            Text("Want folder watch chaos too?")
                 .font(VibeCheckTheme.Typography.headline)
                 .foregroundColor(VibeCheckTheme.Colors.textPrimary)
 
-            Text("Add one or more folders. You can skip and configure this later in Settings.")
+            Text("Add one or more folders. You can skip and do this later in Settings.")
                 .font(VibeCheckTheme.Typography.caption)
                 .foregroundColor(VibeCheckTheme.Colors.textSecondary)
 
@@ -163,6 +181,80 @@ struct OnboardingFlowView: View {
                     selectedFolders = []
                     step = 3
                 }
+            }
+        }
+    }
+
+    private var stepThree: some View {
+        VStack(alignment: .leading, spacing: sectionSpacing) {
+            Text("Where should saved files go?")
+                .font(VibeCheckTheme.Typography.headline)
+                .foregroundColor(VibeCheckTheme.Colors.textPrimary)
+
+            Text("Pick your default save strategy. ClipSlim keeps originals and optimized files in separate subfolders.")
+                .font(VibeCheckTheme.Typography.caption)
+                .foregroundColor(VibeCheckTheme.Colors.textSecondary)
+
+            saveDestinationCard(
+                title: SaveDestinationMode.sameFolder.title,
+                subtitle: "Use the original file's folder when possible.",
+                mode: .sameFolder
+            )
+
+            saveDestinationCard(
+                title: SaveDestinationMode.customFolder.title,
+                subtitle: "Use one dedicated folder you control.",
+                mode: .customFolder
+            )
+
+            if selectedSaveDestinationMode == .customFolder {
+                HStack {
+                    Text(customSaveFolderPath.isEmpty ? "No custom folder selected" : customSaveFolderPath)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                        .font(VibeCheckTheme.Typography.caption)
+                        .foregroundColor(VibeCheckTheme.Colors.textSecondary)
+                    Spacer()
+                    VibeButton("Choose Folder", style: .secondary) {
+                        chooseCustomSaveFolder()
+                    }
+                }
+            } else {
+                HStack {
+                    Text(customSaveFolderPath.isEmpty ? "No fallback custom folder selected" : "Fallback folder: \(customSaveFolderPath)")
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                        .font(VibeCheckTheme.Typography.caption)
+                        .foregroundColor(VibeCheckTheme.Colors.textSecondary)
+                    Spacer()
+                    VibeButton("Set Fallback", style: .secondary) {
+                        chooseCustomSaveFolder()
+                    }
+                }
+            }
+
+            if customSaveFolderPath.isEmpty {
+                Text("Pick a custom folder to continue (it's also the clipboard fallback).")
+                    .font(VibeCheckTheme.Typography.caption)
+                    .foregroundColor(VibeCheckTheme.Colors.warning)
+            }
+        }
+    }
+
+    private var stepFour: some View {
+        VStack(alignment: .leading, spacing: sectionSpacing) {
+            Text("All set")
+                .font(VibeCheckTheme.Typography.headline)
+                .foregroundColor(VibeCheckTheme.Colors.textPrimary)
+
+            Text("ClipSlim now lives in the menu bar, ready to politely wreck oversized images.")
+                .font(VibeCheckTheme.Typography.body)
+                .foregroundColor(VibeCheckTheme.Colors.textSecondary)
+
+            VStack(alignment: .leading, spacing: VibeCheckTheme.Spacing.sm) {
+                hintRow(icon: "menubar.rectangle", text: "Menu bar icon = quick toggles, pause controls, and stats.")
+                hintRow(icon: "keyboard", text: "Hotkeys: Option+1 copies optimized, Option+2 restores original.")
+                hintRow(icon: "lock.shield", text: "Everything runs locally on your Mac. No cloud detours.")
             }
         }
     }
@@ -221,21 +313,16 @@ struct OnboardingFlowView: View {
         )
     }
 
-    private var stepThree: some View {
-        VStack(alignment: .leading, spacing: sectionSpacing) {
-            Text("All set")
-                .font(VibeCheckTheme.Typography.headline)
-                .foregroundColor(VibeCheckTheme.Colors.textPrimary)
+    private func chooseCustomSaveFolder() {
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = false
+        panel.canChooseDirectories = true
+        panel.allowsMultipleSelection = false
+        panel.message = "Choose where ClipSlim should save output files"
+        panel.prompt = "Select Folder"
 
-            Text("ClipSlim runs from the menu bar and stays in the background.")
-                .font(VibeCheckTheme.Typography.body)
-                .foregroundColor(VibeCheckTheme.Colors.textSecondary)
-
-            VStack(alignment: .leading, spacing: VibeCheckTheme.Spacing.sm) {
-                hintRow(icon: "menubar.rectangle", text: "Use the menu bar icon for pause/focus/rules quickly.")
-                hintRow(icon: "keyboard", text: "Hotkeys: Option+1 copy last optimized, Option+2 copy last original.")
-                hintRow(icon: "lock.shield", text: "All optimization runs locally on your Mac.")
-            }
+        if panel.runModal() == .OK, let url = panel.url {
+            customSaveFolderPath = url.path
         }
     }
 
@@ -262,6 +349,34 @@ struct OnboardingFlowView: View {
             .overlay(
                 RoundedRectangle(cornerRadius: VibeCheckTheme.CornerRadius.md)
                     .stroke(selectedFormat == format ? VibeCheckTheme.Colors.neonCyan.opacity(0.6) : VibeCheckTheme.Colors.border, lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func saveDestinationCard(title: String, subtitle: String, mode: SaveDestinationMode) -> some View {
+        Button {
+            selectedSaveDestinationMode = mode
+        } label: {
+            HStack {
+                VStack(alignment: .leading, spacing: VibeCheckTheme.Spacing.xs) {
+                    Text(title)
+                        .font(VibeCheckTheme.Typography.body)
+                        .foregroundColor(VibeCheckTheme.Colors.textPrimary)
+                    Text(subtitle)
+                        .font(VibeCheckTheme.Typography.caption)
+                        .foregroundColor(VibeCheckTheme.Colors.textTertiary)
+                }
+                Spacer()
+                Image(systemName: selectedSaveDestinationMode == mode ? "checkmark.circle.fill" : "circle")
+                    .foregroundColor(selectedSaveDestinationMode == mode ? VibeCheckTheme.Colors.neonCyan : VibeCheckTheme.Colors.textTertiary)
+            }
+            .padding(VibeCheckTheme.Spacing.md)
+            .background(VibeCheckTheme.Colors.surface)
+            .cornerRadius(VibeCheckTheme.CornerRadius.md)
+            .overlay(
+                RoundedRectangle(cornerRadius: VibeCheckTheme.CornerRadius.md)
+                    .stroke(selectedSaveDestinationMode == mode ? VibeCheckTheme.Colors.neonCyan.opacity(0.6) : VibeCheckTheme.Colors.border, lineWidth: 1)
             )
         }
         .buttonStyle(.plain)

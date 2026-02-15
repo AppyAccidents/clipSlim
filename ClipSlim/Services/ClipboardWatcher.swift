@@ -25,6 +25,13 @@ final class ClipboardWatcher {
         case idle = 3.0
     }
 
+#if DEBUG
+    private(set) var debugTimerRecreationCount = 0
+    private(set) var debugDirectExtractionCount = 0
+    private(set) var debugNSImageFallbackCount = 0
+    private(set) var debugURLFallbackCount = 0
+#endif
+
     func start() {
         guard !isWatching else { return }
         isWatching = true
@@ -40,6 +47,14 @@ final class ClipboardWatcher {
         isWatching = false
         currentPollInterval = PollingProfile.active.rawValue
         log.clipboard("Clipboard watcher stopped")
+    }
+
+    func shutdown() {
+        stop()
+        onImageDetected = nil
+        lastWrittenHash = ""
+        isWritingToPasteboard = false
+        lastSeenChangeCount = 0
     }
 
     func writeToPasteboard(data: Data, format: ImageFormat) {
@@ -122,6 +137,9 @@ final class ClipboardWatcher {
     private func scheduleTimer(interval: TimeInterval) {
         timer?.invalidate()
         currentPollInterval = interval
+#if DEBUG
+        debugTimerRecreationCount += 1
+#endif
         timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
             self?.checkClipboard()
         }
@@ -169,36 +187,43 @@ final class ClipboardWatcher {
     }
 
     private func extractImageData(from pb: NSPasteboard) -> Data? {
-        let knownImageTypes: Set<NSPasteboard.PasteboardType> = [
-            .png,
-            .tiff,
-            NSPasteboard.PasteboardType(UTType.jpeg.identifier),
-            NSPasteboard.PasteboardType(UTType.gif.identifier),
-            NSPasteboard.PasteboardType(UTType.bmp.identifier),
-            NSPasteboard.PasteboardType(UTType.heic.identifier)
-        ]
+        let items = pb.pasteboardItems ?? []
+        guard !items.isEmpty else { return nil }
 
-        let pbTypes = Set(pb.types ?? [])
+        let hasImageItemType = items.contains { item in
+            item.types.contains(where: isImagePasteboardType)
+        }
+        guard hasImageItemType else { return nil }
 
-        // Reject non-image content (PDFs, text, HTML, etc.) up front
-        guard !pbTypes.isDisjoint(with: knownImageTypes) else { return nil }
-
-        for type in knownImageTypes {
-            if let data = pb.data(forType: type), !data.isEmpty {
-                return data
+        for item in items {
+            for type in item.types where isImagePasteboardType(type) {
+                if let data = item.data(forType: type), !data.isEmpty {
+#if DEBUG
+                    debugDirectExtractionCount += 1
+#endif
+                    return data
+                }
             }
         }
 
-        // Fallback: only for pasteboard items already confirmed to contain image types
+        // Fallbacks run only after explicit image type confirmation above.
         if let image = NSImage(pasteboard: pb),
            let tiff = image.tiffRepresentation {
+#if DEBUG
+            debugNSImageFallbackCount += 1
+#endif
             return tiff
         }
 
         if let urls = pb.readObjects(forClasses: [NSURL.self], options: [
             .urlReadingContentsConformToTypes: [UTType.image.identifier]
         ]) as? [URL], let url = urls.first {
-            return try? Data(contentsOf: url)
+            if let data = try? Data(contentsOf: url), !data.isEmpty {
+#if DEBUG
+                debugURLFallbackCount += 1
+#endif
+                return data
+            }
         }
 
         return nil

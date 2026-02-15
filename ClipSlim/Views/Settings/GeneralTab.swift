@@ -9,9 +9,9 @@ struct GeneralTab: View {
             VibeSettingsCard(title: "Clipboard", icon: "doc.on.clipboard") {
                 Toggle("Enable Clipboard Watching", isOn: viewModel.settings.clipboardWatchEnabledBinding)
                     .onChange(of: viewModel.settings.clipboardWatchEnabled) { _, _ in
-                        viewModel.refreshPauseState()
+                        viewModel.reconcileWatcherState()
                     }
-                VibeHintText(text: "Automatically optimize images copied to the clipboard")
+                VibeHintText(text: "Automatically slim images copied to the clipboard, no manual button mashing required.")
             }
 
             VibeSettingsCard(title: "Output Format", icon: "arrow.triangle.2.circlepath") {
@@ -47,10 +47,13 @@ struct GeneralTab: View {
             }
 
             VibeSettingsCard(title: "Pause & Focus", icon: "moon.zzz") {
-                Toggle("Pause folder watcher while paused", isOn: viewModel.settings.pauseFolderWatcherBinding)
+                Toggle("Pause folder watcher.", isOn: viewModel.settings.pauseFolderWatcherBinding)
+                    .onChange(of: viewModel.settings.pauseFolderWatcher) { _, _ in
+                        viewModel.reconcileWatcherState()
+                    }
                 Toggle("Focus mode", isOn: viewModel.settings.focusModeEnabledBinding)
                     .onChange(of: viewModel.settings.focusModeEnabled) { _, _ in
-                        viewModel.refreshPauseState()
+                        viewModel.reconcileWatcherState()
                     }
 
                 TextField("Focus bundle IDs (comma-separated)", text: Binding(
@@ -90,12 +93,31 @@ struct GeneralTab: View {
             VibeSettingsCard(title: "Save to Disk", icon: "square.and.arrow.down") {
                 Toggle("Save originals and optimized files to disk", isOn: viewModel.settings.saveToDiskBinding)
                 if viewModel.settings.saveToDisk {
-                    HStack {
-                        Text(viewModel.settings.saveFolderPath.isEmpty ? "~/Pictures/ClipSlim (default)" : viewModel.settings.saveFolderPath)
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-                        Spacer()
-                        Button("Choose…") { selectSaveFolder() }
+                    Picker("Save destination", selection: viewModel.settings.saveDestinationModeBinding) {
+                        ForEach(SaveDestinationMode.allCases, id: \.self) { mode in
+                            Text(mode.title).tag(mode)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+
+                    VibeHintText(text: "Clipboard images in same-folder mode fall back to your custom folder.")
+
+                    if viewModel.settings.saveDestinationMode == .customFolder {
+                        HStack {
+                            Text(viewModel.settings.saveFolderPath.isEmpty ? "No custom folder selected" : viewModel.settings.saveFolderPath)
+                                .lineLimit(1)
+                                .truncationMode(.middle)
+                            Spacer()
+                            Button("Choose…") { selectSaveFolder() }
+                        }
+                    } else {
+                        HStack {
+                            Text(viewModel.settings.saveFolderPath.isEmpty ? "No fallback custom folder selected" : "Fallback folder: \(viewModel.settings.saveFolderPath)")
+                                .lineLimit(1)
+                                .truncationMode(.middle)
+                            Spacer()
+                            Button("Set fallback…") { selectSaveFolder() }
+                        }
                     }
                 }
             }
@@ -105,7 +127,7 @@ struct GeneralTab: View {
                     viewModel.runOnboardingAgain()
                 }
                 .buttonStyle(.bordered)
-                VibeHintText(text: "Use onboarding to reset default format, optimization intensity, and watched folders.")
+                VibeHintText(text: "Run onboarding to re-pick format, folder watching, and save destination.")
             }
         }
     }

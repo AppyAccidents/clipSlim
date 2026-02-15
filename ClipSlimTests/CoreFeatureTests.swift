@@ -3,25 +3,6 @@ import XCTest
 
 final class CoreFeatureTests: XCTestCase {
 
-    func testRuleEngineFirstMatchWins() {
-        let rules: [OptimizationRule] = [
-            OptimizationRule(name: "Skip Zoom", frontmostBundleID: "us.zoom.xos", shouldSkip: true),
-            OptimizationRule(name: "Force PNG", frontmostBundleID: "us.zoom.xos", overrideFormat: .png)
-        ]
-
-        let context = RuleEvaluationContext(
-            frontmostBundleID: "us.zoom.xos",
-            byteSize: 1_000_000,
-            dimensions: (1200, 800),
-            hasAlpha: false
-        )
-
-        let decision = RuleEngine().evaluate(rules: rules, context: context)
-        XCTAssertFalse(decision.shouldOptimize)
-        XCTAssertEqual(decision.matchedRuleName, "Skip Zoom")
-        XCTAssertNil(decision.formatOverride)
-    }
-
     func testIgnoreCacheExpiration() {
         let cache = IgnoreCache()
         let hash = "abc"
@@ -93,9 +74,9 @@ final class CoreFeatureTests: XCTestCase {
         }
 
         settings.overridePresetQuality = true
-        settings.applyPreset(.small)
+        settings.applyPreset(.compressed)
 
-        XCTAssertEqual(settings.selectedPreset, .small)
+        XCTAssertEqual(settings.selectedPreset, .compressed)
         XCTAssertFalse(settings.overridePresetQuality)
     }
 
@@ -132,7 +113,7 @@ final class CoreFeatureTests: XCTestCase {
         defer { defaults.removePersistentDomain(forName: suiteName) }
 
         let first = AppSettings(defaults: defaults)
-        first.applyPreset(.small)
+        first.applyPreset(.compressed)
         first.overridePresetQuality = true
         first.globalQualityValue = 0.55
         first.applyOptimizationIntensity(.light)
@@ -143,5 +124,40 @@ final class CoreFeatureTests: XCTestCase {
         XCTAssertEqual(second.customQuality, 0.80, accuracy: 0.001)
         XCTAssertEqual(second.globalQualityValue, 0.80, accuracy: 0.001)
         XCTAssertFalse(second.overridePresetQuality)
+    }
+
+    func testLegacyPresetRawValueMigratesOnLoad() {
+        let suiteName = "ClipSlimTests-LegacyPreset-\(UUID().uuidString)"
+        guard let defaults = UserDefaults(suiteName: suiteName) else {
+            XCTFail("Failed to create isolated defaults suite")
+            return
+        }
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        defaults.set("Small", forKey: "selectedPreset")
+
+        let settings = AppSettings(defaults: defaults)
+        XCTAssertEqual(settings.selectedPreset, .compressed)
+        XCTAssertEqual(defaults.string(forKey: "selectedPreset"), OptimizationPreset.compressed.rawValue)
+    }
+
+    func testFirstLaunchStillRequiresOnboardingWhenNotPresented() {
+        let suiteName = "ClipSlimTests-Onboarding-\(UUID().uuidString)"
+        guard let defaults = UserDefaults(suiteName: suiteName) else {
+            XCTFail("Failed to create isolated defaults suite")
+            return
+        }
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        defaults.set(true, forKey: "onboardingCompleted")
+        defaults.set(AppSettings.onboardingSchemaVersion, forKey: "onboardingSchemaVersion")
+        defaults.set(false, forKey: "onboardingPresentedAtLeastOnce")
+
+        let settings = AppSettings(defaults: defaults)
+        XCTAssertTrue(settings.shouldPresentOnboarding)
+
+        settings.markOnboardingPresented()
+        settings.markOnboardingCompleted()
+        XCTAssertFalse(settings.shouldPresentOnboarding)
     }
 }

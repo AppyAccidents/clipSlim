@@ -6,6 +6,13 @@ struct MenuBarView: View {
     @Environment(\.openSettings) private var openSettings
     @Environment(\.openWindow) private var openWindow
 
+    private var folderWatchBinding: Binding<Bool> {
+        Binding(
+            get: { viewModel.settings.folderWatchEnabled },
+            set: { viewModel.setFolderWatchEnabled($0) }
+        )
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             headerSection
@@ -82,25 +89,19 @@ struct MenuBarView: View {
         VStack(spacing: 0) {
             QuickToggleRow(
                 icon: "doc.on.clipboard",
-                title: "Clipboard Watch",
+                title: "Clipboard Watch (Chaos Mode)",
                 isOn: viewModel.settings.clipboardWatchEnabledBinding
             )
             .onChange(of: viewModel.settings.clipboardWatchEnabled) { _, _ in
-                viewModel.refreshPauseState()
+                viewModel.reconcileWatcherState()
             }
 
             QuickToggleRow(
                 icon: "folder",
                 title: "Folder Watch",
-                isOn: viewModel.settings.folderWatchEnabledBinding,
+                isOn: folderWatchBinding,
                 accentColor: VibeCheckTheme.Colors.neonOrange
             )
-            .onChange(of: viewModel.settings.folderWatchEnabled) { _, newValue in
-                viewModel.refreshPauseState()
-                if newValue && viewModel.settings.watchedFolders.isEmpty {
-                    viewModel.addWatchFolders()
-                }
-            }
 
             QuickToggleRow(
                 icon: "moon.zzz",
@@ -109,7 +110,7 @@ struct MenuBarView: View {
                 accentColor: VibeCheckTheme.Colors.warning
             )
             .onChange(of: viewModel.settings.focusModeEnabled) { _, _ in
-                viewModel.refreshPauseState()
+                viewModel.reconcileWatcherState()
             }
         }
         .padding(.vertical, VibeCheckTheme.Spacing.xs)
@@ -127,7 +128,7 @@ struct MenuBarView: View {
 
             PresetPicker(selectedPreset: viewModel.settings.selectedPresetBinding)
 
-            Text("Quality: \(Int(viewModel.settings.currentQuality * 100))%")
+            Text("JPEG flavor: \(Int(viewModel.settings.currentQuality * 100))%")
                 .font(VibeCheckTheme.Typography.caption)
                 .foregroundColor(VibeCheckTheme.Colors.textSecondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -148,13 +149,13 @@ struct MenuBarView: View {
 
             StatsRow(
                 icon: "photo.stack",
-                label: "Optimized",
+                label: "Slimmed",
                 value: "\(viewModel.totalOptimized)"
             )
 
             StatsRow(
                 icon: "arrow.down.circle",
-                label: "Total Saved",
+                label: "Bytes Rescued",
                 value: ByteCountFormatter.string(fromByteCount: Int64(viewModel.totalSaved), countStyle: .file),
                 valueColor: VibeCheckTheme.Colors.success
             )
@@ -170,9 +171,9 @@ struct MenuBarView: View {
                 .foregroundColor(VibeCheckTheme.Colors.textSecondary)
 
             HStack {
-                Button("Pause 10m") { viewModel.pauseFor(minutes: 10) }
-                Button("Pause 1h") { viewModel.pauseFor(hours: 1) }
-                Button("Until Tomorrow") { viewModel.pauseUntilTomorrow() }
+                Button("Hide 10m") { viewModel.pauseFor(minutes: 10) }
+                Button("Hide 1h") { viewModel.pauseFor(hours: 1) }
+                Button("Ghost Till Tomorrow") { viewModel.pauseUntilTomorrow() }
                 Button("Resume") { viewModel.resumeFromPause() }
             }
             .buttonStyle(.borderless)
@@ -210,7 +211,7 @@ struct MenuBarView: View {
 
     private var actionsSection: some View {
         VStack(spacing: 0) {
-            MenuActionButton(icon: "arrow.uturn.backward", title: "Undo Last Optimization") {
+            MenuActionButton(icon: "arrow.uturn.backward", title: "Undo Last Slimming") {
                 viewModel.undoLastOptimization()
             }
 
@@ -220,7 +221,7 @@ struct MenuBarView: View {
                 }
             }
 
-            MenuActionButton(icon: "clock.arrow.circlepath", title: "Debug Log") {
+            MenuActionButton(icon: "clock.arrow.circlepath", title: "Debug Log (Nerd View)") {
                 openWindow(id: "debug-log")
             }
 
@@ -228,7 +229,7 @@ struct MenuBarView: View {
                 openSettings()
             }
 
-            MenuActionButton(icon: "trash", title: "Clear History", iconColor: VibeCheckTheme.Colors.warning) {
+            MenuActionButton(icon: "trash", title: "Clear History (Poof)", iconColor: VibeCheckTheme.Colors.warning) {
                 viewModel.clearHistory()
             }
 

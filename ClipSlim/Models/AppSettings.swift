@@ -53,6 +53,18 @@ enum OptimizationIntensity: String, Codable, CaseIterable {
     }
 }
 
+enum SaveDestinationMode: String, Codable, CaseIterable {
+    case sameFolder
+    case customFolder
+
+    var title: String {
+        switch self {
+        case .sameFolder: return "Same folder as original"
+        case .customFolder: return "Custom folder"
+        }
+    }
+}
+
 struct WatchedFolder: Codable, Identifiable, Hashable {
     let id: UUID
     var displayName: String
@@ -67,7 +79,7 @@ struct WatchedFolder: Codable, Identifiable, Hashable {
 
 @Observable
 final class AppSettings {
-    static let onboardingSchemaVersion = 2
+    static let onboardingSchemaVersion = 3
 
     @ObservationIgnored private let defaults: UserDefaults
 
@@ -85,6 +97,7 @@ final class AppSettings {
     var launchAtLogin: Bool { didSet { defaults.set(launchAtLogin, forKey: Keys.launchAtLogin) } }
     var saveToDisk: Bool { didSet { defaults.set(saveToDisk, forKey: Keys.saveToDisk) } }
     var saveFolderPath: String { didSet { defaults.set(saveFolderPath, forKey: Keys.saveFolderPath) } }
+    var saveDestinationModeRaw: String { didSet { defaults.set(saveDestinationModeRaw, forKey: Keys.saveDestinationModeRaw) } }
 
     var preferredOutputFormatRaw: String { didSet { defaults.set(preferredOutputFormatRaw, forKey: Keys.preferredOutputFormatRaw) } }
     var overridePresetQuality: Bool { didSet { defaults.set(overridePresetQuality, forKey: Keys.overridePresetQuality) } }
@@ -92,6 +105,7 @@ final class AppSettings {
     var optimizationIntensityRaw: String { didSet { defaults.set(optimizationIntensityRaw, forKey: Keys.optimizationIntensityRaw) } }
 
     var onboardingCompleted: Bool { didSet { defaults.set(onboardingCompleted, forKey: Keys.onboardingCompleted) } }
+    var onboardingPresentedAtLeastOnce: Bool { didSet { defaults.set(onboardingPresentedAtLeastOnce, forKey: Keys.onboardingPresentedAtLeastOnce) } }
     var onboardingSchemaVersionStored: Int { didSet { defaults.set(onboardingSchemaVersionStored, forKey: Keys.onboardingSchemaVersionStored) } }
     var pauseUntilEpoch: Double { didSet { defaults.set(pauseUntilEpoch, forKey: Keys.pauseUntilEpoch) } }
     var pauseFolderWatcher: Bool { didSet { defaults.set(pauseFolderWatcher, forKey: Keys.pauseFolderWatcher) } }
@@ -117,11 +131,13 @@ final class AppSettings {
         static let launchAtLogin = "launchAtLogin"
         static let saveToDisk = "saveToDisk"
         static let saveFolderPath = "saveFolderPath"
+        static let saveDestinationModeRaw = "saveDestinationModeRaw"
         static let preferredOutputFormatRaw = "preferredOutputFormatRaw"
         static let overridePresetQuality = "overridePresetQuality"
         static let globalQualityValue = "globalQualityValue"
         static let optimizationIntensityRaw = "optimizationIntensityRaw"
         static let onboardingCompleted = "onboardingCompleted"
+        static let onboardingPresentedAtLeastOnce = "onboardingPresentedAtLeastOnce"
         static let onboardingSchemaVersionStored = "onboardingSchemaVersion"
         static let pauseUntilEpoch = "pauseUntilEpoch"
         static let pauseFolderWatcher = "pauseFolderWatcher"
@@ -139,10 +155,12 @@ final class AppSettings {
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
+        let storedPresetRaw = defaults.string(forKey: Keys.selectedPresetRaw) ?? OptimizationPreset.webQuality.rawValue
+        let normalizedPresetRaw = Self.normalizeLegacyPresetRawValue(storedPresetRaw)
         clipboardWatchEnabled = defaults.object(forKey: Keys.clipboardWatchEnabled) as? Bool ?? true
         folderWatchEnabled = defaults.object(forKey: Keys.folderWatchEnabled) as? Bool ?? false
         notificationsEnabled = defaults.object(forKey: Keys.notificationsEnabled) as? Bool ?? true
-        selectedPresetRaw = defaults.string(forKey: Keys.selectedPresetRaw) ?? OptimizationPreset.web.rawValue
+        selectedPresetRaw = normalizedPresetRaw
 
         customQuality = defaults.object(forKey: Keys.customQuality) as? Double ?? 0.75
         customMaxDimension = defaults.object(forKey: Keys.customMaxDimension) as? Int ?? 1920
@@ -153,6 +171,7 @@ final class AppSettings {
         launchAtLogin = defaults.object(forKey: Keys.launchAtLogin) as? Bool ?? false
         saveToDisk = defaults.object(forKey: Keys.saveToDisk) as? Bool ?? true
         saveFolderPath = defaults.string(forKey: Keys.saveFolderPath) ?? ""
+        saveDestinationModeRaw = defaults.string(forKey: Keys.saveDestinationModeRaw) ?? SaveDestinationMode.customFolder.rawValue
 
         preferredOutputFormatRaw = defaults.string(forKey: Keys.preferredOutputFormatRaw) ?? ImageFormat.jpeg.rawValue
         overridePresetQuality = defaults.object(forKey: Keys.overridePresetQuality) as? Bool ?? false
@@ -160,6 +179,7 @@ final class AppSettings {
         optimizationIntensityRaw = defaults.string(forKey: Keys.optimizationIntensityRaw) ?? OptimizationIntensity.moderate.rawValue
 
         onboardingCompleted = defaults.object(forKey: Keys.onboardingCompleted) as? Bool ?? false
+        onboardingPresentedAtLeastOnce = defaults.object(forKey: Keys.onboardingPresentedAtLeastOnce) as? Bool ?? false
         onboardingSchemaVersionStored = defaults.object(forKey: Keys.onboardingSchemaVersionStored) as? Int ?? 0
         pauseUntilEpoch = defaults.object(forKey: Keys.pauseUntilEpoch) as? Double ?? 0
         pauseFolderWatcher = defaults.object(forKey: Keys.pauseFolderWatcher) as? Bool ?? false
@@ -171,6 +191,10 @@ final class AppSettings {
         lastDonationPromptEpoch = defaults.object(forKey: Keys.lastDonationPromptEpoch) as? Double ?? 0
 
         watchedFoldersData = defaults.string(forKey: Keys.watchedFoldersData) ?? "[]"
+
+        if storedPresetRaw != normalizedPresetRaw {
+            defaults.set(normalizedPresetRaw, forKey: Keys.selectedPresetRaw)
+        }
     }
 
     var preferredOutputFormat: ImageFormat {
@@ -233,8 +257,13 @@ final class AppSettings {
     }
 
     var selectedPreset: OptimizationPreset {
-        get { OptimizationPreset(rawValue: selectedPresetRaw) ?? .web }
+        get { OptimizationPreset(rawValue: Self.normalizeLegacyPresetRawValue(selectedPresetRaw)) ?? .webQuality }
         set { selectedPresetRaw = newValue.rawValue }
+    }
+
+    var saveDestinationMode: SaveDestinationMode {
+        get { SaveDestinationMode(rawValue: saveDestinationModeRaw) ?? .customFolder }
+        set { saveDestinationModeRaw = newValue.rawValue }
     }
 
     var optimizationIntensity: OptimizationIntensity {
@@ -255,6 +284,7 @@ final class AppSettings {
     }
 
     var shouldPresentOnboarding: Bool {
+        if !onboardingPresentedAtLeastOnce { return true }
         if !onboardingCompleted { return true }
         if onboardingSchemaVersionStored < Self.onboardingSchemaVersion { return true }
         if preferredOutputFormatRaw.isEmpty { return true }
@@ -299,6 +329,9 @@ final class AppSettings {
     var saveToDiskBinding: Binding<Bool> {
         Binding(get: { self.saveToDisk }, set: { self.saveToDisk = $0 })
     }
+    var saveDestinationModeBinding: Binding<SaveDestinationMode> {
+        Binding(get: { self.saveDestinationMode }, set: { self.saveDestinationMode = $0 })
+    }
     var overridePresetQualityBinding: Binding<Bool> {
         Binding(get: { self.overridePresetQuality }, set: { self.overridePresetQuality = $0 })
     }
@@ -336,6 +369,10 @@ final class AppSettings {
         onboardingSchemaVersionStored = Self.onboardingSchemaVersion
     }
 
+    func markOnboardingPresented() {
+        onboardingPresentedAtLeastOnce = true
+    }
+
     private func encodeArray<T: Codable>(_ value: [T]) -> String {
         guard let data = try? JSONEncoder().encode(value),
               let string = String(data: data, encoding: .utf8) else {
@@ -350,5 +387,18 @@ final class AppSettings {
             return []
         }
         return decoded
+    }
+
+    private static func normalizeLegacyPresetRawValue(_ raw: String) -> String {
+        switch raw {
+        case "Web":
+            return OptimizationPreset.webQuality.rawValue
+        case "High Quality":
+            return OptimizationPreset.highQuality.rawValue
+        case "Small":
+            return OptimizationPreset.compressed.rawValue
+        default:
+            return raw
+        }
     }
 }

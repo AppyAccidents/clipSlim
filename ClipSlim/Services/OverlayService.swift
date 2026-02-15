@@ -60,6 +60,24 @@ final class OverlayService {
         scheduleDismiss()
     }
 
+    func shutdown() {
+        dismissTimer?.invalidate()
+        dismissTimer = nil
+        panel?.orderOut(nil)
+        panel?.contentView = nil
+        panel = nil
+        currentItem = nil
+        onUndo = nil
+        onSaveAs = nil
+        onRemoveClipboardImage = nil
+        onApplyFormatOverride = nil
+        onApplyResizeOverride = nil
+        onApplyCrop = nil
+        onOpenSettings = nil
+        onIgnoreImage = nil
+        onIgnoreApp = nil
+    }
+
     private func scheduleDismiss() {
         dismissTimer?.invalidate()
         dismissTimer = Timer.scheduledTimer(withTimeInterval: autoDismissSeconds, repeats: false) { [weak self] _ in

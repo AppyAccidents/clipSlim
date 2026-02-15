@@ -4,7 +4,13 @@ import SwiftUI
 struct ClipSlimApp: App {
 
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    @State private var viewModel = AppViewModel()
+    @State private var viewModel: AppViewModel
+
+    init() {
+        let vm = AppViewModel()
+        _viewModel = State(initialValue: vm)
+        vm.startServices()
+    }
 
     var body: some Scene {
         MenuBarExtra {
@@ -27,5 +33,6 @@ struct ClipSlimApp: App {
                 .environment(viewModel)
         }
         .defaultSize(width: 600, height: 400)
+        
     }
 }
