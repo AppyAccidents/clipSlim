@@ -171,9 +171,9 @@ struct MenuBarView: View {
                 .foregroundColor(VibeCheckTheme.Colors.textSecondary)
 
             HStack {
-                Button("Hide 10m") { viewModel.pauseFor(minutes: 10) }
-                Button("Hide 1h") { viewModel.pauseFor(hours: 1) }
-                Button("Ghost Till Tomorrow") { viewModel.pauseUntilTomorrow() }
+                Button("10m") { viewModel.pauseFor(minutes: 10) }
+                Button("1h") { viewModel.pauseFor(hours: 1) }
+                Button("Tomorrow") { viewModel.pauseUntilTomorrow() }
                 Button("Resume") { viewModel.resumeFromPause() }
             }
             .buttonStyle(.borderless)

@@ -42,7 +42,7 @@ final class FolderWatcher {
     private let maxPreExistingFiles = 20000
 
     private let debounceInterval: TimeInterval = 0.3
-    private let supportedExtensions: Set<String> = ["jpg", "jpeg", "png", "tiff", "tif", "bmp", "heic"]
+    private static let supportedExtensions: Set<String> = ["jpg", "jpeg", "png", "tiff", "tif", "bmp", "heic"]
     // Chosen strategy to avoid self-processing loops: outputs go into "Optimized" subfolder.
     private let optimizedOutputSubfolder = "Optimized"
     private let log = Logger.shared
@@ -176,6 +176,10 @@ final class FolderWatcher {
         return optimizedDir.appendingPathComponent("\(nameWithoutExt)-optimized.\(format.fileExtension)")
     }
 
+    static func isSupportedImageFileExtension(_ ext: String) -> Bool {
+        supportedExtensions.contains(ext.lowercased())
+    }
+
     // MARK: - Private
 
     private func catalogExistingFiles() {
@@ -210,7 +214,7 @@ final class FolderWatcher {
         let url = URL(fileURLWithPath: path)
         let ext = url.pathExtension.lowercased()
 
-        guard supportedExtensions.contains(ext) else { return }
+        guard Self.isSupportedImageFileExtension(ext) else { return }
 
         if path.contains("/\(optimizedOutputSubfolder)/") {
             return

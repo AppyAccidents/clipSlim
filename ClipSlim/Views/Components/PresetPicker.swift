@@ -22,7 +22,7 @@ struct PresetPicker: View {
                 selectedPreset = preset
             }
         } label: {
-            Text(preset.rawValue)
+            Text(displayName(for: preset))
                 .font(VibeCheckTheme.Typography.caption)
                 .foregroundColor(isSelected ? VibeCheckTheme.Colors.background : VibeCheckTheme.Colors.textSecondary)
                 .padding(.horizontal, VibeCheckTheme.Spacing.sm)
@@ -31,5 +31,14 @@ struct PresetPicker: View {
                 .cornerRadius(VibeCheckTheme.CornerRadius.sm)
         }
         .buttonStyle(.plain)
+    }
+
+    private func displayName(for preset: OptimizationPreset) -> String {
+        switch preset {
+        case .highQuality: return "High"
+        case .webQuality: return "Web"
+        case .compressed: return "Comp"
+        case .custom: return "Custom"
+        }
     }
 }

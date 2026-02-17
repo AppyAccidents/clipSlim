@@ -132,6 +132,11 @@ final class ClipboardWatcher {
         return hash.compactMap { String(format: "%02x", $0) }.joined()
     }
 
+    static func isSupportedImagePasteboardType(_ type: NSPasteboard.PasteboardType) -> Bool {
+        if type == .png || type == .tiff { return true }
+        return UTType(type.rawValue)?.conforms(to: .image) ?? false
+    }
+
     // MARK: - Private
 
     private func scheduleTimer(interval: TimeInterval) {
@@ -230,8 +235,7 @@ final class ClipboardWatcher {
     }
 
     private func isImagePasteboardType(_ type: NSPasteboard.PasteboardType) -> Bool {
-        if type == .png || type == .tiff { return true }
-        return UTType(type.rawValue)?.conforms(to: .image) ?? false
+        Self.isSupportedImagePasteboardType(type)
     }
 
     private func sha256(_ data: Data) -> String {

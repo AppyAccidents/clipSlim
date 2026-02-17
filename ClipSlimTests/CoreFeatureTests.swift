@@ -1,4 +1,5 @@
 import XCTest
+import AppKit
 @testable import ClipSlim
 
 final class CoreFeatureTests: XCTestCase {
@@ -124,6 +125,40 @@ final class CoreFeatureTests: XCTestCase {
         XCTAssertEqual(second.customQuality, 0.80, accuracy: 0.001)
         XCTAssertEqual(second.globalQualityValue, 0.80, accuracy: 0.001)
         XCTAssertFalse(second.overridePresetQuality)
+    }
+
+    func testSaveToDiskDefaultsToTrueOnFreshDefaults() {
+        let suiteName = "ClipSlimTests-SaveToDiskDefault-\(UUID().uuidString)"
+        guard let defaults = UserDefaults(suiteName: suiteName) else {
+            XCTFail("Failed to create isolated defaults suite")
+            return
+        }
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let settings = AppSettings(defaults: defaults)
+        XCTAssertTrue(settings.saveToDisk)
+    }
+
+    func testClipboardWatcherRejectsPDFPasteboardType() {
+        let pdfType = NSPasteboard.PasteboardType("com.adobe.pdf")
+        XCTAssertFalse(ClipboardWatcher.isSupportedImagePasteboardType(pdfType))
+    }
+
+    func testClipboardWatcherAcceptsImagePasteboardTypes() {
+        XCTAssertTrue(ClipboardWatcher.isSupportedImagePasteboardType(.png))
+        XCTAssertTrue(ClipboardWatcher.isSupportedImagePasteboardType(.tiff))
+        XCTAssertTrue(ClipboardWatcher.isSupportedImagePasteboardType(NSPasteboard.PasteboardType("public.jpeg")))
+    }
+
+    func testFolderWatcherRejectsPDFAndNonImageExtensions() {
+        XCTAssertFalse(FolderWatcher.isSupportedImageFileExtension("pdf"))
+        XCTAssertFalse(FolderWatcher.isSupportedImageFileExtension("txt"))
+    }
+
+    func testFolderWatcherAcceptsSupportedImageExtensions() {
+        XCTAssertTrue(FolderWatcher.isSupportedImageFileExtension("jpg"))
+        XCTAssertTrue(FolderWatcher.isSupportedImageFileExtension("JPEG"))
+        XCTAssertTrue(FolderWatcher.isSupportedImageFileExtension("heic"))
     }
 
     func testLegacyPresetRawValueMigratesOnLoad() {
