@@ -44,6 +44,8 @@
 		A10000400000000000000040 /* PresetButtonGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000400000000000000040 /* PresetButtonGroup.swift */; };
 		A10000410000000000000041 /* MenuPauseViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000410000000000000041 /* MenuPauseViewState.swift */; };
 		A10000420000000000000042 /* MenuViewStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000420000000000000042 /* MenuViewStateTests.swift */; };
+		A10000430000000000000043 /* OptimizationDispatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000430000000000000043 /* OptimizationDispatch.swift */; };
+		A10000440000000000000044 /* OptimizationDispatchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000440000000000000044 /* OptimizationDispatchTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -96,6 +98,8 @@
 		B10000400000000000000040 /* PresetButtonGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetButtonGroup.swift; sourceTree = "<group>"; };
 		B10000410000000000000041 /* MenuPauseViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuPauseViewState.swift; sourceTree = "<group>"; };
 		B10000420000000000000042 /* MenuViewStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViewStateTests.swift; sourceTree = "<group>"; };
+		B10000430000000000000043 /* OptimizationDispatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimizationDispatch.swift; sourceTree = "<group>"; };
+		B10000440000000000000044 /* OptimizationDispatchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimizationDispatchTests.swift; sourceTree = "<group>"; };
 		F10000010000000000000001 /* ClipSlim.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClipSlim.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F10000020000000000000002 /* ClipSlimTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClipSlimTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -148,6 +152,7 @@
 				B10000270000000000000021 /* ImageOptimizerTests.swift */,
 				B10000380000000000000038 /* CoreFeatureTests.swift */,
 				B10000420000000000000042 /* MenuViewStateTests.swift */,
+				B10000440000000000000044 /* OptimizationDispatchTests.swift */,
 			);
 			path = ClipSlimTests;
 			sourceTree = "<group>";
@@ -186,6 +191,7 @@
 			isa = PBXGroup;
 			children = (
 				B10000080000000000000008 /* ImageOptimizer.swift */,
+				B10000430000000000000043 /* OptimizationDispatch.swift */,
 				B10000090000000000000009 /* ClipboardWatcher.swift */,
 				B1000010000000000000000A /* FolderWatcher.swift */,
 				B1000011000000000000000B /* NotificationService.swift */,
@@ -368,6 +374,7 @@
 				A10000060000000000000006 /* OptimizationEvent.swift in Sources */,
 				A10000070000000000000007 /* ImageFormat.swift in Sources */,
 				A10000080000000000000008 /* ImageOptimizer.swift in Sources */,
+				A10000430000000000000043 /* OptimizationDispatch.swift in Sources */,
 				A10000090000000000000009 /* ClipboardWatcher.swift in Sources */,
 				A1000010000000000000000A /* FolderWatcher.swift in Sources */,
 				A1000011000000000000000B /* NotificationService.swift in Sources */,
@@ -403,6 +410,7 @@
 				A10000270000000000000021 /* ImageOptimizerTests.swift in Sources */,
 				A10000380000000000000038 /* CoreFeatureTests.swift in Sources */,
 				A10000420000000000000042 /* MenuViewStateTests.swift in Sources */,
+				A10000440000000000000044 /* OptimizationDispatchTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

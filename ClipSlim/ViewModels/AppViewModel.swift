@@ -769,9 +769,9 @@ final class AppViewModel {
                 optimizedData = cached.0
                 result = cached.1
             } else {
-                let optimizedTuple = try await Task.detached(priority: .userInitiated) {
+                let optimizedTuple = try await OptimizationDispatch.run {
                     try await ImageOptimizer.shared.optimize(data: data, config: config)
-                }.value
+                }
                 optimizedData = optimizedTuple.data
                 result = optimizedTuple.result
                 cacheOptimization(cacheKey: cacheKey, data: optimizedData, result: result)
@@ -805,9 +805,9 @@ final class AppViewModel {
                         alternateData = cachedAlternate.0
                         alternateResult = cachedAlternate.1
                     } else {
-                        let tuple = try await Task.detached(priority: .userInitiated) {
+                        let tuple = try await OptimizationDispatch.run {
                             try await ImageOptimizer.shared.optimize(data: data, config: alternateConfig)
-                        }.value
+                        }
                         alternateData = tuple.data
                         alternateResult = tuple.result
                         cacheOptimization(cacheKey: alternateKey, data: alternateData, result: alternateResult)
@@ -881,11 +881,11 @@ final class AppViewModel {
     private func processFileURL(_ url: URL) async {
         do {
             let config = ImageOptimizer.OptimizationConfig(from: settings)
-            let (data, optimizedData, result) = try await Task.detached(priority: .userInitiated) {
+            let (data, optimizedData, result) = try await OptimizationDispatch.run {
                 let data = try Data(contentsOf: url)
                 let (optimizedData, result) = try await ImageOptimizer.shared.optimize(data: data, config: config)
                 return (data, optimizedData, result)
-            }.value
+            }
 
             guard isMeaningfulSavings(result) else {
                 log.folder("Skipping \(url.lastPathComponent): no meaningful savings (\(String(format: "%.2f", result.savingsPercentage))%)")

@@ -92,7 +92,12 @@ final class ImageOptimizer: Sendable {
             }
 
             let originalDimensions = getImageDimensions(source: source)
-            let hasAlpha = imageHasVisibleTransparency(source: source)
+            let hasAlpha: Bool
+            if Self.requiresVisibleTransparencyCheck(config: config) {
+                hasAlpha = imageHasVisibleTransparency(source: source)
+            } else {
+                hasAlpha = false
+            }
             let outputFormat = decideOutputFormat(hasAlpha: hasAlpha, config: config)
 
             let cgImage: CGImage
@@ -185,6 +190,13 @@ final class ImageOptimizer: Sendable {
     }
 
     // MARK: - Private Helpers
+
+    static func requiresVisibleTransparencyCheck(config: OptimizationConfig) -> Bool {
+        let candidate = config.outputFormatOverride ?? config.preferredFormat
+        return candidate == .jpeg
+            && !config.allowTransparencyLoss
+            && config.preserveAlphaByForcingPNG
+    }
 
     private func decideOutputFormat(hasAlpha: Bool, config: OptimizationConfig) -> ImageFormat {
         let candidate = config.outputFormatOverride ?? config.preferredFormat

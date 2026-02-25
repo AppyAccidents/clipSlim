@@ -152,6 +152,53 @@ final class ImageOptimizerTests: XCTestCase {
         XCTAssertEqual(result.optimizedDimensions.width, 128)
         XCTAssertEqual(result.optimizedDimensions.height, 128)
     }
+
+    func testRequiresVisibleTransparencyCheckForJPEGWhenPreservingTransparency() {
+        let config = ImageOptimizer.OptimizationConfig(
+            allowTransparencyLoss: false,
+            preferredFormat: .jpeg,
+            preserveAlphaByForcingPNG: true
+        )
+
+        XCTAssertTrue(ImageOptimizer.requiresVisibleTransparencyCheck(config: config))
+    }
+
+    func testRequiresVisibleTransparencyCheckFalseWhenTransparencyLossAllowed() {
+        let config = ImageOptimizer.OptimizationConfig(
+            allowTransparencyLoss: true,
+            preferredFormat: .jpeg,
+            preserveAlphaByForcingPNG: true
+        )
+
+        XCTAssertFalse(ImageOptimizer.requiresVisibleTransparencyCheck(config: config))
+    }
+
+    func testRequiresVisibleTransparencyCheckFalseWhenPNGFallbackDisabled() {
+        let config = ImageOptimizer.OptimizationConfig(
+            allowTransparencyLoss: false,
+            preferredFormat: .jpeg,
+            preserveAlphaByForcingPNG: false
+        )
+
+        XCTAssertFalse(ImageOptimizer.requiresVisibleTransparencyCheck(config: config))
+    }
+
+    func testRequiresVisibleTransparencyCheckFalseForPNGPreferredAndOverride() {
+        let preferredPNGConfig = ImageOptimizer.OptimizationConfig(
+            allowTransparencyLoss: false,
+            preferredFormat: .png,
+            preserveAlphaByForcingPNG: true
+        )
+        let overridePNGConfig = ImageOptimizer.OptimizationConfig(
+            allowTransparencyLoss: false,
+            preferredFormat: .jpeg,
+            preserveAlphaByForcingPNG: true,
+            outputFormatOverride: .png
+        )
+
+        XCTAssertFalse(ImageOptimizer.requiresVisibleTransparencyCheck(config: preferredPNGConfig))
+        XCTAssertFalse(ImageOptimizer.requiresVisibleTransparencyCheck(config: overridePNGConfig))
+    }
     
     func testEmptyDataThrows() async {
         let config = ImageOptimizer.OptimizationConfig()
