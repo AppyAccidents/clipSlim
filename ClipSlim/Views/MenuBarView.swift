@@ -13,6 +13,10 @@ struct MenuBarView: View {
         )
     }
 
+    private var pauseViewState: MenuPauseViewState {
+        MenuPauseViewState(isPaused: viewModel.settings.isPausedNow)
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             headerSection
@@ -89,7 +93,7 @@ struct MenuBarView: View {
         VStack(spacing: 0) {
             QuickToggleRow(
                 icon: "doc.on.clipboard",
-                title: "Clipboard Watch (Chaos Mode)",
+                title: "Clipboard Watch",
                 isOn: viewModel.settings.clipboardWatchEnabledBinding
             )
             .onChange(of: viewModel.settings.clipboardWatchEnabled) { _, _ in
@@ -102,16 +106,6 @@ struct MenuBarView: View {
                 isOn: folderWatchBinding,
                 accentColor: VibeCheckTheme.Colors.neonOrange
             )
-
-            QuickToggleRow(
-                icon: "moon.zzz",
-                title: "Focus Mode",
-                isOn: viewModel.settings.focusModeEnabledBinding,
-                accentColor: VibeCheckTheme.Colors.warning
-            )
-            .onChange(of: viewModel.settings.focusModeEnabled) { _, _ in
-                viewModel.reconcileWatcherState()
-            }
         }
         .padding(.vertical, VibeCheckTheme.Spacing.xs)
     }
@@ -126,9 +120,12 @@ struct MenuBarView: View {
                 Spacer()
             }
 
-            PresetPicker(selectedPreset: viewModel.settings.selectedPresetBinding)
+            PresetButtonGroup(
+                selectedPreset: viewModel.settings.selectedPresetBinding,
+                labelStyle: .compact
+            )
 
-            Text("JPEG flavor: \(Int(viewModel.settings.currentQuality * 100))%")
+            Text("Slimming percentage: \(viewModel.settings.currentSlimmingPercentage)%")
                 .font(VibeCheckTheme.Typography.caption)
                 .foregroundColor(VibeCheckTheme.Colors.textSecondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -165,16 +162,28 @@ struct MenuBarView: View {
     }
 
     private var pauseSection: some View {
-        VStack(alignment: .leading, spacing: VibeCheckTheme.Spacing.xs) {
-            Text("\(viewModel.pauseStatusText)")
+        VStack(alignment: .leading, spacing: VibeCheckTheme.Spacing.sm) {
+            HStack {
+                Text("FOCUS MODE")
+                    .font(VibeCheckTheme.Typography.tiny)
+                    .foregroundColor(VibeCheckTheme.Colors.textTertiary)
+                    .tracking(1.5)
+                Spacer()
+            }
+
+            Text(pauseViewState.statusText)
                 .font(VibeCheckTheme.Typography.caption)
                 .foregroundColor(VibeCheckTheme.Colors.textSecondary)
 
             HStack {
                 Button("10m") { viewModel.pauseFor(minutes: 10) }
+                    .disabled(!pauseViewState.canPause)
                 Button("1h") { viewModel.pauseFor(hours: 1) }
-                Button("Tomorrow") { viewModel.pauseUntilTomorrow() }
+                    .disabled(!pauseViewState.canPause)
+                Button("One Day") { viewModel.pauseFor(days: 1) }
+                    .disabled(!pauseViewState.canPause)
                 Button("Resume") { viewModel.resumeFromPause() }
+                    .disabled(!pauseViewState.canResume)
             }
             .buttonStyle(.borderless)
             .font(VibeCheckTheme.Typography.caption)

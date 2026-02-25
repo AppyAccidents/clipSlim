@@ -23,7 +23,7 @@
 - Overlay auto-dismisses after timeout, pauses on hover, and has close button.
 - Overlay actions work: Undo, Save As, Remove from clipboard, Ignore image, Ignore app, one-off format override.
 
-- Pause 10m / 1h / until tomorrow stops clipboard optimization.
+- Pause 10m / 1h / one day stops clipboard optimization.
 - Resume restores clipboard optimization.
 - Focus mode prevents optimization when frontmost app bundle ID is in focus list.
 

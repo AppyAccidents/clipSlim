@@ -47,6 +47,19 @@ final class AppViewModel {
     private var hasSetupOverlayActions = false
     private var hasSetupFrontmostTracking = false
     private var hasRegisteredHotkeys = false
+    private var activeFolderWatcherSignature: String?
+
+    private static let pauseTimeFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .none
+        formatter.timeStyle = .short
+        return formatter
+    }()
+
+    nonisolated static func pauseDeadline(now: Date, minutes: Int = 0, hours: Int = 0, days: Int = 0) -> Date {
+        let seconds = (minutes * 60) + (hours * 3600) + (days * 24 * 3600)
+        return now.addingTimeInterval(TimeInterval(seconds))
+    }
 
     init() {
         setupClipboardWatcher()
@@ -70,10 +83,7 @@ final class AppViewModel {
 
     var pauseStatusText: String {
         guard let until = settings.pauseUntil, settings.isPausedNow else { return "Active" }
-        let formatter = DateFormatter()
-        formatter.dateStyle = .none
-        formatter.timeStyle = .short
-        return "Paused until \(formatter.string(from: until))"
+        return "Paused until \(Self.pauseTimeFormatter.string(from: until))"
     }
 
     func startServices() {
@@ -92,7 +102,7 @@ final class AppViewModel {
 
     func stopServices() {
         clipboardWatcher.stop()
-        folderWatcher.stop()
+        stopFolderWatcher()
         hasStartedServices = false
     }
 
@@ -121,6 +131,7 @@ final class AppViewModel {
         hasStartedServices = false
         clipboardWatcher.shutdown()
         folderWatcher.shutdown()
+        activeFolderWatcherSignature = nil
         overlayService.shutdown()
     }
 
@@ -182,11 +193,11 @@ final class AppViewModel {
         if settings.isPausedNow {
             clipboardWatcher.stop()
             if settings.pauseFolderWatcher {
-                folderWatcher.stop()
+                stopFolderWatcher()
             } else if settings.folderWatchEnabled {
                 startFolderWatcher()
             } else {
-                folderWatcher.stop()
+                stopFolderWatcher()
             }
         } else {
             if settings.clipboardWatchEnabled {
@@ -197,25 +208,23 @@ final class AppViewModel {
             if settings.folderWatchEnabled {
                 startFolderWatcher()
             } else {
-                folderWatcher.stop()
+                stopFolderWatcher()
             }
         }
     }
 
-    func pauseFor(minutes: Int) {
-        settings.pauseUntil = Date().addingTimeInterval(TimeInterval(minutes * 60))
+    func pauseFor(minutes: Int, now: Date = Date()) {
+        settings.pauseUntil = Self.pauseDeadline(now: now, minutes: minutes)
         refreshPauseState()
     }
 
-    func pauseFor(hours: Int) {
-        settings.pauseUntil = Date().addingTimeInterval(TimeInterval(hours * 3600))
+    func pauseFor(hours: Int, now: Date = Date()) {
+        settings.pauseUntil = Self.pauseDeadline(now: now, hours: hours)
         refreshPauseState()
     }
 
-    func pauseUntilTomorrow() {
-        let calendar = Calendar.current
-        let tomorrow = calendar.date(byAdding: .day, value: 1, to: Date()) ?? Date().addingTimeInterval(24 * 3600)
-        settings.pauseUntil = calendar.startOfDay(for: tomorrow)
+    func pauseFor(days: Int, now: Date = Date()) {
+        settings.pauseUntil = Self.pauseDeadline(now: now, days: days)
         refreshPauseState()
     }
 
@@ -557,9 +566,29 @@ final class AppViewModel {
         let folders = settings.watchedFolders
         guard !folders.isEmpty else {
             log.folder("No watched folders configured")
+            activeFolderWatcherSignature = nil
             return
         }
+
+        let signature = Self.folderWatcherSignature(for: folders)
+        if folderWatcher.isWatching, activeFolderWatcherSignature == signature {
+            return
+        }
+
         folderWatcher.start(folders: folders)
+        activeFolderWatcherSignature = folderWatcher.isWatching ? signature : nil
+    }
+
+    private func stopFolderWatcher() {
+        folderWatcher.stop()
+        activeFolderWatcherSignature = nil
+    }
+
+    nonisolated static func folderWatcherSignature(for folders: [WatchedFolder]) -> String {
+        folders
+            .sorted { $0.id.uuidString < $1.id.uuidString }
+            .map { "\($0.id.uuidString)|\($0.displayName)|\($0.bookmarkData.base64EncodedString())" }
+            .joined(separator: ";")
     }
 
     // MARK: - Global Hotkeys
@@ -690,12 +719,14 @@ final class AppViewModel {
         do {
             let sourceBundleID = sourceBundleID ?? currentFrontmostBundleID()
             lastSourceAppBundleID = sourceBundleID
+            let excludedBundleIDs = Set(settings.excludedBundleIDs)
+            let focusedBundleIDs = settings.focusBundleIDs
 
-            if settings.excludedBundleIDs.contains(sourceBundleID) {
+            if excludedBundleIDs.contains(sourceBundleID) {
                 return
             }
 
-            let isFocusMode = source == .clipboard && settings.focusModeEnabled && matchesFocusBundle(sourceBundleID)
+            let isFocusMode = source == .clipboard && settings.focusModeEnabled && matchesFocusBundle(sourceBundleID, focusBundleIDs: focusedBundleIDs)
 
             let sourceHash = ClipboardWatcher.hash(data)
             if source == .clipboard && ignoreCache.contains(sourceHash) {
@@ -956,9 +987,9 @@ final class AppViewModel {
         return sanitizeFilename("\(defaultName)-\(timestamp)")
     }
 
-    private func matchesFocusBundle(_ bundleID: String) -> Bool {
+    private func matchesFocusBundle(_ bundleID: String, focusBundleIDs: [String]) -> Bool {
         guard !bundleID.isEmpty else { return false }
-        for focused in settings.focusBundleIDs {
+        for focused in focusBundleIDs {
             if focused == "*" { return true }
             if bundleID == focused { return true }
             if bundleID.hasPrefix(focused) { return true }

@@ -7,12 +7,14 @@ struct PresetsTab: View {
     var body: some View {
         VibeSettingsPage {
             VibeSettingsCard(title: "Preset", icon: "slider.horizontal.3") {
-                Picker("Active Preset", selection: viewModel.settings.selectedPresetBinding) {
-                    ForEach(OptimizationPreset.allCases, id: \.self) { preset in
-                        Text(preset.rawValue).tag(preset)
-                    }
-                }
-                .pickerStyle(.segmented)
+                Text("Active Preset")
+                    .font(VibeCheckTheme.Typography.body)
+
+                PresetButtonGroup(
+                    selectedPreset: viewModel.settings.selectedPresetBinding,
+                    labelStyle: .full,
+                    selectedColor: VibeCheckTheme.Colors.neonOrange
+                )
 
                 presetDescription
             }

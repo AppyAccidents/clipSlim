@@ -256,6 +256,11 @@ final class AppSettings {
         return selectedPreset == .custom ? customQuality : selectedPreset.quality
     }
 
+    var currentSlimmingPercentage: Int {
+        let percentage = Int(((1.0 - currentQuality) * 100.0).rounded())
+        return max(0, min(100, percentage))
+    }
+
     var selectedPreset: OptimizationPreset {
         get { OptimizationPreset(rawValue: Self.normalizeLegacyPresetRawValue(selectedPresetRaw)) ?? .webQuality }
         set { selectedPresetRaw = newValue.rawValue }

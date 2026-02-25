@@ -38,9 +38,12 @@
 		A10000320000000000000032 /* OverlayService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000320000000000000032 /* OverlayService.swift */; };
 		A10000340000000000000034 /* OverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000340000000000000034 /* OverlayView.swift */; };
 		A10000350000000000000035 /* OnboardingFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000350000000000000035 /* OnboardingFlowView.swift */; };
-		A10000370000000000000037 /* SupportTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000370000000000000037 /* SupportTab.swift */; };
-		A10000380000000000000038 /* CoreFeatureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000380000000000000038 /* CoreFeatureTests.swift */; };
-		A10000390000000000000039 /* SettingsDesign.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000390000000000000039 /* SettingsDesign.swift */; };
+			A10000370000000000000037 /* SupportTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000370000000000000037 /* SupportTab.swift */; };
+			A10000380000000000000038 /* CoreFeatureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000380000000000000038 /* CoreFeatureTests.swift */; };
+			A10000390000000000000039 /* SettingsDesign.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000390000000000000039 /* SettingsDesign.swift */; };
+			A10000400000000000000040 /* PresetButtonGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000400000000000000040 /* PresetButtonGroup.swift */; };
+			A10000410000000000000041 /* MenuPauseViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000410000000000000041 /* MenuPauseViewState.swift */; };
+			A10000420000000000000042 /* MenuViewStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000420000000000000042 /* MenuViewStateTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -87,11 +90,14 @@
 		B10000320000000000000032 /* OverlayService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayService.swift; sourceTree = "<group>"; };
 		B10000340000000000000034 /* OverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayView.swift; sourceTree = "<group>"; };
 		B10000350000000000000035 /* OnboardingFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingFlowView.swift; sourceTree = "<group>"; };
-		B10000370000000000000037 /* SupportTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportTab.swift; sourceTree = "<group>"; };
-		B10000380000000000000038 /* CoreFeatureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreFeatureTests.swift; sourceTree = "<group>"; };
-		B10000390000000000000039 /* SettingsDesign.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsDesign.swift; sourceTree = "<group>"; };
-		F10000010000000000000001 /* ClipSlim.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClipSlim.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		F10000020000000000000002 /* ClipSlimTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClipSlimTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+			B10000370000000000000037 /* SupportTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportTab.swift; sourceTree = "<group>"; };
+			B10000380000000000000038 /* CoreFeatureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreFeatureTests.swift; sourceTree = "<group>"; };
+			B10000390000000000000039 /* SettingsDesign.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsDesign.swift; sourceTree = "<group>"; };
+			B10000400000000000000040 /* PresetButtonGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetButtonGroup.swift; sourceTree = "<group>"; };
+			B10000410000000000000041 /* MenuPauseViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuPauseViewState.swift; sourceTree = "<group>"; };
+			B10000420000000000000042 /* MenuViewStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViewStateTests.swift; sourceTree = "<group>"; };
+			F10000010000000000000001 /* ClipSlim.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClipSlim.app; sourceTree = BUILT_PRODUCTS_DIR; };
+			F10000020000000000000002 /* ClipSlimTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClipSlimTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -179,14 +185,15 @@
 			path = Services;
 			sourceTree = "<group>";
 		};
-		D10000090000000000000009 /* ViewModels */ = {
-			isa = PBXGroup;
-			children = (
-				B1000012000000000000000C /* AppViewModel.swift */,
-			);
-			path = ViewModels;
-			sourceTree = "<group>";
-		};
+			D10000090000000000000009 /* ViewModels */ = {
+				isa = PBXGroup;
+				children = (
+					B1000012000000000000000C /* AppViewModel.swift */,
+					B10000410000000000000041 /* MenuPauseViewState.swift */,
+				);
+				path = ViewModels;
+				sourceTree = "<group>";
+			};
 		D1000010000000000000000A /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -200,15 +207,16 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
-		D1000014000000000000000E /* Components */ = {
-			isa = PBXGroup;
-			children = (
-				B1000015000000000000000F /* QuickToggleRow.swift */,
-				B10000160000000000000010 /* PresetPicker.swift */,
-				B10000170000000000000011 /* StatsRow.swift */,
-				B10000180000000000000012 /* MenuActionButton.swift */,
-				B10000390000000000000039 /* SettingsDesign.swift */,
-			);
+			D1000014000000000000000E /* Components */ = {
+				isa = PBXGroup;
+				children = (
+					B1000015000000000000000F /* QuickToggleRow.swift */,
+					B10000160000000000000010 /* PresetPicker.swift */,
+					B10000400000000000000040 /* PresetButtonGroup.swift */,
+					B10000170000000000000011 /* StatsRow.swift */,
+					B10000180000000000000012 /* MenuActionButton.swift */,
+					B10000390000000000000039 /* SettingsDesign.swift */,
+				);
 			path = Components;
 			sourceTree = "<group>";
 		};
@@ -251,15 +259,16 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		D10000040000000000000004 /* ClipSlimTests */ = {
-			isa = PBXGroup;
-			children = (
-				B10000270000000000000021 /* ImageOptimizerTests.swift */,
-				B10000380000000000000038 /* CoreFeatureTests.swift */,
-			);
-			path = ClipSlimTests;
-			sourceTree = "<group>";
-		};
+			D10000040000000000000004 /* ClipSlimTests */ = {
+				isa = PBXGroup;
+				children = (
+					B10000270000000000000021 /* ImageOptimizerTests.swift */,
+					B10000380000000000000038 /* CoreFeatureTests.swift */,
+					B10000420000000000000042 /* MenuViewStateTests.swift */,
+				);
+				path = ClipSlimTests;
+				sourceTree = "<group>";
+			};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -380,18 +389,21 @@
 				A10000320000000000000032 /* OverlayService.swift in Sources */,
 				A10000340000000000000034 /* OverlayView.swift in Sources */,
 				A10000350000000000000035 /* OnboardingFlowView.swift in Sources */,
-				A10000370000000000000037 /* SupportTab.swift in Sources */,
-				A10000390000000000000039 /* SettingsDesign.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
+					A10000370000000000000037 /* SupportTab.swift in Sources */,
+					A10000390000000000000039 /* SettingsDesign.swift in Sources */,
+					A10000400000000000000040 /* PresetButtonGroup.swift in Sources */,
+					A10000410000000000000041 /* MenuPauseViewState.swift in Sources */,
+				);
+				runOnlyForDeploymentPostprocessing = 0;
+			};
 		E10000090000000000000009 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
-			files = (
-				A10000270000000000000021 /* ImageOptimizerTests.swift in Sources */,
-				A10000380000000000000038 /* CoreFeatureTests.swift in Sources */,
-			);
+				files = (
+					A10000270000000000000021 /* ImageOptimizerTests.swift in Sources */,
+					A10000380000000000000038 /* CoreFeatureTests.swift in Sources */,
+					A10000420000000000000042 /* MenuViewStateTests.swift in Sources */,
+				);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */

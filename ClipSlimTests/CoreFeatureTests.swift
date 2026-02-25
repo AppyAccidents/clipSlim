@@ -195,4 +195,85 @@ final class CoreFeatureTests: XCTestCase {
         settings.markOnboardingCompleted()
         XCTAssertFalse(settings.shouldPresentOnboarding)
     }
+
+    func testCurrentSlimmingPercentageForCommonValues() {
+        let suiteName = "ClipSlimTests-SlimmingCommon-\(UUID().uuidString)"
+        guard let defaults = UserDefaults(suiteName: suiteName) else {
+            XCTFail("Failed to create isolated defaults suite")
+            return
+        }
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let settings = AppSettings(defaults: defaults)
+        settings.overridePresetQuality = true
+        settings.globalQualityValue = 0.60
+
+        XCTAssertEqual(settings.currentSlimmingPercentage, 40)
+    }
+
+    func testCurrentSlimmingPercentageClampsToBounds() {
+        let suiteName = "ClipSlimTests-SlimmingClamp-\(UUID().uuidString)"
+        guard let defaults = UserDefaults(suiteName: suiteName) else {
+            XCTFail("Failed to create isolated defaults suite")
+            return
+        }
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let settings = AppSettings(defaults: defaults)
+        settings.overridePresetQuality = true
+
+        settings.globalQualityValue = 0.0
+        XCTAssertEqual(settings.currentSlimmingPercentage, 100)
+
+        settings.globalQualityValue = 1.0
+        XCTAssertEqual(settings.currentSlimmingPercentage, 0)
+
+        settings.globalQualityValue = 1.4
+        XCTAssertEqual(settings.currentSlimmingPercentage, 0)
+
+        settings.globalQualityValue = -0.2
+        XCTAssertEqual(settings.currentSlimmingPercentage, 100)
+    }
+
+    func testPauseDeadlineDurationsAndResumeTransition() {
+        let now = Date(timeIntervalSince1970: 1_735_689_600) // Jan 1, 2025 00:00:00 UTC
+
+        let tenMinute = AppViewModel.pauseDeadline(now: now, minutes: 10)
+        XCTAssertEqual(tenMinute.timeIntervalSince(now), 10 * 60, accuracy: 0.001)
+
+        let oneHour = AppViewModel.pauseDeadline(now: now, hours: 1)
+        XCTAssertEqual(oneHour.timeIntervalSince(now), 60 * 60, accuracy: 0.001)
+
+        let oneDay = AppViewModel.pauseDeadline(now: now, days: 1)
+        XCTAssertEqual(oneDay.timeIntervalSince(now), 24 * 60 * 60, accuracy: 0.001)
+
+        let suiteName = "ClipSlimTests-PauseResume-\(UUID().uuidString)"
+        guard let defaults = UserDefaults(suiteName: suiteName) else {
+            XCTFail("Failed to create isolated defaults suite")
+            return
+        }
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let settings = AppSettings(defaults: defaults)
+        settings.pauseUntil = Date().addingTimeInterval(3600)
+        XCTAssertTrue(settings.isPausedNow)
+
+        settings.pauseUntil = nil
+        XCTAssertFalse(settings.isPausedNow)
+    }
+
+    func testFolderWatcherSignatureIsStableAndOrderIndependent() {
+        let idA = UUID(uuidString: "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA")!
+        let idB = UUID(uuidString: "BBBBBBBB-BBBB-BBBB-BBBB-BBBBBBBBBBBB")!
+        let folderA = WatchedFolder(id: idA, displayName: "alpha", bookmarkData: Data("a".utf8))
+        let folderB = WatchedFolder(id: idB, displayName: "beta", bookmarkData: Data("b".utf8))
+
+        let firstSignature = AppViewModel.folderWatcherSignature(for: [folderA, folderB])
+        let reversedSignature = AppViewModel.folderWatcherSignature(for: [folderB, folderA])
+        XCTAssertEqual(firstSignature, reversedSignature)
+
+        let changedFolderB = WatchedFolder(id: idB, displayName: "beta", bookmarkData: Data("changed".utf8))
+        let changedSignature = AppViewModel.folderWatcherSignature(for: [folderA, changedFolderB])
+        XCTAssertNotEqual(firstSignature, changedSignature)
+    }
 }
