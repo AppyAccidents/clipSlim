@@ -35,7 +35,7 @@ final class OverlayService {
 
     private let autoDismissSeconds: TimeInterval = 5.0
 
-    // Chosen anchor: top-right of main screen for predictable placement and no cursor tracking overhead.
+    // Chosen anchor: top-right of the screen where the cursor is, so the overlay follows the active monitor.
     func show(item: OverlayItem) {
         currentItem = item
         ensurePanel()
@@ -113,7 +113,9 @@ final class OverlayService {
 
     private func positionPanel() {
         guard let panel else { return }
-        guard let screen = NSScreen.screens.first else { return }
+        let mouseLocation = NSEvent.mouseLocation
+        let screen = NSScreen.screens.first { $0.frame.contains(mouseLocation) } ?? NSScreen.main ?? NSScreen.screens.first
+        guard let screen else { return }
 
         let visible = screen.visibleFrame
         let x = visible.maxX - panel.frame.width - 16
