@@ -114,7 +114,7 @@ final class FolderWatcher {
             return
         }
 
-        FSEventStreamScheduleWithRunLoop(stream, CFRunLoopGetMain(), CFRunLoopMode.defaultMode.rawValue)
+        FSEventStreamSetDispatchQueue(stream, .main)
         FSEventStreamStart(stream)
         isWatching = true
 #if DEBUG
