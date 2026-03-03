@@ -2,7 +2,7 @@
   "id": "clipslim",
   "title": "ClipSlim",
   "group_id": "group-macos",
-  "platform_tag": "macOS",
+  "platform_tag": ["macOS"],
   "status": "coming_soon",
   "description": "A menubar sidekick that eats bloated images for breakfast and spits out clean, optimized pixels before your coffee cools or your patience files a ticket.",
   "vibe_tone": "cyan",
