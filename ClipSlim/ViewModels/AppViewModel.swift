@@ -12,6 +12,7 @@ final class AppViewModel {
     let clipboardWatcher = ClipboardWatcher()
     let folderWatcher = FolderWatcher()
     let overlayService = OverlayService()
+    let dropZoneService = DropZoneService()
     let ignoreCache = IgnoreCache()
 
     private(set) var events: [OptimizationEvent] = []
@@ -27,6 +28,7 @@ final class AppViewModel {
     private(set) var lastSourceAppBundleID: String = ""
 
     private let optimizer = ImageOptimizer.shared
+    private let pdfOptimizer = PDFOptimizer.shared
     private let notificationService = NotificationService.shared
     private let log = Logger.shared
 
@@ -45,6 +47,7 @@ final class AppViewModel {
     private var hasSetupClipboardWatcher = false
     private var hasSetupFolderWatcher = false
     private var hasSetupOverlayActions = false
+    private var hasSetupDropZoneActions = false
     private var hasSetupFrontmostTracking = false
     private var hasRegisteredHotkeys = false
     private var activeFolderWatcherSignature: String?
@@ -65,6 +68,7 @@ final class AppViewModel {
         setupClipboardWatcher()
         setupFolderWatcher()
         setupOverlayActions()
+        setupDropZoneActions()
         setupFrontmostAppTracking()
         notificationService.requestAuthorization()
         registerGlobalHotkeys()
@@ -128,11 +132,13 @@ final class AppViewModel {
         hasSetupClipboardWatcher = false
         hasSetupFolderWatcher = false
         hasSetupOverlayActions = false
+        hasSetupDropZoneActions = false
         hasStartedServices = false
         clipboardWatcher.shutdown()
         folderWatcher.shutdown()
         activeFolderWatcherSignature = nil
         overlayService.shutdown()
+        dropZoneService.shutdown()
     }
 
     func clearHistory() {
@@ -491,6 +497,132 @@ final class AppViewModel {
         overlayService.onIgnoreApp = { [weak self] in self?.ignoreCurrentApp() }
     }
 
+    private func setupDropZoneActions() {
+        guard !hasSetupDropZoneActions else { return }
+        hasSetupDropZoneActions = true
+        dropZoneService.onFilesDropped = { [weak self] urls in
+            guard let self else { return }
+            Task { @MainActor in
+                await self.processDroppedFiles(urls)
+            }
+        }
+    }
+
+    func toggleDropZone() {
+        dropZoneService.toggle()
+    }
+
+    private func processDroppedFiles(_ urls: [URL]) async {
+        guard !isProcessing else { return }
+        isProcessing = true
+        dropZoneService.isProcessing = true
+        defer {
+            dropZoneService.isProcessing = false
+            isProcessing = false
+        }
+
+        for url in urls {
+            let fileSize = (try? FileManager.default.attributesOfItem(atPath: url.path)[.size] as? Int) ?? 0
+            let itemID = dropZoneService.addPendingItem(fileName: url.lastPathComponent, originalSize: fileSize)
+            dropZoneService.updateItem(id: itemID, state: .processing)
+
+            let fileType = OptimizableFileType.from(url: url)
+
+            do {
+                switch fileType {
+                case .pdf:
+                    guard settings.pdfCompressionEnabled else {
+                        dropZoneService.updateItem(id: itemID, state: .failed("PDF compression disabled"))
+                        continue
+                    }
+                    let data = try Data(contentsOf: url)
+                    let config = PDFOptimizer.PDFOptimizationConfig(from: settings)
+                    let (optimizedData, pdfResult) = try await OptimizationDispatch.run {
+                        try PDFOptimizer.shared.optimize(data: data, config: config)
+                    }
+
+                    guard pdfResult.optimizedSize < pdfResult.originalSize else {
+                        dropZoneService.updateItem(id: itemID, state: .failed("PDF is already optimized"))
+                        continue
+                    }
+
+                    // Save optimized PDF next to original
+                    let outputURL = url.deletingLastPathComponent()
+                        .appendingPathComponent(url.deletingPathExtension().lastPathComponent + "-optimized.pdf")
+                    try optimizedData.write(to: outputURL, options: .atomic)
+
+                    let imageResult = OptimizationResult(
+                        originalSize: pdfResult.originalSize,
+                        optimizedSize: pdfResult.optimizedSize,
+                        format: .jpeg,
+                        duration: pdfResult.duration,
+                        originalDimensions: (0, 0),
+                        optimizedDimensions: (0, 0)
+                    )
+
+                    let event = OptimizationEvent(
+                        timestamp: Date(),
+                        source: .dropZone,
+                        result: imageResult,
+                        fileName: url.lastPathComponent
+                    )
+                    events.insert(event, at: 0)
+                    if events.count > 100 { events = Array(events.prefix(100)) }
+                    totalSaved += pdfResult.savingsBytes
+                    totalOptimized += 1
+
+                    dropZoneService.updateItem(id: itemID, state: .completed(
+                        savedBytes: pdfResult.savingsBytes,
+                        savingsPercent: pdfResult.savingsPercentage
+                    ))
+
+                case .image, nil:
+                    let data = try Data(contentsOf: url)
+                    let config = ImageOptimizer.OptimizationConfig(from: settings)
+                    let (optimizedData, result) = try await OptimizationDispatch.run {
+                        try await ImageOptimizer.shared.optimize(data: data, config: config)
+                    }
+
+                    guard result.optimizedSize < result.originalSize else {
+                        dropZoneService.updateItem(id: itemID, state: .failed("No size reduction"))
+                        continue
+                    }
+
+                    let nameWithoutExt = url.deletingPathExtension().lastPathComponent
+                    let outputURL = url.deletingLastPathComponent()
+                        .appendingPathComponent("\(nameWithoutExt)-optimized.\(result.format.fileExtension)")
+                    try optimizedData.write(to: outputURL, options: .atomic)
+
+                    let event = OptimizationEvent(
+                        timestamp: Date(),
+                        source: .dropZone,
+                        result: result,
+                        fileName: url.lastPathComponent
+                    )
+                    events.insert(event, at: 0)
+                    if events.count > 100 { events = Array(events.prefix(100)) }
+                    totalSaved += result.savingsBytes
+                    totalOptimized += 1
+
+                    dropZoneService.updateItem(id: itemID, state: .completed(
+                        savedBytes: result.savingsBytes,
+                        savingsPercent: result.savingsPercentage
+                    ))
+                }
+
+                if settings.notificationsEnabled {
+                    notificationService.sendOptimizationNotification(
+                        result: events.first!.result,
+                        source: .dropZone
+                    )
+                }
+            } catch {
+                dropZoneService.updateItem(id: itemID, state: .failed(error.localizedDescription))
+                log.error("Drop zone optimization failed for \(url.lastPathComponent): \(error.localizedDescription)", category: "dropzone")
+            }
+        }
+    }
+
     private func setupFrontmostAppTracking() {
         guard !hasSetupFrontmostTracking else { return }
         hasSetupFrontmostTracking = true
@@ -702,6 +834,12 @@ final class AppViewModel {
         targetDimensions: (width: Int, height: Int)?,
         sourceBundleID: String?
     ) async {
+        // Check if data is actually a PDF and route accordingly
+        if let fileType = OptimizableFileType.from(data: data), fileType.isPDF {
+            await processClipboardPDF(data, sourceBundleID: sourceBundleID)
+            return
+        }
+
         if settings.isPausedNow {
             return
         }
@@ -879,6 +1017,13 @@ final class AppViewModel {
     }
 
     private func processFileURL(_ url: URL) async {
+        let fileType = OptimizableFileType.from(url: url)
+
+        if case .pdf = fileType {
+            await processPDFFileURL(url)
+            return
+        }
+
         do {
             let config = ImageOptimizer.OptimizationConfig(from: settings)
             let (data, optimizedData, result) = try await OptimizationDispatch.run {
@@ -934,6 +1079,160 @@ final class AppViewModel {
             log.folder("Optimized \(url.lastPathComponent) -> \(outputURL.lastPathComponent)")
         } catch {
             log.error("Folder optimization failed for \(url.lastPathComponent): \(error.localizedDescription)", category: "folder")
+        }
+    }
+
+    private func processPDFFileURL(_ url: URL) async {
+        guard settings.pdfCompressionEnabled else {
+            log.folder("PDF compression disabled, skipping \(url.lastPathComponent)")
+            return
+        }
+
+        do {
+            let config = PDFOptimizer.PDFOptimizationConfig(from: settings)
+            let (optimizedData, pdfResult) = try await OptimizationDispatch.run {
+                let data = try Data(contentsOf: url)
+                return try PDFOptimizer.shared.optimize(data: data, config: config)
+            }
+
+            guard pdfResult.optimizedSize < pdfResult.originalSize else {
+                log.folder("Skipping PDF \(url.lastPathComponent): already optimized")
+                return
+            }
+
+            // Write to Optimized subfolder like images
+            let parent = url.deletingLastPathComponent()
+            let optimizedDir = parent.appendingPathComponent("Optimized", isDirectory: true)
+            let outputURL = optimizedDir.appendingPathComponent(
+                url.deletingPathExtension().lastPathComponent + "-optimized.pdf"
+            )
+            try await Task.detached(priority: .utility) {
+                try FileManager.default.createDirectory(at: optimizedDir, withIntermediateDirectories: true, attributes: nil)
+                try optimizedData.write(to: outputURL, options: .atomic)
+            }.value
+
+            let result = OptimizationResult(
+                originalSize: pdfResult.originalSize,
+                optimizedSize: pdfResult.optimizedSize,
+                format: .jpeg,
+                duration: pdfResult.duration,
+                originalDimensions: (0, 0),
+                optimizedDimensions: (0, 0)
+            )
+
+            let event = OptimizationEvent(
+                timestamp: Date(),
+                source: .folder,
+                result: result,
+                fileName: url.lastPathComponent
+            )
+            events.insert(event, at: 0)
+            if events.count > 100 { events = Array(events.prefix(100)) }
+            totalSaved += pdfResult.savingsBytes
+            totalOptimized += 1
+
+            if settings.notificationsEnabled {
+                notificationService.sendOptimizationNotification(result: result, source: .folder)
+            }
+
+            log.folder("Optimized PDF \(url.lastPathComponent) -> \(outputURL.lastPathComponent) (\(pdfResult.pageCount) pages)")
+        } catch {
+            log.error("PDF folder optimization failed for \(url.lastPathComponent): \(error.localizedDescription)", category: "folder")
+        }
+    }
+
+    // MARK: - PDF Processing
+
+    private func processClipboardPDF(_ data: Data, sourceBundleID: String?) async {
+        guard settings.pdfCompressionEnabled else {
+            log.app("PDF compression disabled, skipping clipboard PDF")
+            return
+        }
+
+        if settings.isPausedNow { return }
+        if isProcessing {
+            log.app("Already processing, skipping")
+            return
+        }
+
+        isProcessing = true
+        lastError = nil
+        defer { isProcessing = false }
+
+        do {
+            let config = PDFOptimizer.PDFOptimizationConfig(from: settings)
+            let (optimizedData, pdfResult) = try await OptimizationDispatch.run {
+                try PDFOptimizer.shared.optimize(data: data, config: config)
+            }
+
+            guard pdfResult.optimizedSize < pdfResult.originalSize else {
+                log.app("Skipping clipboard PDF: already optimized")
+                return
+            }
+
+            lastOriginalData = data
+            lastOptimizedData = optimizedData
+            lastOptimizedFormat = .jpeg
+            lastOriginalFormat = .png
+
+            // Write optimized PDF back to clipboard
+            let pb = NSPasteboard.general
+            pb.clearContents()
+            pb.setData(optimizedData, forType: NSPasteboard.PasteboardType("com.adobe.pdf"))
+            clipboardWatcher.updateHashTracking(data: optimizedData)
+
+            let result = OptimizationResult(
+                originalSize: pdfResult.originalSize,
+                optimizedSize: pdfResult.optimizedSize,
+                format: .jpeg,
+                duration: pdfResult.duration,
+                originalDimensions: (0, 0),
+                optimizedDimensions: (0, 0)
+            )
+
+            let bundleID = sourceBundleID ?? currentFrontmostBundleID()
+            let isFocusMode = settings.focusModeEnabled && matchesFocusBundle(bundleID, focusBundleIDs: settings.focusBundleIDs)
+
+            if !isFocusMode {
+                overlayService.show(item: OverlayItem(
+                    originalData: data,
+                    optimizedData: optimizedData,
+                    result: result,
+                    formatOverrideSelection: .jpeg,
+                    sourceAppBundleID: bundleID,
+                    pdfPageCount: pdfResult.pageCount
+                ))
+            }
+
+            let event = OptimizationEvent(
+                timestamp: Date(),
+                source: .clipboard,
+                result: result,
+                fileName: "clipboard.pdf"
+            )
+            events.insert(event, at: 0)
+            if events.count > 100 { events = Array(events.prefix(100)) }
+            totalSaved += pdfResult.savingsBytes
+            totalOptimized += 1
+
+            if settings.notificationsEnabled {
+                notificationService.sendOptimizationNotification(result: result, source: .clipboard)
+            }
+
+            Task {
+                await saveToDisk(
+                    originalData: data,
+                    optimizedData: optimizedData,
+                    format: .jpeg,
+                    fileName: "clipboard.pdf",
+                    sourceURL: nil
+                )
+            }
+
+            log.app("PDF optimization complete: \(pdfResult.formattedOriginalSize) -> \(pdfResult.formattedOptimizedSize) (\(pdfResult.pageCount) pages)")
+        } catch {
+            lastError = error.localizedDescription
+            log.error("Clipboard PDF optimization failed: \(error.localizedDescription)", category: "optimizer")
         }
     }
 

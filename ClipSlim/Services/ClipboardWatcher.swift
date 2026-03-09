@@ -80,6 +80,14 @@ final class ClipboardWatcher {
         log.clipboard("Wrote optimized \(format.rawValue) to pasteboard (changeCount: \(lastSeenChangeCount))")
     }
 
+    func updateHashTracking(data: Data) {
+        let pb = NSPasteboard.general
+        lastSeenChangeCount = pb.changeCount
+        lastWrittenHash = sha256(data)
+        lastChangeDate = Date()
+        log.clipboard("Updated hash tracking without pasteboard write (changeCount: \(lastSeenChangeCount))")
+    }
+
     func removeImageContentSafely() -> Bool {
         let pb = NSPasteboard.general
         guard let items = pb.pasteboardItems, !items.isEmpty else { return false }
@@ -134,6 +142,8 @@ final class ClipboardWatcher {
 
     static func isSupportedImagePasteboardType(_ type: NSPasteboard.PasteboardType) -> Bool {
         if type == .png || type == .tiff { return true }
+        if type.rawValue == "com.adobe.pdf" { return true }
+        if let utType = UTType(type.rawValue), utType.conforms(to: .pdf) { return true }
         return UTType(type.rawValue)?.conforms(to: .image) ?? false
     }
 

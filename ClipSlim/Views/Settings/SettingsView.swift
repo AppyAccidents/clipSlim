@@ -24,6 +24,12 @@ struct SettingsView: View {
                     Label("Folders", systemImage: "folder")
                 }
 
+            PDFTab()
+                .environment(viewModel)
+                .tabItem {
+                    Label("PDF", systemImage: "doc.richtext")
+                }
+
             SupportTab()
                 .tabItem {
                     Label("Support", systemImage: "cup.and.saucer")

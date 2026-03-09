@@ -116,6 +116,12 @@ final class AppSettings {
     var menuBarIconStyleRaw: String { didSet { defaults.set(menuBarIconStyleRaw, forKey: Keys.menuBarIconStyleRaw) } }
     var lastDonationPromptEpoch: Double { didSet { defaults.set(lastDonationPromptEpoch, forKey: Keys.lastDonationPromptEpoch) } }
 
+    var pdfCompressionEnabled: Bool { didSet { defaults.set(pdfCompressionEnabled, forKey: Keys.pdfCompressionEnabled) } }
+    var pdfTargetDPI: Int { didSet { defaults.set(pdfTargetDPI, forKey: Keys.pdfTargetDPI) } }
+    var pdfImageQuality: Double { didSet { defaults.set(pdfImageQuality, forKey: Keys.pdfImageQuality) } }
+    var pdfStripMetadata: Bool { didSet { defaults.set(pdfStripMetadata, forKey: Keys.pdfStripMetadata) } }
+    var dropZoneVisibleOnLaunch: Bool { didSet { defaults.set(dropZoneVisibleOnLaunch, forKey: Keys.dropZoneVisibleOnLaunch) } }
+
     private var watchedFoldersData: String { didSet { defaults.set(watchedFoldersData, forKey: Keys.watchedFoldersData) } }
 
     private enum Keys {
@@ -147,6 +153,11 @@ final class AppSettings {
         static let menuBarIconStyleRaw = "menuBarIconStyleRaw"
         static let lastDonationPromptEpoch = "lastDonationPromptEpoch"
         static let watchedFoldersData = "watchedFoldersData"
+        static let pdfCompressionEnabled = "pdfCompressionEnabled"
+        static let pdfTargetDPI = "pdfTargetDPI"
+        static let pdfImageQuality = "pdfImageQuality"
+        static let pdfStripMetadata = "pdfStripMetadata"
+        static let dropZoneVisibleOnLaunch = "dropZoneVisibleOnLaunch"
     }
 
     // Chosen behavior: if preferred output is JPEG but input has alpha, force PNG.
@@ -191,6 +202,12 @@ final class AppSettings {
         lastDonationPromptEpoch = defaults.object(forKey: Keys.lastDonationPromptEpoch) as? Double ?? 0
 
         watchedFoldersData = defaults.string(forKey: Keys.watchedFoldersData) ?? "[]"
+
+        pdfCompressionEnabled = defaults.object(forKey: Keys.pdfCompressionEnabled) as? Bool ?? true
+        pdfTargetDPI = defaults.object(forKey: Keys.pdfTargetDPI) as? Int ?? 150
+        pdfImageQuality = defaults.object(forKey: Keys.pdfImageQuality) as? Double ?? 0.6
+        pdfStripMetadata = defaults.object(forKey: Keys.pdfStripMetadata) as? Bool ?? true
+        dropZoneVisibleOnLaunch = defaults.object(forKey: Keys.dropZoneVisibleOnLaunch) as? Bool ?? false
 
         if storedPresetRaw != normalizedPresetRaw {
             defaults.set(normalizedPresetRaw, forKey: Keys.selectedPresetRaw)
@@ -354,6 +371,21 @@ final class AppSettings {
             get: { self.optimizationIntensity },
             set: { self.applyOptimizationIntensity($0) }
         )
+    }
+    var pdfCompressionEnabledBinding: Binding<Bool> {
+        Binding(get: { self.pdfCompressionEnabled }, set: { self.pdfCompressionEnabled = $0 })
+    }
+    var pdfTargetDPIBinding: Binding<Int> {
+        Binding(get: { self.pdfTargetDPI }, set: { self.pdfTargetDPI = $0 })
+    }
+    var pdfImageQualityBinding: Binding<Double> {
+        Binding(get: { self.pdfImageQuality }, set: { self.pdfImageQuality = $0 })
+    }
+    var pdfStripMetadataBinding: Binding<Bool> {
+        Binding(get: { self.pdfStripMetadata }, set: { self.pdfStripMetadata = $0 })
+    }
+    var dropZoneVisibleOnLaunchBinding: Binding<Bool> {
+        Binding(get: { self.dropZoneVisibleOnLaunch }, set: { self.dropZoneVisibleOnLaunch = $0 })
     }
 
     func applyPreset(_ preset: OptimizationPreset) {

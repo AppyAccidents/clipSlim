@@ -87,6 +87,8 @@ final class NotificationService {
             content.body = "Clipboard slimmed: \(sizeStr) (\(savingsStr) rescued)"
         case .folder:
             content.body = "Folder file slimmed: \(sizeStr) (\(savingsStr) rescued)"
+        case .dropZone:
+            content.body = "Drop zone slimmed: \(sizeStr) (\(savingsStr) rescued)"
         }
         
         content.sound = nil

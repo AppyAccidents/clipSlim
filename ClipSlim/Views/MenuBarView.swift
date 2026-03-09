@@ -220,6 +220,10 @@ struct MenuBarView: View {
 
     private var actionsSection: some View {
         VStack(spacing: 0) {
+            MenuActionButton(icon: "square.and.arrow.down.on.square", title: "Drop Zone") {
+                viewModel.toggleDropZone()
+            }
+
             MenuActionButton(icon: "arrow.uturn.backward", title: "Undo Last Slimming") {
                 viewModel.undoLastOptimization()
             }

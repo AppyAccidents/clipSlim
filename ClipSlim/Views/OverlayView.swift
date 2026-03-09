@@ -67,14 +67,16 @@ struct OverlayView: View {
             summary(item)
             OrangeDivider()
             primaryActions
-            OrangeDivider()
-            formatSection
-            OrangeDivider()
-            resizeSection
-            OrangeDivider()
-            cropSection
-            OrangeDivider()
-            colorsSection
+            if item.pdfPageCount == nil {
+                OrangeDivider()
+                formatSection
+                OrangeDivider()
+                resizeSection
+                OrangeDivider()
+                cropSection
+                OrangeDivider()
+                colorsSection
+            }
         }
         .padding(VibeCheckTheme.Spacing.xl)
         .frame(width: 392)
@@ -136,7 +138,11 @@ struct OverlayView: View {
 
     private func summary(_ item: OverlayItem) -> some View {
         HStack(alignment: .top, spacing: VibeCheckTheme.Spacing.md) {
-            preview(data: item.optimizedData)
+            if item.pdfPageCount != nil {
+                pdfPreview
+            } else {
+                preview(data: item.optimizedData)
+            }
 
             VStack(alignment: .leading, spacing: VibeCheckTheme.Spacing.xs) {
                 Text("\(item.result.formattedOriginalSize) → \(item.result.formattedOptimizedSize)")
@@ -148,13 +154,34 @@ struct OverlayView: View {
                     .font(VibeCheckTheme.Typography.caption)
                     .foregroundColor(VibeCheckTheme.Colors.statusOk)
 
-                Text("\(item.result.optimizedDimensions.width)×\(item.result.optimizedDimensions.height) · \(item.result.format.rawValue)")
-                    .font(VibeCheckTheme.Typography.caption)
-                    .foregroundColor(VibeCheckTheme.Colors.textSecondary)
+                if let pageCount = item.pdfPageCount {
+                    Text("PDF · \(pageCount) page\(pageCount == 1 ? "" : "s")")
+                        .font(VibeCheckTheme.Typography.caption)
+                        .foregroundColor(VibeCheckTheme.Colors.textSecondary)
+                } else {
+                    Text("\(item.result.optimizedDimensions.width)×\(item.result.optimizedDimensions.height) · \(item.result.format.rawValue)")
+                        .font(VibeCheckTheme.Typography.caption)
+                        .foregroundColor(VibeCheckTheme.Colors.textSecondary)
+                }
             }
 
             Spacer()
         }
+    }
+
+    private var pdfPreview: some View {
+        ZStack {
+            Color.white.opacity(0.06)
+            Image(systemName: "doc.richtext")
+                .font(.system(size: 28, weight: .light))
+                .foregroundColor(accentOrange)
+        }
+        .frame(width: 72, height: 72)
+        .cornerRadius(VibeCheckTheme.CornerRadius.sm)
+        .overlay(
+            RoundedRectangle(cornerRadius: VibeCheckTheme.CornerRadius.sm)
+                .stroke(Color.white.opacity(0.18), lineWidth: 1)
+        )
     }
 
     // MARK: - Primary Actions

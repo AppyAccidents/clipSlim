@@ -46,6 +46,12 @@
 		A10000420000000000000042 /* MenuViewStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000420000000000000042 /* MenuViewStateTests.swift */; };
 		A10000430000000000000043 /* OptimizationDispatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000430000000000000043 /* OptimizationDispatch.swift */; };
 		A10000440000000000000044 /* OptimizationDispatchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000440000000000000044 /* OptimizationDispatchTests.swift */; };
+		A10000450000000000000045 /* PDFOptimizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000450000000000000045 /* PDFOptimizer.swift */; };
+		A10000460000000000000046 /* FileType.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000460000000000000046 /* FileType.swift */; };
+		A10000470000000000000047 /* DropZoneService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000470000000000000047 /* DropZoneService.swift */; };
+		A10000480000000000000048 /* DropZoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000480000000000000048 /* DropZoneView.swift */; };
+		A10000490000000000000049 /* PDFTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000490000000000000049 /* PDFTab.swift */; };
+		A10000500000000000000050 /* PDFOptimizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000500000000000000050 /* PDFOptimizerTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -100,6 +106,12 @@
 		B10000420000000000000042 /* MenuViewStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViewStateTests.swift; sourceTree = "<group>"; };
 		B10000430000000000000043 /* OptimizationDispatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimizationDispatch.swift; sourceTree = "<group>"; };
 		B10000440000000000000044 /* OptimizationDispatchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimizationDispatchTests.swift; sourceTree = "<group>"; };
+		B10000450000000000000045 /* PDFOptimizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFOptimizer.swift; sourceTree = "<group>"; };
+		B10000460000000000000046 /* FileType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileType.swift; sourceTree = "<group>"; };
+		B10000470000000000000047 /* DropZoneService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropZoneService.swift; sourceTree = "<group>"; };
+		B10000480000000000000048 /* DropZoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropZoneView.swift; sourceTree = "<group>"; };
+		B10000490000000000000049 /* PDFTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFTab.swift; sourceTree = "<group>"; };
+		B10000500000000000000050 /* PDFOptimizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFOptimizerTests.swift; sourceTree = "<group>"; };
 		F10000010000000000000001 /* ClipSlim.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClipSlim.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F10000020000000000000002 /* ClipSlimTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClipSlimTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -153,6 +165,7 @@
 				B10000380000000000000038 /* CoreFeatureTests.swift */,
 				B10000420000000000000042 /* MenuViewStateTests.swift */,
 				B10000440000000000000044 /* OptimizationDispatchTests.swift */,
+				B10000500000000000000050 /* PDFOptimizerTests.swift */,
 			);
 			path = ClipSlimTests;
 			sourceTree = "<group>";
@@ -183,6 +196,7 @@
 				B10000050000000000000005 /* OptimizationResult.swift */,
 				B10000060000000000000006 /* OptimizationEvent.swift */,
 				B10000070000000000000007 /* ImageFormat.swift */,
+				B10000460000000000000046 /* FileType.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -191,12 +205,14 @@
 			isa = PBXGroup;
 			children = (
 				B10000080000000000000008 /* ImageOptimizer.swift */,
+				B10000450000000000000045 /* PDFOptimizer.swift */,
 				B10000430000000000000043 /* OptimizationDispatch.swift */,
 				B10000090000000000000009 /* ClipboardWatcher.swift */,
 				B1000010000000000000000A /* FolderWatcher.swift */,
 				B1000011000000000000000B /* NotificationService.swift */,
 				B10000310000000000000031 /* IgnoreCache.swift */,
 				B10000320000000000000032 /* OverlayService.swift */,
+				B10000470000000000000047 /* DropZoneService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -217,6 +233,7 @@
 				B1000014000000000000000E /* DebugLogView.swift */,
 				B10000340000000000000034 /* OverlayView.swift */,
 				B10000350000000000000035 /* OnboardingFlowView.swift */,
+				B10000480000000000000048 /* DropZoneView.swift */,
 				D1000014000000000000000E /* Components */,
 				D1000015000000000000000F /* Settings */,
 			);
@@ -269,6 +286,7 @@
 				B1000020000000000000001A /* GeneralTab.swift */,
 				B1000021000000000000001B /* PresetsTab.swift */,
 				B1000022000000000000001C /* FolderTab.swift */,
+				B10000490000000000000049 /* PDFTab.swift */,
 				B10000370000000000000037 /* SupportTab.swift */,
 				B1000023000000000000001D /* AboutTab.swift */,
 			);
@@ -400,6 +418,11 @@
 				A10000390000000000000039 /* SettingsDesign.swift in Sources */,
 				A10000400000000000000040 /* PresetButtonGroup.swift in Sources */,
 				A10000410000000000000041 /* MenuPauseViewState.swift in Sources */,
+				A10000450000000000000045 /* PDFOptimizer.swift in Sources */,
+				A10000460000000000000046 /* FileType.swift in Sources */,
+				A10000470000000000000047 /* DropZoneService.swift in Sources */,
+				A10000480000000000000048 /* DropZoneView.swift in Sources */,
+				A10000490000000000000049 /* PDFTab.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -411,6 +434,7 @@
 				A10000380000000000000038 /* CoreFeatureTests.swift in Sources */,
 				A10000420000000000000042 /* MenuViewStateTests.swift in Sources */,
 				A10000440000000000000044 /* OptimizationDispatchTests.swift in Sources */,
+				A10000500000000000000050 /* PDFOptimizerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

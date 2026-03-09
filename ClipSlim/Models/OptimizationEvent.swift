@@ -10,6 +10,7 @@ struct OptimizationEvent: Identifiable {
     enum Source: String {
         case clipboard = "Clipboard"
         case folder = "Folder"
+        case dropZone = "Drop Zone"
     }
     
     var formattedTimestamp: String {

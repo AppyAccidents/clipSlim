@@ -13,6 +13,16 @@ struct OverlayItem {
     let result: OptimizationResult
     let formatOverrideSelection: ImageFormat
     let sourceAppBundleID: String
+    let pdfPageCount: Int?
+
+    init(originalData: Data, optimizedData: Data, result: OptimizationResult, formatOverrideSelection: ImageFormat, sourceAppBundleID: String, pdfPageCount: Int? = nil) {
+        self.originalData = originalData
+        self.optimizedData = optimizedData
+        self.result = result
+        self.formatOverrideSelection = formatOverrideSelection
+        self.sourceAppBundleID = sourceAppBundleID
+        self.pdfPageCount = pdfPageCount
+    }
 }
 
 @MainActor

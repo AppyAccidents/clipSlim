@@ -42,7 +42,7 @@ final class FolderWatcher {
     private let maxPreExistingFiles = 20000
 
     private let debounceInterval: TimeInterval = 0.3
-    private static let supportedExtensions: Set<String> = ["jpg", "jpeg", "png", "tiff", "tif", "bmp", "heic"]
+    private static let supportedExtensions: Set<String> = ["jpg", "jpeg", "png", "tiff", "tif", "bmp", "heic", "pdf"]
     // Chosen strategy to avoid self-processing loops: outputs go into "Optimized" subfolder.
     private let optimizedOutputSubfolder = "Optimized"
     private let log = Logger.shared
