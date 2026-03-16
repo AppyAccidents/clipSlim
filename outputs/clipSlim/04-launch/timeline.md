@@ -1,264 +1,181 @@
-# Launch Timeline - ClipSlim
+# Resubmission Timeline - ClipSlim
 
-**Launch Target:** March 7-8, 2026 (this weekend)
-**Today's Date:** March 5, 2026
-**Time to Launch:** 2-3 days (URGENT)
-**Distribution:** Direct (notarized DMG) primary, Mac App Store secondary
-
----
-
-## Day 1: Thursday, March 5, 2026 -- Foundation Day
-
-### Morning (9 AM - 12 PM)
-
-**9:00 AM - Legal and Privacy (1 hour)**
-- [ ] Write privacy policy (simple -- no data collected, all local)
-- [ ] Host privacy policy at a public URL (GitHub Pages or similar)
-- [ ] Test that the privacy policy URL loads correctly
-
-**10:00 AM - App Store Connect Setup (1.5 hours)**
-- [ ] Log into App Store Connect
-- [ ] Create new macOS app record
-- [ ] Reserve app name "ClipSlim"
-- [ ] Set bundle ID to match Xcode project
-- [ ] Set category: Utilities
-- [ ] Set pricing (Free or chosen price tier)
-- [ ] Set availability: Worldwide
-
-**11:30 AM - Metadata Entry (1.5 hours)**
-- [ ] Enter app name/title
-- [ ] Enter subtitle: "Clipboard Auto-Compression"
-- [ ] Write and enter promotional text (170 chars)
-- [ ] Enter keywords (100 chars, comma-separated)
-- [ ] Write and enter full description (focus on benefits, features, privacy)
-- [ ] Enter support URL
-- [ ] Enter marketing URL
-- [ ] Enter privacy policy URL
-- [ ] Complete app privacy details ("Data Not Collected")
-- [ ] Complete age rating questionnaire
-- [ ] Write App Review notes (explain menubar UI, how to test)
-
-### Afternoon (1 PM - 6 PM)
-
-**1:00 PM - Technical Build: DMG (2 hours)**
-- [ ] Run full test suite: `xcodebuild test`
-- [ ] Fix any test failures
-- [ ] Build release: `xcodebuild -configuration Release build`
-- [ ] Sign with Developer ID Application certificate
-- [ ] Create DMG: `./scripts/create_stylized_dmg.sh`
-- [ ] Sign DMG
-- [ ] Notarize: `xcrun notarytool submit --keychain-profile clipslim-notary --wait`
-- [ ] Staple: `xcrun stapler staple`
-- [ ] Verify: `spctl --assess --type execute -vv`
-
-**3:00 PM - Sandbox Decision for MAS (1 hour)**
-- [ ] Evaluate sandbox requirements for Mac App Store
-- [ ] Test clipboard watcher behavior under sandbox (quick test)
-- [ ] Test folder watcher with sandbox file access entitlements
-- [ ] Decision: submit to MAS this weekend or defer to next week
-
-**4:00 PM - MAS Build (if proceeding) (1.5 hours)**
-- [ ] Add sandbox entitlements
-- [ ] Add required file access entitlements for folder watcher
-- [ ] Build with MAS signing identity (Apple Distribution)
-- [ ] Upload to App Store Connect via Xcode
-- [ ] Verify build processes without errors
-
-**5:30 PM - Day 1 Review**
-- [ ] Privacy policy live and URL working
-- [ ] App Store Connect record created with all metadata
-- [ ] DMG built, signed, notarized, and verified
-- [ ] MAS build uploaded (or deferred decision documented)
+**Submission Target:** March 16, 2026 (today)
+**Today's Date:** March 16, 2026
+**Context:** Resubmission after Guideline 3.1.1 rejection (BMC replaced with StoreKit 2 tip jar)
+**Platform:** Mac App Store (macOS)
+**App Store ID:** 6759780567
+**Expected Review Time:** 1-3 business days (resubmissions are sometimes faster)
 
 ---
 
-## Day 2: Friday, March 6, 2026 -- Polish Day
+## Today: Monday, March 16, 2026 -- Submission Day
 
-### Morning (9 AM - 12 PM)
+### Morning (9:00 AM - 12:00 PM)
 
-**9:00 AM - Screenshots (2.5 hours)**
-- [ ] Launch ClipSlim on a clean desktop
-- [ ] Capture screenshot 1: Menubar popover with optimization result (hero)
-- [ ] Capture screenshot 2: Settings panel showing presets
-- [ ] Capture screenshot 3: Folder watcher view
-- [ ] Capture screenshot 4: Overlay resize controls in action
-- [ ] Capture screenshot 5: Debug log with events
-- [ ] Add text overlays/annotations to each screenshot
-  - Use consistent style matching neon terminal aesthetic
-  - Ensure text readable at Mac App Store thumbnail size
-- [ ] Export at correct resolution (2880x1800 for Retina Mac)
-- [ ] Upload screenshots to App Store Connect
+**9:00 AM - Final Code Verification (30 minutes)**
+- [ ] Run full grep for BMC references across entire project (expect zero matches)
+- [ ] Run test suite: `xcodebuild -project ClipSlim.xcodeproj -scheme ClipSlim -destination 'platform=macOS' test`
+- [ ] Launch app and manually verify SupportTab shows native tip buttons only
+- [ ] Confirm no external URLs are opened from any UI element
 
-**11:30 AM - Final Metadata Review (30 min)**
-- [ ] Re-read all metadata for typos and clarity
-- [ ] Verify all URLs are accessible (privacy, support, marketing)
-- [ ] Confirm screenshots display correctly in App Store Connect preview
+**9:30 AM - Build and Upload (45 minutes)**
+- [ ] Build Release archive: Product > Archive in Xcode
+- [ ] Upload to App Store Connect via Xcode Organizer
+- [ ] Wait for build processing (typically 15-30 minutes)
+- [ ] Verify build status: "Ready to Submit"
 
-### Afternoon (1 PM - 6 PM)
+**10:15 AM - App Store Connect IAP Setup (45 minutes)**
+- [ ] Create all three consumable IAPs in App Store Connect (if not done yet):
+  - Small Tip: `com.appyaccidents.clipslim.tip.small` at $2.99
+  - Medium Tip: `com.appyaccidents.clipslim.tip.medium` at $4.99
+  - Large Tip: `com.appyaccidents.clipslim.tip.large` at $9.99
+- [ ] Upload review screenshot for each IAP (SupportTab screenshot)
+- [ ] Add review notes for each IAP
+- [ ] Verify all three show "Ready to Submit"
 
-**1:00 PM - Website / Landing Page (2 hours)**
-- [ ] Create minimal landing page (can be single HTML page or GitHub Pages)
-  - App name, tagline, and description
-  - Key features list
-  - Download button for DMG
-  - Screenshots or animated GIF
-  - System requirements (macOS 14.0+ Sonoma)
-  - Privacy policy link
-  - Support contact
-- [ ] Deploy and test download link
-- [ ] Verify DMG downloads correctly and installs
+**11:00 AM - Metadata and Review Notes (30 minutes)**
+- [ ] Verify all metadata is clean (no BMC references in description, promo text)
+- [ ] Update App Review notes with resubmission explanation (see prelaunch-checklist.md Phase 5)
+- [ ] Verify screenshots are accurate (no BMC UI visible)
+- [ ] Verify all URLs load (privacy policy, support)
 
-**3:00 PM - Marketing Preparation (1.5 hours)**
-- [ ] Draft Twitter/X launch tweet
-  - Focus: "Introducing ClipSlim -- automatic clipboard image optimization for macOS. 100% local, zero data collection. Free download."
-  - Include screenshot or GIF
-- [ ] Draft Reddit r/macapps post
-  - Title: "I built ClipSlim -- a menubar utility that automatically optimizes images on your clipboard (100% local)"
-  - Body: what it does, why, link to download
-- [ ] Draft Hacker News "Show HN" post
-  - Title: "Show HN: ClipSlim -- macOS menubar app that auto-optimizes clipboard images locally"
-- [ ] Prepare social media images (app icon + hero screenshot)
-
-**4:30 PM - Final DMG Testing (1 hour)**
-- [ ] Fresh install test: download DMG from website, mount, drag to /Applications
-- [ ] First launch test: app appears in menubar, onboarding works
-- [ ] Core flow test: copy image, verify optimization happens automatically
-- [ ] Folder watcher test: enable, drop image in watched folder
-- [ ] Hotkey test: Option+1 and Option+2 work
-- [ ] Quit and relaunch test: settings persist
-
-**5:30 PM - Submit to Mac App Store (if build ready)**
+**11:30 AM - Submit for Review**
 - [ ] Select build in App Store Connect
-- [ ] Submit for review
-- [ ] Expected review time: 1-3 business days (may not be approved by weekend)
-- [ ] Note: MAS launch may happen March 10-12 instead
-
-**6:00 PM - Day 2 Review**
-- [ ] Screenshots created and uploaded
-- [ ] Website live with working download
-- [ ] Marketing materials drafted and ready to post
-- [ ] MAS submitted (or DMG-only plan confirmed)
-- [ ] Final DMG verified via fresh install test
-
----
-
-## Day 3: Saturday, March 7, 2026 -- LAUNCH DAY (Direct Distribution)
-
-### Morning (9 AM - 12 PM)
-
-**9:00 AM - Pre-Launch Verification (30 min)**
-- [ ] Website loads correctly
-- [ ] DMG download link works
-- [ ] DMG installs cleanly on a test machine (or clean user account)
-- [ ] Privacy policy URL accessible
-- [ ] Support channel ready (email or GitHub Issues)
-
-**9:30 AM - Launch Announcements (2 hours)**
-- [ ] Post on Twitter/X
-- [ ] Post on Reddit r/macapps
-- [ ] Post on Hacker News (Show HN)
-- [ ] Post on Mastodon (if applicable)
-- [ ] Share in any relevant Slack/Discord communities
-- [ ] Email friends/contacts who might be interested
-
-**11:30 AM - Monitor First Reactions (ongoing)**
-- [ ] Watch Reddit comments and respond
-- [ ] Watch HN comments and respond
-- [ ] Monitor Twitter mentions
-- [ ] Check email for support requests
-
-### Afternoon and Evening
-
-**1:00 PM - Engagement (ongoing)**
-- [ ] Respond to all comments and questions within 1 hour
-- [ ] Note any bug reports for immediate triage
-- [ ] Track download numbers (website analytics / server logs)
-
-**5:00 PM - Day 3 Review**
-- [ ] Total downloads recorded
-- [ ] Feedback themes documented
-- [ ] Any critical bugs? If yes, plan hotfix for tomorrow
-- [ ] Social media engagement metrics noted
-
----
-
-## Day 4: Sunday, March 8, 2026 -- Post-Launch Day 1
-
-### Morning
-- [ ] Check overnight feedback (Reddit, HN, Twitter, email)
-- [ ] Respond to all outstanding comments
-- [ ] If critical bug reported: fix, rebuild, re-notarize DMG, update website
-- [ ] Check Mac App Store review status (likely still "In Review")
+- [ ] Ensure IAPs are included in submission
+- [ ] Review submission summary one final time
+- [ ] Click "Submit to App Review"
+- [ ] Confirm status: "Waiting for Review"
+- [ ] Record submission time: _______
 
 ### Afternoon
-- [ ] Write follow-up post on Reddit if initial post gained traction
-- [ ] Cross-post to additional communities:
-  - [ ] r/apple
-  - [ ] r/productivity
-  - [ ] Indie hacker communities
-- [ ] Begin documenting feedback for v1.1 roadmap
+- [ ] Monitor App Store Connect for status changes
+- [ ] Prepare for potential reviewer questions (keep App Store Connect app on phone)
+- [ ] If "In Review" status appears today, be available to respond
 
 ---
 
-## Week 1: March 9-14, 2026 -- Early Traction
+## Tuesday, March 17, 2026 -- Waiting for Review
 
-### Monday, March 9
-- [ ] Check Mac App Store review status
-- [ ] Respond to any new reviews or feedback
-- [ ] If MAS approved: announce on social media
-- [ ] If MAS rejected: address rejection reasons, resubmit
-- [ ] Track download numbers (DMG + MAS)
+### Morning Check (9:00 AM, 5 minutes)
+- [ ] Check App Store Connect status
+- [ ] Check email for App Review messages
+- [ ] Expected status: "Waiting for Review" or "In Review"
 
-### Tuesday, March 10
-- [ ] Product Hunt launch preparation (if not done yet)
-- [ ] Submit to Product Hunt
-- [ ] Draft blog post about building ClipSlim (dev story)
-- [ ] Check keyword rankings (manual search in App Store)
+### If Status is "In Review"
+- [ ] Be available for reviewer questions via App Store Connect messaging
+- [ ] Keep phone nearby for status notifications
+- [ ] Do NOT make changes to the submission while in review
 
-### Wednesday, March 11
-- [ ] Product Hunt monitoring and engagement
-- [ ] Respond to all reviews (MAS and social)
-- [ ] Compile bug reports and prioritize v1.1 fixes
-- [ ] Begin v1.1 development if needed
+### If No Status Change
+- [ ] Normal -- Apple review queue can take 1-3 business days
+- [ ] Continue monitoring twice daily (morning and evening)
+- [ ] Use waiting time to prepare post-approval announcements
 
-### Thursday, March 12
-- [ ] Mid-week analytics review:
-  - DMG downloads
-  - MAS downloads (if live)
-  - Website visitors
-  - Social media reach
-- [ ] Adjust marketing messaging based on feedback
-- [ ] Reach out to Mac app review blogs/YouTubers
-
-### Friday, March 14
-- [ ] Week 1 retrospective:
-  - Total downloads across channels
-  - User feedback themes
-  - Bug count and severity
-  - Marketing channel effectiveness
-- [ ] Plan Week 2 activities
-- [ ] v1.1 scope finalized
+### Productive Waiting Tasks
+- [ ] Draft "We're back on the App Store" announcement for social media
+- [ ] Update DMG download page to note MAS version coming soon
+- [ ] Prepare What's New text for first post-approval update
+- [ ] Review and respond to any existing user feedback from DMG distribution
 
 ---
 
-## Week 2: March 15-21, 2026 -- Optimization
+## Wednesday, March 18, 2026 -- Review Expected
 
-### Monday, March 15
-- [ ] Run ASO health check on Mac App Store listing
-- [ ] Analyze which keywords are driving impressions
-- [ ] Update promotional text if messaging needs refinement
-- [ ] Respond to all new reviews
+### Morning Check (9:00 AM)
+- [ ] Check App Store Connect status
+- [ ] Check email for resolution
 
-### Wednesday, March 17
-- [ ] A/B test ideas for screenshots (if MAS data available)
-- [ ] Review conversion rate in App Store Connect analytics
-- [ ] Submit v1.1 update (if fixes ready)
+### If APPROVED
+- [ ] Verify app is live on Mac App Store (search for "ClipSlim")
+- [ ] Download from MAS and verify tip jar works in production
+- [ ] Post announcement on Twitter/X, Reddit r/macapps
+- [ ] Update website/landing page with Mac App Store link
+- [ ] Proceed to Post-Approval actions (see below)
 
-### Friday, March 21
-- [ ] Week 2 metrics review
-- [ ] Compare to Week 1 baseline
-- [ ] Adjust keyword strategy based on data
-- [ ] Plan localization if international interest exists
+### If REJECTED AGAIN
+- [ ] Read rejection reason carefully and completely
+- [ ] Do NOT panic -- common second rejections:
+  - IAP metadata incomplete (fix in App Store Connect, resubmit same day)
+  - Reviewer found residual BMC reference you missed (fix code, rebuild, resubmit)
+  - Different guideline issue unrelated to 3.1.1 (address the new issue)
+- [ ] Fix the issue immediately
+- [ ] Resubmit with updated App Review notes addressing the new feedback
+- [ ] See Contingency Planning section below
+
+---
+
+## Thursday, March 19, 2026 -- Approval Expected (if not Wednesday)
+
+### Morning Check (9:00 AM)
+- [ ] Check App Store Connect status
+- [ ] Same protocol as Wednesday
+
+### If Still "In Review" or "Waiting for Review"
+- [ ] This is unusual but not alarming for resubmissions
+- [ ] Check Apple Developer System Status page for any review delays
+- [ ] If past 4 business days with no response, consider contacting App Review via the Resolution Center
+
+---
+
+## Friday, March 20, 2026 -- Deadline Check
+
+### If Still Not Resolved
+- [ ] Contact App Review via Resolution Center in App Store Connect
+- [ ] Message: "This is a resubmission addressing Guideline 3.1.1. We replaced the external donation link with native StoreKit 2 in-app purchases. The submission has been waiting since March 16. Could you provide an update on the review status?"
+- [ ] Also try the App Review phone line if email does not get a response within 4 hours
+
+---
+
+## Post-Approval: Week 1 (Approval Day through 7 days after)
+
+### Approval Day (Day 0)
+- [ ] Verify app is live and searchable on Mac App Store
+- [ ] Download and test from MAS (fresh install)
+- [ ] Verify StoreKit tip jar loads real products (not sandbox)
+- [ ] Test one tip purchase to confirm real transaction flow
+- [ ] Post announcements:
+  - Twitter/X: "ClipSlim is live on the Mac App Store!"
+  - Reddit r/macapps: share or update existing thread
+  - Update website with MAS badge and link
+- [ ] Update promotional text in App Store Connect (can change without review):
+  "Now with native Tip Jar! Automatic clipboard image optimization, 100% local. Free forever -- tips optional."
+
+### Days 1-3 Post-Approval
+- [ ] Monitor for initial reviews on MAS
+- [ ] Respond to all reviews within 24 hours (use review-responses.md templates)
+- [ ] Monitor crash reports in App Store Connect
+- [ ] Track daily downloads in App Store Connect > Trends
+- [ ] Watch for any StoreKit-related crashes or errors in logs
+
+### Days 4-7 Post-Approval
+- [ ] First week download report
+- [ ] Check keyword rankings (manual search for primary keywords)
+- [ ] Review conversion rate in App Store Connect Analytics
+- [ ] Compile any bug reports for v1.1 planning
+- [ ] Submit to Product Hunt (Tuesday or Wednesday for best visibility)
+
+---
+
+## Post-Approval: Weeks 2-4 (Optimization Phase)
+
+### Week 2 (Approval + 7-14 days)
+- [ ] Monday: Full keyword ranking check for all tracked terms
+- [ ] Monday: Conversion rate analysis (impressions > page views > installs)
+- [ ] Wednesday: Update promotional text if messaging needs refinement
+- [ ] Friday: Week 2 metrics summary
+
+### Week 3 (Approval + 14-21 days)
+- [ ] Evaluate A/B test readiness (need 1,000+ impressions for significance)
+- [ ] Plan v1.1 update scope based on user feedback
+- [ ] Begin v1.1 development if fixes identified
+- [ ] Keyword adjustment if data supports changes
+
+### Week 4 (Approval + 21-28 days)
+- [ ] Submit v1.1 update (bug fixes, polish)
+- [ ] Include review request prompt (SKStoreReviewController) in v1.1
+- [ ] Month 1 ASO health report
+- [ ] Evaluate if promotional text changes impacted conversion
 
 ---
 
@@ -266,50 +183,62 @@
 
 | Date | Milestone | Status |
 |------|-----------|--------|
-| March 5 | Metadata and DMG build finalized | Pending |
-| March 6 | Screenshots, website, marketing materials ready | Pending |
-| March 6 | Mac App Store submission (if sandbox resolved) | Pending |
-| March 7 | **DMG LAUNCH -- Direct distribution live** | Pending |
-| March 7 | Social media announcements posted | Pending |
-| March 9-12 | Mac App Store approval (estimated) | Pending |
-| March 10-11 | Product Hunt launch | Pending |
-| March 14 | Week 1 retrospective | Pending |
-| March 21 | v1.1 update submitted | Pending |
+| March 16 | Resubmission to App Review | Today |
+| March 17-19 | Expected approval window (1-3 business days) | Pending |
+| March 20 | Deadline to contact App Review if no response | Pending |
+| Approval Day | Live on Mac App Store | Pending |
+| Approval + 7 | First week metrics review | Pending |
+| Approval + 14 | Keyword optimization based on data | Pending |
+| Approval + 21 | v1.1 update submitted | Pending |
+| Approval + 28 | Month 1 ASO health report | Pending |
 
 ---
 
 ## Contingency Planning
 
-**If Mac App Store rejects due to sandbox:**
-- Launch DMG-only as planned (this is the primary distribution anyway)
-- Address sandbox issues during Week 1
-- Resubmit to MAS by March 14
+### If Rejected Again for 3.1.1
+**Most likely cause:** Residual BMC reference the grep missed, or IAP metadata incomplete.
+**Action:**
+1. Read the rejection message word-for-word
+2. Check if the rejection references specific code or UI
+3. Fix immediately (should be a small change)
+4. Rebuild, re-upload, resubmit same day
+5. Update App Review notes to explicitly address the specific feedback
+**Expected delay:** 1-2 additional days
 
-**If critical bug found on launch day:**
-- Fix immediately, rebuild, re-notarize (process takes ~30 min total)
-- Update DMG on website
-- Post update on social media acknowledging the fix
+### If Rejected for a Different Guideline
+**Possible issues for menubar apps:**
+- Guideline 4.2 (Minimum Functionality) -- unlikely given ClipSlim's feature set
+- Guideline 2.4.5 (Accessibility) -- ensure VoiceOver labels are present
+- Guideline 5.1.1 (Privacy) -- ensure privacy policy URL works
+**Action:**
+1. Address the specific guideline cited
+2. Resubmit with updated review notes
+**Expected delay:** 2-5 additional days
 
-**If low engagement on launch posts:**
-- Try different communities (IndieHackers, MacStories forum, etc.)
-- Create a demo GIF/video showing the before/after of clipboard optimization
-- Reach out directly to Mac utility reviewers
+### If Review Takes Longer Than 5 Business Days
+**Action:**
+1. Contact App Review via Resolution Center
+2. If no response in 24 hours, use the App Review phone line
+3. Politely reference the resubmission context and ask for an update
+4. Do not submit additional builds while one is in review (causes delays)
 
-**If Reddit/HN post gets removed:**
-- Check subreddit rules, adjust post format
-- Try alternative subreddits
-- Focus on other channels
+### If StoreKit Products Do Not Load for Reviewer
+**Possible cause:** IAPs not in "Ready to Submit" state or not included in submission.
+**Prevention:** Verify all IAPs are linked to the app version before submitting.
+**If it happens:** Respond in Resolution Center explaining the IAPs are configured and ask for a re-review.
 
 ---
 
-## Time Budget Summary
+## Time Budget
 
 | Day | Hours | Focus |
 |-----|-------|-------|
-| March 5 (Thu) | 6-8 hours | Metadata, legal, builds |
-| March 6 (Fri) | 6-8 hours | Screenshots, website, marketing |
-| March 7 (Sat) | 4-6 hours | Launch, announcements, monitoring |
-| March 8 (Sun) | 2-3 hours | Follow-up, engagement |
-| March 9-14 | 1-2 hours/day | Monitoring, MAS follow-up, v1.1 |
+| March 16 (Mon) | 2-3 hours | Final validation, IAP setup, submit |
+| March 17 (Tue) | 15 minutes | Status check, prepare announcements |
+| March 18 (Wed) | 30 min - 2 hours | Approval response OR rejection fix |
+| March 19 (Thu) | 15 minutes | Status check if still waiting |
+| March 20 (Fri) | 30 minutes | Contact App Review if needed |
+| Post-Approval Week 1 | 1-2 hours/day | Monitoring, responses, optimization |
 
-**Total estimated effort:** 25-35 hours over 10 days
+**Total estimated effort:** 8-12 hours over the first week (including post-approval)

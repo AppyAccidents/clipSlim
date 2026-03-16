@@ -1,0 +1,82 @@
+{
+  "identifier" : "ClipSlim",
+  "nonRenewableSubscriptions" : [
+
+  ],
+  "products" : [
+
+  ],
+  "settings" : {
+    "_applicationInternalID" : "ClipSlim",
+    "_developerTeamID" : "",
+    "_failTransactionsEnabled" : false,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+
+    ]
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  },
+  "consumableInAppPurchases" : [
+    {
+      "displayName" : "Small Tip",
+      "name" : "Small Tip",
+      "productID" : "com.appyaccidents.clipslim.tip.small",
+      "isFamilyShareable" : false,
+      "referenceName" : "Small Tip",
+      "type" : "Consumable",
+      "localizations" : [
+        {
+          "description" : "A small tip to support ClipSlim",
+          "displayName" : "Small Tip",
+          "locale" : "en_US"
+        }
+      ],
+      "pricing" : {
+        "price" : "2.99"
+      }
+    },
+    {
+      "displayName" : "Medium Tip",
+      "name" : "Medium Tip",
+      "productID" : "com.appyaccidents.clipslim.tip.medium",
+      "isFamilyShareable" : false,
+      "referenceName" : "Medium Tip",
+      "type" : "Consumable",
+      "localizations" : [
+        {
+          "description" : "A medium tip to support ClipSlim",
+          "displayName" : "Medium Tip",
+          "locale" : "en_US"
+        }
+      ],
+      "pricing" : {
+        "price" : "4.99"
+      }
+    },
+    {
+      "displayName" : "Large Tip",
+      "name" : "Large Tip",
+      "productID" : "com.appyaccidents.clipslim.tip.large",
+      "isFamilyShareable" : false,
+      "referenceName" : "Large Tip",
+      "type" : "Consumable",
+      "localizations" : [
+        {
+          "description" : "A large tip to support ClipSlim",
+          "displayName" : "Large Tip",
+          "locale" : "en_US"
+        }
+      ],
+      "pricing" : {
+        "price" : "9.99"
+      }
+    }
+  ]
+}

@@ -14,6 +14,7 @@ final class AppViewModel {
     let overlayService = OverlayService()
     let dropZoneService = DropZoneService()
     let ignoreCache = IgnoreCache()
+    let tipStore = TipStore()
 
     private(set) var events: [OptimizationEvent] = []
     private(set) var totalSaved: Int = 0
@@ -101,7 +102,7 @@ final class AppViewModel {
         hasStartedServices = true
         presentOnboardingIfNeeded()
         refreshPauseState()
-        notificationService.scheduleDonationReminderIfNeeded(settings: settings)
+        Task { await tipStore.loadProducts() }
     }
 
     func stopServices() {

@@ -114,7 +114,6 @@ final class AppSettings {
     var focusBundleIDsCSV: String { didSet { defaults.set(focusBundleIDsCSV, forKey: Keys.focusBundleIDsCSV) } }
     var excludedBundleIDsCSV: String { didSet { defaults.set(excludedBundleIDsCSV, forKey: Keys.excludedBundleIDsCSV) } }
     var menuBarIconStyleRaw: String { didSet { defaults.set(menuBarIconStyleRaw, forKey: Keys.menuBarIconStyleRaw) } }
-    var lastDonationPromptEpoch: Double { didSet { defaults.set(lastDonationPromptEpoch, forKey: Keys.lastDonationPromptEpoch) } }
 
     var pdfCompressionEnabled: Bool { didSet { defaults.set(pdfCompressionEnabled, forKey: Keys.pdfCompressionEnabled) } }
     var pdfTargetDPI: Int { didSet { defaults.set(pdfTargetDPI, forKey: Keys.pdfTargetDPI) } }
@@ -151,7 +150,6 @@ final class AppSettings {
         static let focusBundleIDsCSV = "focusBundleIDsCSV"
         static let excludedBundleIDsCSV = "excludedBundleIDsCSV"
         static let menuBarIconStyleRaw = "menuBarIconStyleRaw"
-        static let lastDonationPromptEpoch = "lastDonationPromptEpoch"
         static let watchedFoldersData = "watchedFoldersData"
         static let pdfCompressionEnabled = "pdfCompressionEnabled"
         static let pdfTargetDPI = "pdfTargetDPI"
@@ -199,7 +197,6 @@ final class AppSettings {
         focusBundleIDsCSV = defaults.string(forKey: Keys.focusBundleIDsCSV) ?? "us.zoom.xos,com.microsoft.teams,com.microsoft.teams2"
         excludedBundleIDsCSV = defaults.string(forKey: Keys.excludedBundleIDsCSV) ?? ""
         menuBarIconStyleRaw = defaults.string(forKey: Keys.menuBarIconStyleRaw) ?? MenuBarIconStyle.scissors.rawValue
-        lastDonationPromptEpoch = defaults.object(forKey: Keys.lastDonationPromptEpoch) as? Double ?? 0
 
         watchedFoldersData = defaults.string(forKey: Keys.watchedFoldersData) ?? "[]"
 

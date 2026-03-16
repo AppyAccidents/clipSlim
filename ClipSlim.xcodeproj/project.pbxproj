@@ -18,6 +18,7 @@
 		A10000090000000000000009 /* ClipboardWatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000090000000000000009 /* ClipboardWatcher.swift */; };
 		A1000010000000000000000A /* FolderWatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000010000000000000000A /* FolderWatcher.swift */; };
 		A1000011000000000000000B /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000011000000000000000B /* NotificationService.swift */; };
+		A10000520000000000000052 /* TipStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000520000000000000052 /* TipStore.swift */; };
 		A1000012000000000000000C /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000012000000000000000C /* AppViewModel.swift */; };
 		A1000013000000000000000D /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000013000000000000000D /* MenuBarView.swift */; };
 		A1000014000000000000000E /* DebugLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000014000000000000000E /* DebugLogView.swift */; };
@@ -76,6 +77,8 @@
 		B10000090000000000000009 /* ClipboardWatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardWatcher.swift; sourceTree = "<group>"; };
 		B1000010000000000000000A /* FolderWatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderWatcher.swift; sourceTree = "<group>"; };
 		B1000011000000000000000B /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		B10000520000000000000052 /* TipStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TipStore.swift; sourceTree = "<group>"; };
+		B10000530000000000000053 /* ClipSlim.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = ClipSlim.storekit; sourceTree = "<group>"; };
 		B1000012000000000000000C /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
 		B1000013000000000000000D /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
 		B1000014000000000000000E /* DebugLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogView.swift; sourceTree = "<group>"; };
@@ -140,6 +143,7 @@
 				D10000030000000000000003 /* ClipSlim */,
 				D10000040000000000000004 /* ClipSlimTests */,
 				D10000050000000000000005 /* Products */,
+				B10000530000000000000053 /* ClipSlim.storekit */,
 			);
 			sourceTree = "<group>";
 		};
@@ -213,6 +217,7 @@
 				B10000310000000000000031 /* IgnoreCache.swift */,
 				B10000320000000000000032 /* OverlayService.swift */,
 				B10000470000000000000047 /* DropZoneService.swift */,
+				B10000520000000000000052 /* TipStore.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -396,6 +401,7 @@
 				A10000090000000000000009 /* ClipboardWatcher.swift in Sources */,
 				A1000010000000000000000A /* FolderWatcher.swift in Sources */,
 				A1000011000000000000000B /* NotificationService.swift in Sources */,
+				A10000520000000000000052 /* TipStore.swift in Sources */,
 				A1000012000000000000000C /* AppViewModel.swift in Sources */,
 				A1000013000000000000000D /* MenuBarView.swift in Sources */,
 				A1000014000000000000000E /* DebugLogView.swift in Sources */,
@@ -578,7 +584,7 @@
 				CODE_SIGN_ENTITLEMENTS = ClipSlim/Resources/ClipSlim.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 7;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 56ZVD96SR4;
 				ENABLE_APP_SANDBOX = YES;
@@ -606,7 +612,7 @@
 				CODE_SIGN_ENTITLEMENTS = ClipSlim/Resources/ClipSlim.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 7;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 56ZVD96SR4;
 				ENABLE_APP_SANDBOX = YES;
@@ -633,7 +639,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 7;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 56ZVD96SR4;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -652,7 +658,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 7;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 56ZVD96SR4;
 				GENERATE_INFOPLIST_FILE = YES;

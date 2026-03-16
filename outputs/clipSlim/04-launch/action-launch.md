@@ -1,214 +1,228 @@
-# Launch Execution Plan - ClipSlim
+# Launch Execution Plan - ClipSlim (Resubmission)
 
-**Launch Window:** March 7-8, 2026
-**Primary Channel:** Direct distribution (notarized DMG via website)
-**Secondary Channel:** Mac App Store (may launch March 10-12 pending review)
-
----
-
-## Immediate Actions (Today, March 5, 2026)
-
-### Action 1: Privacy Policy (30 minutes)
-
-Create and publish a privacy policy. For a local-only app with zero data collection, this can be concise.
-
-**Content to include:**
-- ClipSlim does not collect, store, or transmit any user data
-- All image processing happens locally on the user's device
-- No analytics, crash reporting, or third-party SDKs
-- No network connections made by the app
-- No cookies, no tracking, no advertising
-- Contact email for privacy questions
-
-**Where to host:**
-- Option A: GitHub Pages (free, fast to set up)
-- Option B: A page on the AppyAccidents website (when live)
-- Option C: A GitHub Gist with a raw URL (quickest)
-
-**Validation:** Open the URL in a private browser window and confirm it loads.
+**Submission Date:** March 16, 2026 (today)
+**Context:** Resubmission after Guideline 3.1.1 rejection (BMC replaced with StoreKit 2)
+**Platform:** Mac App Store
+**App Store ID:** 6759780567
+**Expected Approval:** March 17-19, 2026
 
 ---
 
-### Action 2: App Store Connect Record (45 minutes)
+## Today's Actions (March 16, 2026)
 
-1. Log in to https://appstoreconnect.apple.com
-2. My Apps > + > New App
-3. Fill in:
-   - Platform: macOS
-   - Name: ClipSlim
-   - Primary Language: English (U.S.)
-   - Bundle ID: (select from dropdown, must match Xcode)
-   - SKU: clipslim-v1
-4. Save and proceed to the app record
+### Action 1: Final 3.1.1 Compliance Verification (15 minutes)
 
----
+Run the verification grep one final time:
 
-### Action 3: Metadata Entry (1 hour)
+```bash
+cd /Users/berkerceylan/Documents/GitHub/clipSlim
+grep -ri "buymeacoffee\|buy.me.a.coffee\|bmc" --include="*.swift" --include="*.plist" .
+```
 
-All metadata has been pre-written and validated. Copy-paste from the metadata files:
+Expected: zero matches.
 
-**Source file:** `/outputs/clipSlim/02-metadata/apple-metadata.md`
-
-**Title (25/30 chars):**
-`clipSlim - Image Optimizer`
-
-**Subtitle (30/30 chars):**
-`Clipboard & Folder Compression`
-
-**Promotional Text (148/170 chars):**
-`NEW: Folder Watcher now monitors entire directories! Drop images in, get slim files out. 100% local - zero uploads, zero tracking. Try free today.`
-
-**Keywords (91/100 chars):**
-`compress,png,jpeg,resize,batch,shrink,menubar,photo,converter,heic,screenshot,bulk,filesize`
-
-IMPORTANT: Do NOT include "image", "optimizer", or "clipboard" in the keyword field -- they are already in the title and subtitle, and Apple would ignore duplicates.
-
-**Description:** Copy the full description from apple-metadata.md (2,847/4,000 chars). It includes all keyword density targets and natural language integration.
-
-**What's New:** Copy the What's New text from apple-metadata.md (840/4,000 chars).
-
-Refer to the full Implementation Instructions in apple-metadata.md for step-by-step App Store Connect entry.
+Then manually:
+1. Launch the app
+2. Open Settings > Support tab
+3. Confirm only three native tip buttons are visible
+4. Confirm no external links, no "Donate" buttons, no BMC branding
+5. Tap each tip button -- confirm native StoreKit purchase sheet appears (in sandbox)
 
 ---
 
-### Action 4: Build and Notarize DMG (1.5 hours)
+### Action 2: Build, Upload, Configure IAPs (2 hours)
 
-Follow the commands in submission-guide.md Part 1. The pipeline is already established per the README:
+Follow submission-guide.md steps 2 through 7:
 
-1. `xcodebuild test` (run tests)
-2. `xcodebuild -configuration Release build` (build release)
-3. Code sign with Developer ID
-4. Create DMG via script
-5. Sign DMG
-6. Notarize via `xcrun notarytool submit`
-7. Staple
-8. Verify with `spctl`
-
----
-
-### Action 5: Sandbox Evaluation (1 hour)
-
-Test whether ClipSlim functions correctly under App Sandbox:
-
-1. Temporarily add sandbox entitlement
-2. Build and run
-3. Test clipboard polling -- does it still detect clipboard changes?
-4. Test folder watcher -- does it work with user-selected folders?
-5. Test global hotkeys -- do they still register?
-6. Document results
-7. If everything works: proceed with MAS submission
-8. If issues found: defer MAS to v1.1, launch DMG-only
+1. Run tests
+2. Increment build number
+3. Archive in Xcode
+4. Upload to App Store Connect
+5. Wait for processing
+6. Configure three consumable IAPs (if not already done)
+7. Verify all IAPs show "Ready to Submit"
 
 ---
 
-## March 6 Actions
+### Action 3: Update App Review Notes and Submit (30 minutes)
 
-### Action 6: Create Screenshots (2 hours)
-
-Capture 3-5 screenshots showing ClipSlim in action:
-
-**Screenshot 1 (Hero):** The menubar popover open, showing a fresh optimization result with compression stats (before/after size, percentage saved). Clean desktop background.
-
-**Screenshot 2 (Presets):** Settings panel with the four presets visible and one selected. Shows the intensity level selector.
-
-**Screenshot 3 (Folder Watcher):** The folder watcher view with a batch of optimized files listed, showing individual file stats.
-
-**Screenshot 4 (Resize):** The overlay resize controls with width/height fields and quick square presets visible.
-
-**Screenshot 5 (Privacy):** A simple graphic or screenshot emphasizing "100% Local" -- possibly the settings or about view with no network indicators.
-
-**Technical requirements:**
-- Mac App Store: 2880x1800 (16-inch Retina) or 2560x1600 (13-inch Retina)
-- Capture using Cmd+Shift+5 (screen recording) or Cmd+Shift+4 (area)
-- Add text overlays using Figma, Sketch, or even Preview/Keynote
+1. In App Store Connect, select the app version
+2. Select the new build
+3. Replace App Review notes with the resubmission text from prelaunch-checklist.md Phase 5
+4. Verify all metadata is clean (no BMC references)
+5. Verify IAPs are included in submission summary
+6. Submit for review
 
 ---
 
-### Action 7: Create Landing Page (1.5 hours)
+### Action 4: Prepare Post-Approval Announcements (30 minutes)
 
-Minimum viable landing page needs:
-- App name and icon
-- One-line description
-- 3-5 bullet points of key features
-- Download button (link to DMG)
-- System requirements
-- Privacy policy link
-- Support email or link
-- At least one screenshot
-
----
-
-### Action 8: Draft Launch Announcements (1 hour)
+Draft these now so they are ready to post the moment approval comes through.
 
 **Twitter/X:**
-"Introducing ClipSlim -- a macOS menubar utility that automatically optimizes images on your clipboard. Copy an image, it shrinks. That simple. 100% local, zero data leaves your Mac. Free download: [URL]"
+```
+ClipSlim is live on the Mac App Store!
+
+Automatic clipboard image optimization for macOS:
+- Copy an image, it shrinks instantly
+- Folder watcher for batch processing
+- PDF compression
+- 100% local, zero data collection
+
+Free with optional tip jar.
+
+[Mac App Store link]
+```
 
 **Reddit r/macapps:**
-Title: "I made ClipSlim -- a menubar app that auto-optimizes clipboard images (macOS, 100% local)"
-Body: Brief description, key features, download link, what makes it different from ImageOptim/Clop, request for feedback.
+```
+Title: ClipSlim -- menubar app that auto-optimizes clipboard images (macOS, 100% local, free)
+
+Body:
+Hey r/macapps -- ClipSlim is now available on the Mac App Store.
+
+It sits in your menubar and automatically compresses images the moment you copy them.
+No drag-and-drop, no upload tools, no manual steps.
+
+Features:
+- Automatic clipboard image optimization
+- Folder watcher (point it at a directory, images get compressed automatically)
+- PDF compression
+- Drop zone for drag-and-drop batches
+- Format override (JPEG/PNG), resize, crop
+- Global hotkeys (Option+1 for optimized, Option+2 for original)
+- Focus mode (skip optimization in specific apps)
+- 100% local -- nothing leaves your Mac
+
+Free with an optional tip jar if you want to support development.
+
+Mac App Store: [link]
+Direct download (DMG): [link]
+
+Happy to answer any questions or take feedback.
+```
 
 **Hacker News:**
-Title: "Show HN: ClipSlim -- Auto-optimize clipboard images on macOS (local-only)"
-Link to website or GitHub.
+```
+Title: Show HN: ClipSlim -- Auto-optimize clipboard images on macOS (local-only, free)
+URL: [website or MAS link]
+```
 
 ---
 
-## March 7 Actions (Launch Day)
+## Post-Approval Actions
 
-### Action 9: Execute Launch (2 hours morning)
+### Approval Day (execute within 2 hours of approval)
 
-**9:00 AM:**
-- Final check: website up, DMG downloadable, links working
-- Post Twitter/X announcement
-- Post Reddit r/macapps
+**Verification (15 minutes):**
+- [ ] Search Mac App Store for "ClipSlim" -- confirm listing is live
+- [ ] Download from MAS on a test machine or clean user account
+- [ ] Launch and verify core functionality works
+- [ ] Open Settings > Support -- verify tip jar loads real products (not sandbox)
+- [ ] Purchase one small tip to confirm real transaction completes
 
-**10:00 AM:**
-- Post Hacker News (Show HN)
-- Share in relevant Discord/Slack communities
+**Announcements (30 minutes):**
+- [ ] Post Twitter/X announcement (drafted above)
+- [ ] Post Reddit r/macapps (drafted above)
+- [ ] Post Hacker News Show HN (drafted above)
+- [ ] Update website/landing page with Mac App Store badge and link
+- [ ] Email announcement to any existing user list or contacts
 
-**11:00 AM:**
-- Monitor all channels for comments
-- Respond to questions within 30 minutes
+**App Store Connect (10 minutes):**
+- [ ] Update promotional text to highlight availability:
+  ```
+  Now on the Mac App Store! Automatic clipboard image optimization, folder watcher, PDF compression. 100% local processing, zero data collection. Free with optional tip jar.
+  ```
+  (Promotional text can be changed without a new submission)
 
-### Action 10: Monitor and Respond (ongoing)
+### Days 1-3 Post-Approval
 
-- Check all channels every 30-60 minutes through the day
-- Priority: respond to bug reports immediately
-- Document all feedback in a single file or note
-- If critical bug found: fix, rebuild, re-notarize, update website (30-min pipeline)
+- [ ] Monitor MAS reviews daily (respond within 24 hours using review-responses.md)
+- [ ] Monitor crash reports in App Store Connect
+- [ ] Track daily download numbers in App Store Connect > Trends
+- [ ] Monitor social media mentions and respond to questions
+- [ ] Watch for StoreKit-related issues (tip jar not loading, purchase failures)
+- [ ] Document any bug reports for v1.1
+
+### Days 4-7 Post-Approval
+
+- [ ] Week 1 metrics report:
+  - Total MAS downloads
+  - Total DMG downloads (if tracking)
+  - Number of reviews received
+  - Average rating
+  - Number of tip purchases (Revenue > Proceeds in App Store Connect)
+  - Social media reach (impressions, engagement)
+- [ ] Check keyword rankings (manual App Store search for primary terms)
+- [ ] Review conversion rate in App Store Connect Analytics
+- [ ] Plan v1.1 scope based on user feedback
+- [ ] Submit to Product Hunt (Tuesday or Wednesday)
 
 ---
 
-## Success Metrics for Launch Weekend
+## Week 2 Post-Approval Actions
 
+### Monday
+- [ ] Full keyword ranking check
+- [ ] Conversion rate analysis (impressions > page views > installs)
+- [ ] Respond to all outstanding reviews
+- [ ] Competitor check (any new apps in the space?)
+
+### Wednesday
+- [ ] Update promotional text if messaging needs refinement
+- [ ] Evaluate screenshot effectiveness (is first screenshot compelling?)
+- [ ] Begin v1.1 development if bugs identified
+
+### Friday
+- [ ] Week 2 metrics comparison vs. Week 1
+- [ ] Plan any metadata adjustments based on data
+
+---
+
+## Success Metrics
+
+### Submission Day (March 16)
+| Metric | Target | Status |
+|--------|--------|--------|
+| Build uploaded | Yes | |
+| IAPs configured | 3/3 Ready to Submit | |
+| Review notes updated | Yes | |
+| Submitted for review | Yes | |
+
+### Approval Week
 | Metric | Target | How to Measure |
 |--------|--------|----------------|
-| DMG downloads | 50+ | Website analytics / server logs |
-| Reddit upvotes | 20+ | r/macapps post |
-| HN points | 10+ | Show HN post |
+| Approved without second rejection | Yes | App Store Connect status |
+| App live on MAS | Yes | Search Mac App Store |
+| Tip jar functional in production | Yes | Manual test purchase |
+
+### First Week Post-Approval
+| Metric | Target | How to Measure |
+|--------|--------|----------------|
+| MAS downloads | 50+ | App Store Connect Trends |
+| App Store rating | 4.0+ | App Store Connect |
+| Reviews received | 3+ | App Store Connect |
 | Critical bugs reported | 0 | All channels |
-| Support emails | < 5 | Inbox |
-| MAS submitted | Yes/No | App Store Connect status |
+| Tip purchases | Any (validation) | App Store Connect Revenue |
+
+### First Month Post-Approval
+| Metric | Target | How to Measure |
+|--------|--------|----------------|
+| MAS downloads | 200+ | App Store Connect |
+| Average rating | 4.3+ | App Store Connect |
+| Reviews | 10+ | App Store Connect |
+| Keywords in top 50 | 3+ | Manual search |
+| v1.1 submitted | Yes | App Store Connect |
 
 ---
 
-## Post-Launch Week 1 Actions
+## Risk Register
 
-### Action 11: Daily Monitoring (15 min/day, March 8-14)
-- Check App Store Connect status (if submitted)
-- Respond to any reviews or feedback
-- Track cumulative downloads
-- Monitor for bug reports
-
-### Action 12: Product Hunt Launch (March 10-11)
-- Create Product Hunt listing
-- Upload screenshots and description
-- Launch on a Tuesday or Wednesday (highest traffic)
-- Engage with comments throughout the day
-
-### Action 13: Week 1 Retrospective (March 14)
-- Total downloads (DMG + MAS)
-- Total social reach
-- User feedback themes
-- Bug count and status
-- v1.1 scope decision
+| Risk | Likelihood | Impact | Mitigation |
+|------|-----------|--------|------------|
+| Second rejection (3.1.1) | Low | Medium | Code fully verified, grep confirms zero BMC references |
+| Second rejection (different guideline) | Low | Medium | Comprehensive review notes, full smoke test |
+| IAPs not loading for reviewer | Medium | High | Configure IAPs before submitting, verify "Ready to Submit" status |
+| Long review time (5+ days) | Low | Low | Contact App Review via Resolution Center |
+| Low initial downloads | Medium | Low | Social media announcements drafted and ready |
+| Negative reviews about tip jar | Low | Low | Response templates prepared in review-responses.md |

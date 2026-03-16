@@ -1,84 +1,90 @@
 # Ongoing ASO and Optimization Tasks - ClipSlim
 
-**Launch Date:** March 7-8, 2026
-**Last Updated:** March 5, 2026
+**Submission Date:** March 16, 2026
+**Last Updated:** March 16, 2026
 **Platform:** Mac App Store + Direct (DMG)
+**App Store ID:** 6759780567
 
 ---
 
-## Phase 1: Intensive Monitoring (March 7-21, 2026 -- First 2 Weeks)
+## Phase 1: Post-Approval Intensive Monitoring (First 2 Weeks)
 
 ### Daily Tasks (20 minutes/day)
 
-**Morning Check (9 AM):**
-- [ ] Check Mac App Store reviews (App Store Connect > Ratings and Reviews)
-- [ ] Check Reddit/social media mentions
-- [ ] Check support email inbox
-- [ ] Review crash reports in App Store Connect (if MAS live)
-- [ ] Check download numbers:
-  - DMG: website analytics
-  - MAS: App Store Connect > Trends
+**Morning Check (9:00 AM):**
+- [ ] Check App Store Connect > Ratings and Reviews for new MAS reviews
+- [ ] Check crash reports in App Store Connect > Feedback > Crashes
+- [ ] Check download numbers: App Store Connect > Trends > Units
+- [ ] Check support email inbox (support@appyaccidents.com)
+- [ ] Check social media mentions (Twitter/X, Reddit)
 - [ ] Note any sudden drops or spikes in downloads
 
-**Evening Check (6 PM):**
+**Evening Check (6:00 PM):**
 - [ ] Respond to all outstanding reviews (goal: 100% within 24 hours)
-- [ ] Respond to all social media comments/questions
+- [ ] Respond to all social media comments and questions
 - [ ] Log day's metrics in tracking spreadsheet:
-  - Downloads (DMG + MAS)
+  - MAS downloads
+  - DMG downloads (if tracking)
   - Reviews received (count and average rating)
   - Support requests received
   - Bugs reported
+  - Tip purchases (check Revenue in App Store Connect)
 
-### Metrics Tracking Spreadsheet (Create on Launch Day)
+### Metrics Tracking Spreadsheet
 
-| Date | DMG Downloads | MAS Downloads | MAS Rating | Reviews | Bugs Reported | Notes |
-|------|--------------|---------------|------------|---------|---------------|-------|
-| Mar 7 | | | | | | Launch day |
-| Mar 8 | | | | | | |
-| ... | | | | | | |
+Create on approval day:
+
+| Date | MAS Downloads | DMG Downloads | Rating Avg | New Reviews | Bugs | Tips | Notes |
+|------|--------------|---------------|------------|-------------|------|------|-------|
+| Day 1 | | | | | | | Approval day |
+| Day 2 | | | | | | | |
+| ... | | | | | | | |
 
 ---
 
-## Phase 2: Weekly Tasks (Starting March 14, 2026)
+## Phase 2: Weekly Tasks (Starting Week 2 Post-Approval)
 
 ### Every Monday (1 hour)
 
 **Keyword Performance (20 minutes):**
 - [ ] Search Mac App Store for primary keywords and note ClipSlim's position:
+  - "image optimizer"
   - "clipboard optimizer"
   - "image compressor mac"
   - "clipboard image"
-  - "image optimizer"
   - "screenshot optimizer"
   - "png compress"
   - "menubar utility"
+  - "pdf compressor"
 - [ ] Record positions in tracking spreadsheet
 - [ ] Note any new competitors appearing for these terms
 
 **Conversion Analysis (15 minutes):**
-- [ ] App Store Connect > Analytics > Metrics
-  - Impressions (how many people saw the listing)
+- [ ] App Store Connect > Analytics > Metrics:
+  - Impressions (how many people saw the listing in search/browse)
   - Product Page Views (how many clicked through)
   - App Units (how many downloaded)
   - Conversion rate = App Units / Impressions
 - [ ] Compare to previous week
-- [ ] If conversion dropped: investigate (bad screenshot? misleading description?)
+- [ ] If conversion dropped more than 10%: investigate (screenshot, description, competitor?)
 
 **Review Analysis (10 minutes):**
 - [ ] Count positive vs. negative reviews this week
 - [ ] Identify recurring themes (feature requests, bugs, praise)
 - [ ] Update response templates if new patterns emerge
+- [ ] Note any reviews mentioning the tip jar (positive or negative)
 
 **Competitor Check (15 minutes):**
-- [ ] Search for top 3 competitors and note any changes:
+- [ ] Search for top competitors and note any changes:
   - Clop: any updates, new features, pricing changes?
-  - ImageOptim: any Mac App Store changes?
+  - ImageOptim: any Mac App Store activity?
   - Squash: any positioning changes?
-- [ ] Note if any new competitors have appeared
+  - Resize it: any updates?
+- [ ] Note if any new clipboard optimization apps appeared
 
 ---
 
-## Phase 3: Monthly Tasks (Starting April 2026)
+## Phase 3: Monthly Tasks (Starting Month 2 Post-Approval)
 
 ### First Monday of Each Month (2-3 hours)
 
@@ -88,51 +94,53 @@
 - [ ] Month-over-month conversion rate trend
 - [ ] Average rating trend
 - [ ] Review volume trend
+- [ ] Tip jar revenue trend
 - [ ] Identify best and worst performing keywords
 
 **Metadata Refresh Evaluation (30 minutes):**
-- [ ] Is the current subtitle still the best choice?
+- [ ] Is the current subtitle still optimal?
 - [ ] Are there new keyword opportunities based on search trends?
 - [ ] Should promotional text be updated? (Can change without review)
 - [ ] Any new features to highlight in description?
-- [ ] Seasonal relevance? (e.g., "back to school" in Aug, "new year productivity" in Jan)
+- [ ] Seasonal relevance? (e.g., "back to school" in August, "new year productivity" in January)
 
 **Screenshot Refresh Evaluation (30 minutes):**
 - [ ] Do screenshots still reflect current UI?
 - [ ] Has any new feature been added that deserves a screenshot?
 - [ ] Are competitors using better visual strategies?
-- [ ] Consider A/B test if conversion rate is stagnant
+- [ ] Consider A/B test if conversion rate is stagnant or declining
 
 **Review Deep Dive (30 minutes):**
-- [ ] Export and read all reviews from the past month
+- [ ] Read all reviews from the past month
 - [ ] Categorize: praise, bug, feature request, complaint, comparison
 - [ ] Top 3 feature requests (track month-over-month demand)
 - [ ] Top 3 reported issues
-- [ ] Any review patterns that suggest description/screenshot changes?
+- [ ] Any review patterns suggesting metadata or screenshot changes?
 
 **Competitor Deep Dive (30 minutes):**
 - [ ] Full review of top 5 competitors' store listings
 - [ ] Any new apps in the clipboard/image optimization space?
 - [ ] Pricing changes in the market?
 - [ ] Features competitors added that ClipSlim lacks?
-- [ ] Differentiation still clear?
+- [ ] Is ClipSlim's differentiation still clear?
 
-**Monthly Report (document for reference):**
-- Total downloads (DMG + MAS)
+**Monthly Report:**
+- Total downloads (MAS + DMG)
 - Average rating and review count
 - Top keywords and positions
 - Conversion rate
+- Tip jar revenue
 - Key feedback themes
 - Planned actions for next month
 
 ---
 
-## Phase 4: Quarterly Tasks (Starting June 2026)
+## Phase 4: Quarterly Tasks (Starting Q3 2026)
 
 ### Quarterly Strategy Review (4-6 hours)
 
 **Full Keyword Research Refresh:**
-- [ ] Research new keywords in the image optimization / clipboard utility space
+- [ ] Research new keywords in image optimization and clipboard utility space
 - [ ] Check trending search terms on Mac App Store
 - [ ] Evaluate long-tail keyword opportunities
 - [ ] Update keyword field if changes warranted (requires app update submission)
@@ -142,7 +150,7 @@
 - [ ] Check App Store Connect analytics for downloads by territory
 - [ ] If significant non-English downloads: consider localizing metadata
 - [ ] Priority languages for Mac utilities: Japanese, German, French, Chinese (Simplified)
-- [ ] Cost-benefit analysis of translation
+- [ ] Cost-benefit analysis of translation vs. download uplift
 
 **Visual Asset Overhaul:**
 - [ ] Redesign screenshots if UI has changed significantly
@@ -152,9 +160,9 @@
 
 **Competitive Positioning:**
 - [ ] Has the market shifted?
-- [ ] New entrants worth worrying about?
+- [ ] New entrants worth monitoring?
 - [ ] Should ClipSlim's messaging evolve?
-- [ ] Pricing adjustment needed?
+- [ ] Pricing model still appropriate? (free + tips vs. paid vs. freemium)
 
 ---
 
@@ -162,15 +170,15 @@
 
 | Timeframe | Action |
 |-----------|--------|
-| Launch (March 7) | Initial keyword set deployed |
-| Week 2 (March 17) | Check which keywords are indexing |
-| Month 1 (April 7) | First keyword adjustment based on data |
-| Month 2 (May 5) | Second adjustment, add long-tail keywords |
-| Month 3 (June 2) | Full keyword refresh |
+| Approval Day | Initial keyword set deployed |
+| Approval + 2 weeks | Check which keywords are indexing |
+| Approval + 4 weeks | First keyword adjustment based on data |
+| Approval + 8 weeks | Second adjustment, add long-tail keywords |
+| Approval + 12 weeks | Full keyword refresh |
 | Ongoing | Monthly check, quarterly overhaul |
 
-**Keyword Optimization Rules:**
-- Only change keywords in the keyword field alongside an app update (requires review)
+**Rules:**
+- Only change keywords alongside an app update (requires review)
 - Promotional text can be changed anytime (use for trending terms)
 - Never stuff keywords unnaturally into the description
 - Track positions before and after every change
@@ -184,29 +192,29 @@
 |---------|--------|
 | Major UI change | Update affected screenshots immediately |
 | New feature added | Add screenshot showing new feature |
-| Conversion rate drops >10% | Test new screenshot designs |
+| Conversion rate drops more than 10% | Test new screenshot designs |
 | Every 6 months | Evaluate freshness, update if stale |
-| macOS major release | Update to show new OS look and feel |
-| Seasonal (optional) | Holiday-themed or seasonal messaging |
+| macOS major release (e.g., macOS 16) | Update to show new OS look |
+| Seasonal (optional) | Holiday-themed or seasonal messaging in promo text |
 
 ---
 
 ## Version Update Strategy
 
 ### Update Cadence Target
-- **v1.1:** 2-3 weeks after launch (March 21-28) -- bug fixes, polish
-- **v1.2:** 1 month after launch (April 7) -- first feature additions
+- **v1.1:** 2-3 weeks post-approval -- bug fixes, polish, add SKStoreReviewController
+- **v1.2:** 4-6 weeks post-approval -- first feature additions based on user feedback
 - **v1.x:** Monthly updates for first 3 months, then bi-monthly
 
 ### What to Include in Each Update
 
-**Bug Fix Updates (1.x.1):**
+**Bug Fix Updates (x.x.1):**
 - Fix reported crashes
 - Fix reported bugs
 - Performance improvements
-- Update "What's New" with specific fixes mentioned
+- "What's New" lists specific fixes
 
-**Feature Updates (1.x.0):**
+**Feature Updates (x.x.0):**
 - New feature(s)
 - Updated screenshots if UI changed
 - Updated description to highlight new features
@@ -215,24 +223,45 @@
 
 ### "What's New" Best Practices
 - Lead with the most impactful change
-- Be specific: "Fixed crash when optimizing HEIC images from Photos" not "Bug fixes"
+- Be specific: "Fixed crash when optimizing HEIC images" not "Bug fixes"
 - Keep it scannable (bullet points)
 - Mention user-requested features: "You asked for it: [feature]"
-- End with a call to action: "Love ClipSlim? A review helps us grow."
+- End with a soft CTA: "Enjoying ClipSlim? A review helps others find us."
+
+---
+
+## StoreKit Tip Jar Monitoring
+
+### Weekly (Part of Monday check)
+- [ ] Check App Store Connect > Payments and Financial Reports for tip revenue
+- [ ] Note any tip purchase failures in crash/error logs
+- [ ] Track tip conversion rate (tips / total active users, if measurable)
+
+### Monthly
+- [ ] Total tip revenue for the month
+- [ ] Which tip tier is most popular? (small / medium / large)
+- [ ] Consider adjusting pricing if one tier dominates heavily
+- [ ] Consider adding a "Super Tip" tier if large tips are common
+
+### Quarterly
+- [ ] Evaluate tip jar as a revenue model
+- [ ] Compare tip revenue vs. effort of maintaining IAPs
+- [ ] Consider if a paid version or subscription would be more sustainable
+- [ ] Decide whether to promote tips more (mention in What's New, description, etc.)
 
 ---
 
 ## Automation Opportunities
 
 **Can Automate Now:**
-- Daily download tracking (App Store Connect API or manual spreadsheet)
-- Crash alerts (Xcode Organizer / App Store Connect notifications)
-- Review notifications (App Store Connect sends emails for new reviews)
+- Download tracking (App Store Connect sends weekly reports via email)
+- Crash alerts (Xcode Organizer notifications)
+- Review notifications (App Store Connect email alerts)
 
-**Can Automate Later:**
-- Keyword ranking tracking (AppTweak, Sensor Tower -- paid tools)
-- Review sentiment analysis (Appbot -- paid tool)
-- Competitor monitoring (set Google Alerts for competitor names)
+**Can Automate Later (Paid Tools):**
+- Keyword ranking tracking (AppTweak ~$70/month, Sensor Tower)
+- Review sentiment analysis (Appbot ~$49/month)
+- Competitor monitoring (Google Alerts for free, or paid tools)
 
 **Should Stay Manual:**
 - Review responses (personal touch matters, especially early on)
@@ -244,20 +273,20 @@
 
 ## Tool Recommendations
 
-### Free Tools
+### Free
 - **App Store Connect Analytics** -- downloads, impressions, conversion
-- **Google Alerts** -- monitor mentions of ClipSlim and competitors
+- **Google Alerts** -- monitor mentions of ClipSlim and competitor names
 - **Spreadsheet** -- manual keyword and metrics tracking
+- **App Store Connect app (iOS)** -- check stats from phone
 
-### Paid Tools (Consider After Month 1)
+### Paid (Consider After Month 3 or 500+ Downloads)
 - **AppTweak** (~$70/month) -- keyword rankings, competitor tracking, ASO scores
 - **Sensor Tower** (varies) -- market intelligence, download estimates
 - **Appbot** (~$49/month) -- review monitoring and sentiment analysis
-- **RevenueCat** (if adding subscriptions) -- revenue analytics
 
 ### When to Invest in Paid Tools
 - After reaching 100+ monthly downloads consistently
-- When manual tracking becomes too time-consuming (>1 hour/week)
+- When manual tracking becomes too time-consuming (more than 1 hour/week)
 - When you need competitive intelligence for strategic decisions
 - When preparing for a major marketing push
 
@@ -267,8 +296,8 @@
 
 ASO for a utility app is a long game. The Mac App Store rewards consistency:
 - Consistent updates signal an active, maintained app
-- Consistent review responses build trust
+- Consistent review responses build trust and can turn 1-star into 5-star
 - Consistent keyword optimization compounds ranking gains
 - The first 3 months set the trajectory for year 1
 
-Spend 20 minutes daily for the first 2 weeks, then 1 hour weekly, then 2-3 hours monthly. Small consistent effort beats sporadic large efforts.
+**Time investment:** 20 minutes daily for the first 2 weeks, then 1 hour weekly, then 2-3 hours monthly. Small consistent effort beats sporadic large efforts.

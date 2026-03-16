@@ -1,129 +1,106 @@
-# clipSlim - Master ASO Action Plan
+# ClipSlim - Master ASO Action Plan
 
-**Generated:** March 5, 2026
-**Launch:** March 7-8, 2026 (this weekend)
-**Distribution:** DMG (primary, this weekend) + Mac App Store (secondary, next week)
-**Developer:** AppyAccidents
-
----
-
-## EXECUTIVE SUMMARY
-
-clipSlim enters a market with **ZERO direct competitors**. No Mac App Store app combines clipboard monitoring with image compression. This is not a marginal gap — it's an entirely unoccupied product category. The 84-app competitive analysis confirms clipSlim owns the upper-right quadrant of "automatic + clipboard-aware" image optimization.
-
-**ASO Score:** 91/100 (metadata ready to copy-paste)
-**Competitive Threat:** LOW (nearest competitors are manual drag-and-drop tools)
-**Key Risk:** Mac App Store sandbox requirement — mitigated by launching DMG-first
+**Updated:** March 16, 2026
+**Platform:** Mac App Store (macOS)
+**App Store ID:** 6759780567
+**Current Status:** Version 1.0.0 (Build 7) -- WAITING FOR REVIEW
 
 ---
 
-## CRITICAL DECISION
+## CURRENT STATE
 
-**Mac App Store requires sandboxing.** clipSlim currently uses hardened runtime without sandbox.
+The app has been submitted to App Review after resolving a Guideline 3.1.1 rejection (external Buy Me a Coffee link replaced with native StoreKit 2 tip jar). All code changes, IAP configuration, and binary upload are complete.
 
-**Recommended approach:** Launch DMG this weekend, submit to MAS next week after sandbox testing. This avoids rushing and risking App Review rejection.
+**What is done:**
+- StoreKit 2 tip jar implemented (TipStore.swift)
+- 3 consumable IAPs created in App Store Connect ($2.99 / $4.99 / $9.99) with localizations, pricing, review screenshots
+- Build 7 uploaded, processed, and validated (encryption exempt)
+- All BMC references removed from codebase (verified with grep)
+- ITSAppUsesNonExemptEncryption = NO in Info.plist
+- App submitted -- status is WAITING_FOR_REVIEW
 
 ---
 
-## DAY-BY-DAY CHECKLIST
+## CHECKLIST
 
-### TODAY - Thursday, March 5 (Foundation Day)
+### Phase 1: Awaiting Review (Now -- March 17-19)
 
-#### P0 BLOCKERS (Must complete today)
+- [x] Final BMC grep verification -- zero matches
+- [x] StoreKit 2 tip jar implemented with 3 consumable IAPs
+- [x] IAPs created in App Store Connect with localizations and review screenshots
+- [x] Build 7 uploaded and processed (VALID)
+- [x] Encryption exemption declared (ITSAppUsesNonExemptEncryption = NO)
+- [x] App submitted for review -- WAITING_FOR_REVIEW
+- [ ] Monitor App Store Connect status twice daily (morning + evening)
+- [ ] Be available for App Review questions via Resolution Center
+- [ ] Prepare post-approval announcements while waiting (see 04-launch/action-launch.md for drafts)
 
-- [ ] **Privacy policy** — Write and host at public URL
-  - Content: No data collected, all processing local, no network calls
-  - Host: GitHub Pages, or simple HTML at appyaccidents.com/privacy
-- [ ] **Support URL** — Set up support@appyaccidents.com or GitHub Issues
-- [ ] **App Store Connect** — Create app record (if pursuing MAS)
-  - Reserve name "clipSlim"
-  - Set category: Utilities
-  - Set pricing
-- [ ] **Paste metadata** into App Store Connect (all pre-written, see `02-metadata/apple-metadata.md`):
-  - App Name: `clipSlim - Image Optimizer` (25/30 chars)
-  - Subtitle: `Clipboard & Folder Compression` (30/30 chars)
-  - Keywords: `compress,png,jpeg,resize,batch,shrink,menubar,photo,converter,heic,screenshot,bulk,filesize`
-  - Description: copy from `02-metadata/apple-metadata.md`
-  - What's New: copy from `02-metadata/apple-metadata.md`
-  - Promotional Text: copy from `02-metadata/apple-metadata.md`
-- [ ] **DMG build** — Build, sign, notarize, staple, verify
-  - Run tests: `xcodebuild -project ClipSlim.xcodeproj -scheme ClipSlim -destination 'platform=macOS' test`
-  - Build release: `xcodebuild -configuration Release build`
-  - Create DMG: `./scripts/create_stylized_dmg.sh`
-  - Notarize: `xcrun notarytool submit --keychain-profile clipslim-notary --wait`
-  - Staple & verify Gatekeeper
-- [ ] **App privacy details** — Declare "Data Not Collected" in App Store Connect
-- [ ] **Age rating** — Complete questionnaire (should be 4+)
+### Phase 2: Approval Day (Expected March 17-19)
 
-### TOMORROW - Friday, March 6 (Polish Day)
+- [ ] Verify app is live -- search Mac App Store for "ClipSlim"
+- [ ] Download from MAS and test fresh install
+- [ ] Verify tip jar loads real products (not sandbox)
+- [ ] Test one tip purchase to confirm real transaction flow
+- [ ] Update promotional text in App Store Connect (no review needed):
+  ```
+  Now with a native tip jar - support ClipSlim directly in-app. 100% local image & PDF compression from your menubar. Free to download, no account needed.
+  ```
+- [ ] Post Twitter/X announcement (draft in 04-launch/action-launch.md)
+- [ ] Post Reddit r/macapps announcement (draft in 04-launch/action-launch.md)
+- [ ] Post Hacker News Show HN (draft in 04-launch/action-launch.md)
+- [ ] Update website/landing page with Mac App Store badge and link
 
-#### P1 CRITICAL (Should complete before launch)
+### Phase 3: Week 1 Post-Approval (Days 1-7)
 
-- [ ] **Screenshots** (3-5 for Mac App Store)
-  - Shot 1: Menubar popover showing optimization results (HERO)
-  - Shot 2: Settings panel with presets and intensity levels
-  - Shot 3: Folder watcher in action
-  - Shot 4: Overlay resize controls
-  - Shot 5: Debug log / event history
-  - Resolution: 2880x1800 (Retina) or 1440x900
-  - Add text overlays matching neon terminal aesthetic
-  - See `02-metadata/visual-assets-spec.md` for full specs
-- [ ] **Landing page** — Minimal page with:
-  - App name, tagline, description
-  - DMG download button
-  - Screenshots or demo GIF
-  - System requirements (macOS 14.0+ Sonoma)
-  - Privacy policy link
-- [ ] **Marketing materials** — Draft announcements:
-  - Twitter/X launch tweet
-  - Reddit r/macapps post (high-value community)
-  - Hacker News "Show HN" post
-  - See `04-launch/action-launch.md` for pre-drafted copy
-- [ ] **Final DMG test** — Fresh install on clean account:
-  - Download from website, mount, drag to /Applications
-  - First launch: menubar appears, onboarding works
-  - Core flow: copy image → auto-optimized
-  - Folder watcher: drop image → optimized
-  - Hotkeys: ⌥1 and ⌥2 work
-- [ ] **Submit to MAS** (if sandbox resolved, otherwise defer)
+- [ ] Respond to all MAS reviews within 24 hours (templates in 05-optimization/review-responses.md)
+- [ ] Monitor crash reports daily in App Store Connect
+- [ ] Track daily download numbers in App Store Connect > Trends
+- [ ] Watch for StoreKit-related issues (tip jar not loading, purchase failures)
+- [ ] Document bug reports for v1.1 planning
+- [ ] Submit to Product Hunt (Tuesday or Wednesday for best visibility)
+- [ ] Record Day 7 baseline metrics:
+  - Impressions, Product Page Views, Installs, Conversion Rate
+  - Top search terms driving traffic
 
-### SATURDAY - March 7 (LAUNCH DAY)
+### Phase 4: Week 2 Post-Approval (Days 8-14)
 
-- [ ] **9:00 AM** — Pre-launch verification
-  - Website loads, DMG link works, privacy policy accessible
-- [ ] **9:30 AM** — Post launch announcements
-  - Twitter/X
-  - Reddit r/macapps
-  - Hacker News "Show HN"
-  - Mastodon (if applicable)
-  - Relevant Slack/Discord communities
-- [ ] **11:30 AM onwards** — Monitor and engage
-  - Respond to all comments within 1 hour
-  - Note bug reports for immediate triage
-  - Track download numbers
+- [ ] Full keyword ranking check -- search MAS for each primary keyword and record position:
+  - "image compressor", "clipboard optimizer", "pdf compressor", "compress png", "menubar utility"
+- [ ] Conversion rate analysis (impressions > page views > installs)
+- [ ] Update promotional text with fresh copy (rotate to privacy or feature angle)
+- [ ] Record Day 14 baseline metrics
+- [ ] Competitor check: any updates from Clop, Zipic, Squash, Resize it?
 
-### SUNDAY - March 8 (Post-Launch Day 1)
+### Phase 5: Month 1 Post-Approval (Weeks 3-4)
 
-- [ ] Check overnight feedback across all channels
-- [ ] Respond to all outstanding comments
-- [ ] If critical bug: fix, rebuild, re-notarize, update website
-- [ ] Cross-post to r/apple, r/productivity, indie hacker communities
+- [ ] First keyword adjustment based on 2 weeks of impression data
+- [ ] Evaluate A/B test readiness (need 1,000+ impressions for significance)
+- [ ] Begin v1.1 development:
+  - Add SKStoreReviewController (trigger after 5th successful optimization)
+  - Fix any reported bugs
+  - Polish based on user feedback
+- [ ] Submit v1.1 update
+- [ ] Month 1 ASO health report:
+  - Total downloads, average rating, review count
+  - Top keywords and positions
+  - Conversion rate
+  - Tip jar revenue
 
-### Week 1: March 9-14
+### Phase 6: A/B Testing (After Day 14 Baseline)
 
-- [ ] Monitor Mac App Store review status
-- [ ] Product Hunt launch (Tuesday/Wednesday)
-- [ ] Track keyword rankings (manual App Store search)
-- [ ] Compile bug reports → plan v1.1
-- [ ] Week 1 retrospective (Friday March 14)
+- [ ] Test 1 (highest priority): App Icon -- design 2 alternative concepts (see 03-testing/ab-test-setup.md)
+- [ ] Test 2: Screenshot 1 hero image -- output-lead vs privacy-lead (run after Test 1 concludes)
+- [ ] Test 3: App Name -- sequential submission test (run after 4 weeks of baseline)
+- [ ] Log all test results in test log (03-testing/ab-test-setup.md)
 
-### Week 2: March 15-21
+### Phase 7: Ongoing Optimization (Monthly)
 
-- [ ] ASO health check on MAS listing
-- [ ] Analyze keyword impressions
-- [ ] Update promotional text if needed
-- [ ] Submit v1.1 update if fixes ready
-- [ ] Review conversion rate in App Store Connect
+- [ ] Update promotional text every 4-6 weeks (no review needed)
+- [ ] Refresh keywords quarterly based on App Store Connect search data
+- [ ] Respond to all reviews within 24 hours
+- [ ] Monthly competitor deep dive (Clop, Zipic, Squash, Optimage, Compresto)
+- [ ] Quarterly full keyword research refresh
+- [ ] Evaluate localization ROI after Month 3 (Japanese, German, French are top Mac utility markets)
 
 ---
 
@@ -131,104 +108,65 @@ clipSlim enters a market with **ZERO direct competitors**. No Mac App Store app 
 
 | Field | Content | Chars |
 |-------|---------|-------|
-| **App Name** | `clipSlim - Image Optimizer` | 25/30 |
-| **Subtitle** | `Clipboard & Folder Compression` | 30/30 |
-| **Keywords** | `compress,png,jpeg,resize,batch,shrink,menubar,photo,converter,heic,screenshot,bulk,filesize` | 91/100 |
-| **Promo Text** | `NEW: Folder Watcher now monitors entire directories! Drop images in, get slim files out. 100% local - zero uploads, zero tracking. Try free today.` | 148/170 |
+| **App Name** | `ClipSlim - Clipboard Optimizer` | 30/30 |
+| **Subtitle** | `Image & PDF Compressor for Mac` | 30/30 |
+| **Keywords** | `compress,png,jpeg,resize,batch,shrink,menubar,photo,converter,heic,screenshot,bulk,pdf,filesize` | 95/100 |
+| **Promo Text** | See promotional text above (update freely, no review needed) | 152/170 |
 
-Full description, What's New, and 3 A/B variants → `02-metadata/apple-metadata.md`
-
----
-
-## TOP 5 KEYWORD OPPORTUNITIES
-
-| Keyword | Competition | Why |
-|---------|-------------|-----|
-| clipboard image optimization | **ZERO** | No app in MAS combines clipboard + compression |
-| automatic clipboard compression | **ZERO** | clipSlim's exact differentiator |
-| folder watcher image | **ZERO** | Unique feature, no competitor mentions it |
-| menubar image compressor | **VERY LOW** (3 apps) | Lightweight utility positioning |
-| local image compression | **ZERO** | Privacy angle, growing demand |
-
-Full 32-keyword list → `01-research/keyword-list.md`
+Full description, What's New, and 3 A/B variants: `02-metadata/apple-metadata.md`
 
 ---
 
-## COMPETITIVE POSITIONING
+## TOP KEYWORD OPPORTUNITIES
 
-```
-                    CLIPBOARD AWARE
-                         ^
-                         |
-                  clipSlim (ALONE HERE)
-                         |
-MANUAL --------+---------+---------+-------- AUTOMATIC
-               |         |         |
-         Image Tool+  (empty)   (empty)
-         mini PNG
-         Squash
-               |         |         |
-                         |
-                  Paste, PastePal
-                         |
-                         v
-                    NO COMPRESSION
-```
+| Keyword | MAS Competition | Action |
+|---------|----------------|--------|
+| clipboard image optimization | ZERO | Own this -- core differentiator |
+| automatic clipboard compression | ZERO | Feature headline in description |
+| folder watcher image | ZERO | Description feature section |
+| menubar image compressor | VERY LOW | Keyword field + description |
+| pdf compressor | LOW-MEDIUM | Subtitle captures this |
 
-**clipSlim is the ONLY app in the upper-right quadrant.**
-
-Top competitor: Resize it (984 ratings, 4.7 stars) — but manual drag-and-drop only.
-Top clipboard tool: Clipboard - Paste Keyboard (1,604 ratings) — stores but never optimizes.
-
-Full analysis → `01-research/competitor-gaps.md`
+Full 35-keyword list: `01-research/keyword-list.md`
 
 ---
 
-## SUCCESS METRICS
+## SUCCESS TARGETS
 
-### Launch Weekend (March 7-8)
-- 50+ DMG downloads
-- 20+ Reddit upvotes on r/macapps
-- 0 critical bugs reported
+| Timeframe | Downloads | Rating | Reviews | Keywords Top 10 |
+|-----------|-----------|--------|---------|-----------------|
+| Week 1 | 50+ | 4.0+ | 3+ | 0-1 |
+| Month 1 | 200+ | 4.3+ | 10+ | 2-3 |
+| Month 3 | 500+ | 4.5+ | 25+ | 5+ |
+| Year 1 | 5,000+ | 4.5+ | 100+ | 10+ |
 
-### Week 1 (March 9-14)
-- Mac App Store approval
-- 100+ total downloads (DMG + MAS)
-- First App Store ratings
+---
 
-### Month 1 (by April 5)
-- 500+ total downloads
-- 4.5+ average rating
-- 5+ keywords in top 50
+## IF REJECTED AGAIN
 
-### Year 1 Targets
-- 5,000+ downloads
-- 4.5+ rating
-- 10+ keywords in top 10
+1. Read rejection message in Resolution Center carefully
+2. Most likely causes: IAP metadata incomplete, residual BMC reference, or different guideline
+3. Fix immediately, increment build number, rebuild, resubmit same day
+4. Use appeal template in 05-optimization/review-responses.md (Template AR1)
+5. Resubmissions after rejection are typically reviewed faster (often same/next day)
 
 ---
 
 ## FILE INDEX
 
-| File | What It Contains |
-|------|-----------------|
-| `01-research/keyword-list.md` | 32 prioritized keywords with placement guide |
-| `01-research/competitor-gaps.md` | 8 competitors analyzed, 5 zero-competition gaps |
-| `01-research/action-research.md` | Research tasks checklist |
-| `01-research/raw-data/` | Raw iTunes API data (84 apps) |
-| `02-metadata/apple-metadata.md` | Copy-paste ready App Store metadata + 3 A/B variants |
+| File | Purpose |
+|------|---------|
+| `01-research/keyword-list.md` | 35 prioritized keywords with placement guide |
+| `01-research/competitor-gaps.md` | 10 competitors analyzed, 5 zero-competition gaps |
+| `01-research/action-research.md` | Research phase checklist |
+| `02-metadata/apple-metadata.md` | Copy-paste ready metadata + 3 A/B variants |
 | `02-metadata/visual-assets-spec.md` | Icon and screenshot specifications |
-| `02-metadata/action-metadata.md` | Metadata implementation tasks |
-| `03-testing/ab-test-setup.md` | A/B test configuration and roadmap |
-| `03-testing/action-testing.md` | Testing tasks checklist |
-| `04-launch/prelaunch-checklist.md` | 69-item validation checklist (P0-P3 prioritized) |
-| `04-launch/timeline.md` | Day-by-day schedule March 5-21 |
-| `04-launch/submission-guide.md` | Platform submission instructions |
-| `04-launch/action-launch.md` | Launch execution tasks + drafted social posts |
-| `05-optimization/review-responses.md` | 18 pre-written review response templates |
+| `02-metadata/action-metadata.md` | Metadata implementation checklist |
+| `03-testing/ab-test-setup.md` | A/B test configuration and test log |
+| `04-launch/prelaunch-checklist.md` | Pre-submission validation (72 items) |
+| `04-launch/timeline.md` | Day-by-day schedule from submission through Month 1 |
+| `04-launch/submission-guide.md` | Step-by-step submission instructions |
+| `04-launch/action-launch.md` | Launch execution plan + drafted social posts |
+| `05-optimization/review-responses.md` | 18 review response templates |
 | `05-optimization/ongoing-tasks.md` | Daily/weekly/monthly optimization schedule |
-| `05-optimization/action-optimization.md` | Ongoing optimization tasks |
-
----
-
-**Start here. Work through the checklist day by day. Your metadata is ready — just paste it.**
+| `05-optimization/action-optimization.md` | Ongoing optimization strategy |

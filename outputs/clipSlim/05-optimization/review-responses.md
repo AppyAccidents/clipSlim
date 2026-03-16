@@ -1,8 +1,9 @@
 # Review Response Templates - ClipSlim
 
-**Response Time Goal:** Within 24 hours (within 4 hours for bug reports)
+**Response Time Goal:** Within 24 hours (within 4 hours for critical bugs)
 **Tone:** Friendly, technical but accessible, direct
 **Platform:** Mac App Store reviews (primary), Reddit/social comments (secondary)
+**Last Updated:** March 16, 2026
 
 ---
 
@@ -17,7 +18,7 @@ Thanks for the kind review! Really glad ClipSlim is saving you time
 with image optimization.
 
 If you have ideas for features or improvements, drop us a line at
-[support email]. We read everything.
+support@appyaccidents.com. We read everything.
 
 -- The ClipSlim Team
 ```
@@ -41,12 +42,26 @@ Thanks for the review!
 ```
 Hi [Name],
 
-Great to hear the [folder watcher / hotkeys / auto-compression] is
-working well for your workflow. That feature was built specifically
-for users like you who [process lots of images / need quick access /
-etc.].
+Great to hear the [folder watcher / hotkeys / auto-compression / PDF
+compression] is working well for your workflow. That feature was built
+specifically for users like you who [process lots of images / need
+quick access / handle PDFs daily].
 
 We have more improvements coming in the next update. Stay tuned!
+
+-- The ClipSlim Team
+```
+
+### Template P4: Tip Jar Appreciation
+
+```
+Hi [Name],
+
+Thank you so much for the tip and the kind words! Tips like yours
+directly support ongoing development -- new features, macOS
+compatibility updates, and performance improvements.
+
+We really appreciate it.
 
 -- The ClipSlim Team
 ```
@@ -61,17 +76,14 @@ We have more improvements coming in the next update. Stay tuned!
 Hi [Name],
 
 Sorry about that -- [crashing / not detecting clipboard / etc.] is
-not acceptable and we want to fix it.
+not the experience we want for you and we are working on a fix.
 
-Could you email us at [support email] with:
+Could you email us at support@appyaccidents.com with:
 - Your macOS version
 - What you were doing when it happened
 - Any error messages you saw
 
-We will prioritize a fix. If you are on macOS [version], there is a
-known issue we are addressing in v[next version].
-
-Thank you for reporting this.
+We will prioritize a fix. Thank you for reporting this.
 
 -- The ClipSlim Team
 ```
@@ -89,8 +101,8 @@ A few things to check:
 2. Try copying an image using Cmd+C or a screenshot (Cmd+Shift+4)
 3. Check that optimization is enabled in the menubar popover
 
-If it still does not work, please email [support email] and we will
-help troubleshoot directly.
+If it still does not work, please email support@appyaccidents.com and
+we will help troubleshoot directly.
 
 -- The ClipSlim Team
 ```
@@ -104,13 +116,31 @@ Thanks for letting us know. ClipSlim should be lightweight and
 unobtrusive -- if it is using noticeable CPU or memory, something
 is off.
 
-We are investigating and will have a fix in the next update. In the
+We are investigating and will address this in the next update. In the
 meantime, you can try:
 - Restarting ClipSlim
 - Checking the debug log for any unusual activity
 - Reducing optimization intensity in Settings
 
 Apologies for the inconvenience.
+
+-- The ClipSlim Team
+```
+
+### Template N4: Tip Jar Complaint
+
+```
+Hi [Name],
+
+Thanks for the feedback. To clarify -- ClipSlim is completely free.
+The tip jar in Settings > Support is entirely optional and does not
+unlock any features. All functionality is available without purchase.
+
+We included it as a way for users who want to support ongoing
+development, but there is zero obligation.
+
+If you have other concerns about the app, we would love to hear them
+at support@appyaccidents.com.
 
 -- The ClipSlim Team
 ```
@@ -141,32 +171,54 @@ Appreciate the suggestion for [requested feature]. We had not
 considered that use case -- it is interesting.
 
 We will add it to our feature tracker and evaluate for a future
-release. No promises on timeline, but we take all feedback
-seriously.
+release. No promises on timeline, but we take all feedback seriously.
 
 Thanks for sharing your ideas.
 
 -- The ClipSlim Team
 ```
 
-### Template F3: PDF Support Request
+### Template F3: PDF-Related Request
 
 ```
 Hi [Name],
 
-PDF optimization is something we have been thinking about and it is
-noted as a future feature in our roadmap. It requires a different
-processing pipeline than images, so it will take some time to get
-right.
+ClipSlim does support PDF compression! You can use it via:
+- Clipboard: copy a PDF and ClipSlim compresses it automatically
+- Folder watcher: drop PDFs into a watched folder
+- Drop zone: drag and drop PDFs
 
-We will announce it when it is ready. Thanks for the interest!
+If you are looking for [specific PDF feature], that is something
+we are considering for a future update.
+
+Let us know at support@appyaccidents.com if you need help getting
+set up.
+
+-- The ClipSlim Team
+```
+
+### Template F4: Batch Processing Request
+
+```
+Hi [Name],
+
+For batch processing, try the Folder Watcher feature:
+1. Open Settings > Folder tab
+2. Select a folder to watch
+3. Drop all your images into that folder
+4. ClipSlim processes them automatically
+
+You can also use the Drop Zone (Option+D or via the menubar) to
+drag and drop multiple files at once (up to 100).
+
+Hope that helps! Let us know if you need anything else.
 
 -- The ClipSlim Team
 ```
 
 ---
 
-## Comparison Reviews ("Why Not ImageOptim / Clop / etc.?")
+## Comparison Reviews
 
 ### Template C1: vs. ImageOptim
 
@@ -180,9 +232,8 @@ ClipSlim takes a different approach: it works automatically on your
 clipboard. Copy an image anywhere, and it is optimized before you
 paste it. No dragging files, no opening an app, no manual steps.
 
-If you frequently share images via Slack, email, or web forms,
-ClipSlim saves you a step every time. They complement each other
-well -- ImageOptim for files, ClipSlim for clipboard.
+They complement each other well -- ImageOptim for files on disk,
+ClipSlim for clipboard workflow.
 
 -- The ClipSlim Team
 ```
@@ -192,13 +243,14 @@ well -- ImageOptim for files, ClipSlim for clipboard.
 ```
 Hi [Name],
 
-Clop is a solid app. ClipSlim focuses specifically on clipboard
-image optimization with a simpler, more focused approach:
+Clop is a solid app. ClipSlim focuses on a few things differently:
 
 - Preset-based optimization (no fiddling with settings each time)
-- Folder watcher for batch processing
+- Folder watcher for automatic directory monitoring
+- PDF compression built in
 - Global hotkeys to switch between original and optimized versions
 - 100% local with zero data collection
+- Free with optional tip jar
 
 Different tools for different workflows. Happy to hear what features
 would make ClipSlim better for your needs.
@@ -216,47 +268,48 @@ your images to a server. For users who handle sensitive screenshots,
 client mockups, or proprietary content, that is a dealbreaker.
 
 ClipSlim processes everything locally on your Mac. Your images never
-leave your device. Plus, it is automatic -- no upload/download
-cycle, no browser tab, no waiting.
+leave your device. Plus, it is automatic -- no upload/download cycle,
+no browser tab, no waiting.
 
 -- The ClipSlim Team
 ```
 
 ---
 
-## Pricing Reviews (If Paid)
+## Pricing and Tip Jar Reviews
 
-### Template PR1: "Too Expensive"
+### Template PR1: "Why Are There In-App Purchases?"
 
 ```
 Hi [Name],
 
-We understand price sensitivity. ClipSlim is priced to sustain
-ongoing development -- we have updates planned with new features
-like [upcoming feature].
+ClipSlim is completely free -- all features work without any
+purchase. The in-app purchases are optional tips (like leaving a
+tip at a coffee shop) for users who want to support ongoing
+development.
 
-Consider how much time you save per image: if ClipSlim saves you
-even 30 seconds per clipboard copy across dozens of images a day,
-it pays for itself quickly.
+Nothing is locked behind a paywall. The tip jar is in Settings >
+Support, and you never have to open it.
 
-If you have feedback on what would make ClipSlim more valuable for
-the price, we are all ears at [support email].
+Thanks for trying ClipSlim!
 
 -- The ClipSlim Team
 ```
 
-### Template PR2: "Should Be Free"
+### Template PR2: "Should Have a Pro Version"
 
 ```
 Hi [Name],
 
-We appreciate the feedback. Building and maintaining a quality
-native macOS app takes significant effort -- ongoing updates, macOS
-compatibility testing, and new features.
+Appreciate the thought! We intentionally kept ClipSlim free with
+all features unlocked. Our philosophy is that a utility this simple
+should just work for everyone.
 
-Our pricing reflects that commitment. We want ClipSlim to be
-something you can rely on for years, and sustainable pricing makes
-that possible.
+The optional tip jar helps sustain development without gating
+features. If there is enough demand for advanced capabilities in
+the future, we will consider the right model.
+
+Thanks for the feedback!
 
 -- The ClipSlim Team
 ```
@@ -279,8 +332,8 @@ To enable:
 3. Toggle it on
 4. Restart ClipSlim
 
-If ClipSlim does not appear in the list, try removing and
-re-adding it using the + button.
+If ClipSlim does not appear in the list, try removing and re-adding
+it using the + button.
 
 Let us know if that resolves the issue.
 
@@ -309,7 +362,7 @@ demand. Thanks for letting us know this matters to you.
 Hi [Name],
 
 If you do not see ClipSlim in your menubar, it may be hidden by
-macOS if your menubar is full.
+macOS when the menubar is crowded.
 
 Try these steps:
 1. Hold Cmd and drag other menubar icons to make space
@@ -317,10 +370,87 @@ Try these steps:
 3. Quit and relaunch ClipSlim
 4. If the icon still does not appear, try logging out and back in
 
-If none of that works, email us at [support email] with your macOS
-version and we will help debug.
+If none of that works, email us at support@appyaccidents.com with
+your macOS version and we will help debug.
 
 -- The ClipSlim Team
+```
+
+### Template M4: Sandbox / Permission Issues
+
+```
+Hi [Name],
+
+If the Folder Watcher is not working, ClipSlim may need permission
+to access the folder you selected.
+
+Try these steps:
+1. Open ClipSlim Settings > Folder tab
+2. Click the folder picker button
+3. Select the folder you want to watch (this grants permission)
+4. macOS should prompt for access -- click Allow
+
+If you see a permissions error, try selecting a folder in your
+home directory (like Downloads or Desktop).
+
+Email us at support@appyaccidents.com if issues persist.
+
+-- The ClipSlim Team
+```
+
+---
+
+## App Review Rejection Appeal (If Needed)
+
+### Template AR1: Responding to a Second 3.1.1 Rejection
+
+```
+Hi App Review Team,
+
+Thank you for the review. We believe we have fully addressed
+Guideline 3.1.1:
+
+1. All Buy Me a Coffee references have been removed from the
+   codebase (verified via comprehensive grep search)
+2. The tip functionality now uses exclusively native StoreKit 2
+   consumable in-app purchases
+3. Three tip products are configured:
+   - com.appyaccidents.clipslim.tip.small ($2.99)
+   - com.appyaccidents.clipslim.tip.medium ($4.99)
+   - com.appyaccidents.clipslim.tip.large ($9.99)
+4. The tip jar is in Settings > Support tab
+5. All tips are optional -- the app is fully functional without
+   any purchase
+
+Could you please clarify what specific element still violates
+3.1.1? We want to resolve this completely.
+
+Thank you,
+AppyAccidents
+support@appyaccidents.com
+```
+
+### Template AR2: Responding to a Different Guideline Rejection
+
+```
+Hi App Review Team,
+
+Thank you for the feedback regarding Guideline [X.X.X].
+
+We understand the concern about [specific issue mentioned].
+We will address this as follows:
+
+[Specific fix description]
+
+We will resubmit with the fix within [timeframe].
+
+Could you confirm that the Guideline 3.1.1 issue from our
+previous submission is now resolved? We want to ensure the
+StoreKit 2 implementation meets your requirements.
+
+Thank you,
+AppyAccidents
+support@appyaccidents.com
 ```
 
 ---
@@ -334,13 +464,13 @@ version and we will help debug.
 5. **Never argue** -- even if the review is unfair, stay professional
 6. **Provide an escape hatch** -- always offer direct email support
 7. **Track patterns** -- if 3+ people mention the same issue, prioritize a fix
-8. **Update responses** when fixes ship -- edit or reply again
+8. **Update responses** when fixes ship -- reply again noting the fix
 
 ## Escalation Priority
 
 | Severity | Response Time | Examples |
 |----------|---------------|----------|
 | Critical | Immediately | Data loss, security issue, crash on launch |
-| High | Within 4 hours | Crash during use, major feature broken |
+| High | Within 4 hours | Crash during use, major feature broken, StoreKit failure |
 | Medium | Within 24 hours | Minor bugs, feature requests, complaints |
 | Low | Within 48 hours | Positive reviews, general questions |

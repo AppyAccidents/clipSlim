@@ -31,8 +31,9 @@ struct SettingsView: View {
                 }
 
             SupportTab()
+                .environment(viewModel)
                 .tabItem {
-                    Label("Support", systemImage: "cup.and.saucer")
+                    Label("Support", systemImage: "heart.fill")
                 }
 
             AboutTab()

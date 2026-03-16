@@ -1,8 +1,8 @@
-# Research Action Checklist - clipSlim
+# Research Action Checklist - ClipSlim
 
-**Date:** 2026-03-05
-**Launch Target:** March 7-8, 2026
-**Status:** Research Complete -- Ready for Implementation
+**Date:** 2026-03-16 (updated from 2026-03-05 original)
+**Status:** Research Complete -- Ready for Metadata Optimization
+**App Store ID:** 6759780567
 
 ---
 
@@ -11,9 +11,14 @@
 - [ ] Read `keyword-list.md` completely
 - [ ] Confirm top 6 primary keywords align with app features
 - [ ] Read `competitor-gaps.md` completely
-- [ ] Note the ZERO-competition opportunities (clipboard optimization, folder watcher, focus mode)
-- [ ] Review competitor title patterns -- decide on title approach
+- [ ] Note the ZERO-competition opportunities:
+  - Clipboard image optimization (zero MAS competition)
+  - Focus mode (zero competitors)
+  - Dominant color extraction (zero competitors)
+- [ ] Review the Clop comparison table -- understand the direct competitor
+- [ ] Note Zipic as an emerging threat (has clipboard compress + strong automation)
 - [ ] Verify keyword field fits within 100 characters
+- [ ] Review pricing advantage analysis (free vs all paid competitors)
 
 ---
 
@@ -21,15 +26,16 @@
 
 ### Title and Subtitle
 - [ ] Finalize App Store title (30 chars max)
-  - Recommended: `clipSlim - Image Compressor` (28 chars)
-  - Alternative: `clipSlim: Clipboard Optimizer` (30 chars)
+  - Recommended: `ClipSlim - Image Compressor` (28 chars)
+  - Alternative: `ClipSlim: Clipboard Optimizer` (30 chars)
 - [ ] Finalize App Store subtitle (30 chars max)
   - Recommended: `Clipboard Image Compression` (28 chars)
-  - Alternative: `Auto Clipboard Optimizer` (25 chars)
+  - Alternative: `Auto Image & PDF Optimizer` (27 chars)
+- [ ] Decision criteria: "Clipboard" in subtitle captures unique niche; "PDF" captures secondary market
 
 ### Keyword Field
 - [ ] Finalize 100-character keyword field
-  - Recommended: `png,jpg,jpeg,reduce,file,size,batch,photo,resize,optimize,menubar,folder,watch,automatic,lightweight`
+  - Recommended: `png,jpg,jpeg,reduce,file,size,batch,photo,resize,optimize,menubar,folder,watch,automatic,pdf,shrink`
   - Do NOT duplicate words already in title/subtitle
   - Adjust based on final title/subtitle choice
 
@@ -39,90 +45,120 @@
   - [ ] "image compression" / "compress images"
   - [ ] "file size" / "reduce file size"
   - [ ] "clipboard" + optimization context
-  - [ ] "menu bar"
+  - [ ] "menu bar" / "menubar"
   - [ ] "png" and "jpg"
-  - [ ] "local processing" / "no data collection"
+  - [ ] "pdf compression"
+  - [ ] "local processing" / "no cloud" / "no data collection"
   - [ ] "folder watcher" / "folder monitoring"
-  - [ ] "presets"
-  - [ ] "keyboard shortcuts" / "hotkeys"
+  - [ ] "drag and drop"
   - [ ] "automatic" / "automatically"
-- [ ] Use bullet points for features (4/5 top competitors do this)
-- [ ] Lead with the unique value prop (automatic clipboard optimization)
-- [ ] Include use cases section (designers, developers, content creators)
-- [ ] End with privacy note (25/84 competitors mention privacy)
+  - [ ] "free" (emphasize no limits vs competitors)
+  - [ ] "hotkeys" / "keyboard shortcuts"
+  - [ ] "focus mode"
+  - [ ] "dominant color"
+- [ ] Use bullet points for features (most successful competitors do this)
+- [ ] Lead with unique value prop: "the only Mac App Store app that automatically optimizes images on your clipboard"
+- [ ] Include quantified claims if available (e.g., "reduce file sizes by up to X%")
+- [ ] Include use cases section (designers, developers, content creators, bloggers)
+- [ ] End with privacy note (local processing, no cloud, no data collection)
+- [ ] Mention "free" and "no limits" to differentiate from Clop (5/session), Zipic (25/day), Optimage (24/day)
 
 ### Category Selection
-- [ ] Primary category: **Utilities** (less saturated than Photo & Video)
-- [ ] Secondary category: **Productivity** or **Graphics & Design**
+- [ ] Primary category: **Utilities** (less saturated than Photo & Video for compressors)
+- [ ] Secondary category: **Graphics & Design** or **Productivity**
 
 ### Visual Assets
-- [ ] App icon leverages neon aesthetic (unique in category)
+- [ ] App icon leverages neon aesthetic (unique in category -- no competitor has this)
 - [ ] Screenshots highlight:
-  - [ ] Menu bar integration
-  - [ ] Clipboard auto-optimization in action
-  - [ ] Preset selection
+  - [ ] Menu bar integration (lightweight, always-on)
+  - [ ] Clipboard auto-optimization in action (before/after)
+  - [ ] Drop Zone window with batch files
   - [ ] Folder watcher setup
-  - [ ] Before/after file size comparison
-- [ ] Consider App Preview video showing the automatic workflow
+  - [ ] Settings/preset selection
+  - [ ] PDF compression workflow
+  - [ ] Focus mode configuration
+- [ ] Consider App Preview video showing the automatic clipboard workflow
+- [ ] Screenshot captions should include keywords ("Automatic Clipboard Compression", "Drag & Drop Image Optimizer")
 
 ---
 
-## Phase 3: Direct Distribution (Website/DMG) (Est: 1 hour)
+## Phase 3: Competitive Differentiation Messaging (Est: 30 min)
 
-- [ ] Create landing page with SEO targeting:
-  - Page title: "clipSlim - Automatic Clipboard Image Compressor for Mac"
-  - H1: "Compress clipboard images automatically on macOS"
-  - Meta description: Include "menu bar", "image compressor", "clipboard", "macOS"
-- [ ] Include structured data (schema.org SoftwareApplication)
-- [ ] Create download page optimized for "mac image compressor download"
-- [ ] Add comparison table vs competitors (ImageOptim, Squash, etc.)
+- [ ] Draft 3 key differentiators for "What's New" and promotional text:
+  1. "Only MAS app with automatic clipboard image optimization"
+  2. "Completely free -- no daily limits, no session caps, no subscription"
+  3. "100% local processing -- your images never leave your Mac"
+- [ ] Review Clop's messaging on lowtechguys.com -- ensure ClipSlim doesn't accidentally copy their language
+- [ ] Identify 3 features Clop lacks that ClipSlim has:
+  - Focus mode
+  - Dominant color extraction
+  - FSEventStream folder watching
+  - Fully free (no session limits)
+- [ ] Prepare comparison points for potential landing page / marketing:
+  - ClipSlim vs Clop
+  - ClipSlim vs ImageOptim
+  - ClipSlim vs Squash
 
 ---
 
 ## Phase 4: Pre-Launch Keyword Validation (Est: 30 min)
 
-- [ ] Search Mac App Store for each primary keyword -- verify competition level
-  - [ ] "image compressor" -- check top 5 results
-  - [ ] "clipboard optimizer" -- check top 5 results (expect very few)
-  - [ ] "image optimizer mac" -- check top 5 results
-  - [ ] "compress png" -- check top 5 results
-  - [ ] "clipboard image" -- check results (expect very few)
-- [ ] Verify no new competitors launched since research date
-- [ ] Confirm keyword field has no wasted words (all unique, all relevant)
+- [ ] Search Mac App Store for each primary keyword -- verify competition level:
+  - [ ] "image compressor" -- check top 5 results, note competitors
+  - [ ] "clipboard optimizer" -- expect very few results (confirm zero competition)
+  - [ ] "pdf compressor" -- check top 5 results
+  - [ ] "compress png" -- check results
+  - [ ] "clipboard image" -- expect near-zero (confirm gap)
+  - [ ] "menubar utility" -- check results
+- [ ] Verify Clop's MAS presence/ranking for relevant keywords
+- [ ] Verify Zipic's MAS presence/ranking for relevant keywords
+- [ ] Confirm keyword field has no wasted words (all unique, all relevant, no duplicates with title/subtitle)
 
 ---
 
 ## Phase 5: Post-Launch Monitoring Setup (Est: 30 min)
 
-- [ ] Bookmark competitor App Store pages for periodic review:
-  - [ ] Resize it - compress any image (top rated compressor)
-  - [ ] Paste -- Limitless Clipboard (top clipboard manager)
-  - [ ] Clipboard - Paste Keyboard (highest rated clipboard tool)
-  - [ ] Any Image Compressor JPG PNG (relevant positioning)
-  - [ ] Image Tool+ (premium compressor)
+- [ ] Bookmark competitor pages for periodic review:
+  - [ ] Clop: https://lowtechguys.com/clop/ (primary competitor)
+  - [ ] Zipic: https://zipic.app/ (emerging competitor)
+  - [ ] Squash: https://realmacsoftware.com/squash/
+  - [ ] Optimage: https://optimage.app/
+  - [ ] Compresto: https://compresto.app/
+  - [ ] Resize it (MAS -- top rated compressor, 984 ratings)
 - [ ] Set calendar reminders:
-  - [ ] Week 1 post-launch: Check keyword rankings
-  - [ ] Week 2: Review first ratings/reviews
-  - [ ] Month 1: Full keyword performance review
-  - [ ] Month 3: Repeat competitor research (re-run this analysis)
-- [ ] Track these metrics:
-  - [ ] Impressions per keyword (App Store Connect)
-  - [ ] Conversion rate by keyword
+  - [ ] Week 1 post-launch: Check keyword rankings in App Store Connect
+  - [ ] Week 2: Review first ratings/reviews, adjust promotional text if needed
+  - [ ] Month 1: Full keyword performance review (impressions, conversions)
+  - [ ] Month 3: Repeat full competitor research (re-run this analysis)
+  - [ ] Month 6: Evaluate keyword field changes based on data
+- [ ] Track these metrics in App Store Connect:
+  - [ ] Impressions per keyword source
+  - [ ] Conversion rate (impressions to downloads)
   - [ ] Rating count growth
   - [ ] Category ranking position
+  - [ ] Search terms driving traffic
 
 ---
 
 ## Phase 6: Rating Momentum Strategy (Est: ongoing)
 
-Most competitors in the image compressor space have ZERO ratings. Even 10-20 ratings will establish credibility.
+Most MAS image compressors have ZERO ratings. Even 10-20 ratings will establish credibility. 50+ puts ClipSlim in the top tier.
 
 - [ ] Implement in-app rating prompt (SKStoreReviewController)
-  - Trigger after: 3+ successful compressions
+  - Trigger after: 5+ successful compressions across 2+ sessions
   - Do not trigger during first session
+  - Respect system-level rate limiting
 - [ ] Request reviews from beta testers on launch day
-- [ ] Share on developer communities (indie dev, macOS subs) for initial visibility
-- [ ] Consider Product Hunt launch in week 1-2
+- [ ] Share on developer/designer communities:
+  - [ ] Reddit: r/macapps, r/mac, r/webdev, r/design
+  - [ ] Hacker News (Show HN)
+  - [ ] Product Hunt (consider timing for max visibility)
+  - [ ] Indie Hackers
+  - [ ] MacStories / 9to5Mac tips
+- [ ] Consider reaching out to review sites:
+  - [ ] MacSources (reviewed Squash positively)
+  - [ ] Macworld
+  - [ ] SetApp blog / community
 
 ---
 
@@ -130,11 +166,14 @@ Most competitors in the image compressor space have ZERO ratings. Even 10-20 rat
 
 Before marking research phase complete:
 
-- [x] At least 10 primary keywords identified (32 total keywords found)
-- [x] At least 3 competitors analyzed (8 competitors analyzed in depth)
+- [x] At least 10 primary keywords identified (35 total keywords found)
+- [x] At least 3 competitors analyzed (10 competitors analyzed -- 7 in depth)
 - [x] Clear implementation locations for each keyword (title, subtitle, keyword field, description mapped)
 - [x] Competitive gaps documented (5 ZERO-competition gaps, 6 low-competition gaps)
-- [x] Data sourced from real iTunes API (84 apps fetched and analyzed)
+- [x] Data sourced from real APIs and web research (iTunes API + WebFetch + WebSearch)
+- [x] Off-store competitors analyzed (Clop, ImageOptim, Squash, Zipic, Optimage, Compresto, JPEGmini)
+- [x] Pricing comparison completed
+- [x] Threat assessment documented
 - [x] Raw data saved to `raw-data/` directory
 
 ---
@@ -143,14 +182,15 @@ Before marking research phase complete:
 
 | Metric | Value |
 |--------|-------|
-| Total apps analyzed | 84 |
-| Direct competitors (image compressors) | 35+ |
-| Clipboard managers analyzed | 20+ |
+| Total MAS apps analyzed | 84 |
+| Off-store competitors analyzed | 7 |
+| Direct clipboard+compression competitors | 1 (Clop) + 1 partial (Zipic) |
 | Primary keywords identified | 6 |
-| Secondary keywords identified | 11 |
-| Long-tail keywords identified | 15 |
-| ZERO-competition gaps found | 5 |
-| Competitors with 100+ ratings | 4 (all clipboard managers, not compressors) |
+| Secondary keywords identified | 13 |
+| Long-tail keywords identified | 16 |
+| ZERO-MAS-competition gaps found | 5 |
+| Competitors with 100+ MAS ratings | 4 (all clipboard managers, not compressors) |
+| Price advantage over nearest competitor | 100% (free vs $15 Clop Pro) |
 
 ---
 
@@ -159,26 +199,34 @@ Before marking research phase complete:
 **For metadata optimization phase (aso-optimizer):**
 - Use `keyword-list.md` for title, subtitle, and keyword field implementation
 - Use `competitor-gaps.md` for description messaging priorities
-- clipSlim's strongest positioning: ONLY app that combines clipboard monitoring + image compression
-- Lead with automation angle -- every competitor requires manual interaction
+- ClipSlim's strongest positioning: ONLY MAS app combining clipboard monitoring + image/PDF compression
+- Lead with automation angle -- most competitors require manual interaction
+- Price differentiation is critical -- ClipSlim is the ONLY fully free option with no limits
 - Privacy messaging is a differentiator (local processing, no data collection)
+- The neon UI aesthetic is unique in the category -- leverage in screenshots
+
+**Key competitive insights to remember:**
+- Clop is the primary threat -- monitor their MAS presence
+- Zipic is emerging with clipboard compress + strong automation -- monitor feature additions
+- ImageOptim dominates developer mindshare but is NOT on MAS
+- Most MAS compressors have zero ratings -- the bar is low for credibility
 
 **Data limitations:**
-- Search volume estimates are approximations (no Apple Search Ads data available)
-- Some well-known tools (ImageOptim, Squash) are not on the Mac App Store and could not be fetched via iTunes API
-- Competition scores are based on title/description keyword frequency, not actual App Store ranking algorithms
-- Rating counts reflect Mac App Store only, not direct distribution popularity
+- Search volume estimates are approximations (no Apple Search Ads data)
+- iTunes API returned schema descriptions instead of live data on 2026-03-16 (used cached data from 2026-03-05 + fresh web research)
+- Off-store competitor data from product pages and review articles (not App Store metrics)
+- Rating counts for off-store tools are approximate
 
 ---
 
 ## File Inventory
 
 ```
-outputs/clipSlim/01-research/
-  keyword-list.md          -- Prioritized keywords with implementation guide
-  competitor-gaps.md       -- Competitive intelligence and gap analysis
+outputs/ClipSlim/01-research/
+  keyword-list.md          -- Prioritized keywords with implementation guide (35 keywords)
+  competitor-gaps.md       -- Competitive intelligence and gap analysis (10 competitors)
   action-research.md       -- This checklist
   raw-data/
-    competitors.json       -- Detailed competitor data (15 apps)
+    competitors.json       -- Detailed competitor data from iTunes API
     all_itunes_results.json -- Full iTunes API dataset (84 apps)
 ```

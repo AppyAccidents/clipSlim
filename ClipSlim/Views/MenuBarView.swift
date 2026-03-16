@@ -228,10 +228,8 @@ struct MenuBarView: View {
                 viewModel.undoLastOptimization()
             }
 
-            MenuActionButton(icon: "cup.and.saucer.fill", title: "Buy me a coffee…") {
-                if let url = URL(string: "https://buymeacoffee.com/appyaccidents") {
-                    NSWorkspace.shared.open(url)
-                }
+            MenuActionButton(icon: "heart.fill", title: "Leave a Tip...") {
+                openSettings()
             }
 
             MenuActionButton(icon: "clock.arrow.circlepath", title: "Debug Log (Nerd View)") {
