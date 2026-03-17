@@ -6,7 +6,7 @@ struct DropZoneView: View {
 
     @State private var isTargeted = false
 
-    private let acceptedExtensions: Set<String> = ["jpg", "jpeg", "png", "tiff", "tif", "bmp", "heic", "pdf"]
+    private let acceptedExtensions: Set<String> = ["jpg", "jpeg", "png", "tiff", "tif", "bmp", "heic", "pdf", "webp"]
 
     var body: some View {
         VStack(spacing: 0) {
@@ -228,6 +228,13 @@ struct DropZoneView: View {
 
         group.notify(queue: .main) {
             guard !urls.isEmpty else { return }
+            // F7: Single-item drop → quick action mode
+            if urls.count == 1, let singleURL = urls.first {
+                if dropZoneService.onSingleFileDropped != nil {
+                    dropZoneService.onSingleFileDropped?(singleURL)
+                    return
+                }
+            }
             dropZoneService.onFilesDropped?(urls)
         }
     }

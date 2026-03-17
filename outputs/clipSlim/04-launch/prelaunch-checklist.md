@@ -100,9 +100,9 @@ This is the reason for rejection. Every item here must be verified before resubm
 ## Phase 3: App Store Connect Metadata (P1)
 
 ### Text Metadata
-- [ ] App Name verified: `clipSlim - Image Optimizer` (25/30 chars) -- unchanged
-- [ ] Subtitle verified: `Clipboard & Folder Compression` (30/30 chars) -- unchanged
-- [ ] Keywords verified: 91/100 chars, no external payment terms
+- [ ] App Name verified: `ClipSlim - Clipboard Optimizer` (30/30 chars)
+- [ ] Subtitle verified: `Image & PDF Compressor for Mac` (30/30 chars)
+- [ ] Keywords verified: 95/100 chars, no external payment terms
 - [ ] Description verified: no BMC or external donation references
 - [ ] Promotional text reviewed (update if desired)
 - [ ] What's New updated for this version (mention tip jar if appropriate)

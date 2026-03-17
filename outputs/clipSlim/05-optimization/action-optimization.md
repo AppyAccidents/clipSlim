@@ -36,13 +36,13 @@ The Mac App Store conversion rate (impressions to installs) is the single most i
 
 ### Priority 2: Keyword Ranking (Months 1-3)
 
-**Initial Keyword Strategy (deployed at submission):**
+**Initial Keyword Strategy (deployed at submission, March 16):**
 
-Title keywords: clipSlim, Image, Optimizer
-Subtitle keywords: Clipboard, Folder, Compression
+Title keywords: ClipSlim, Clipboard, Optimizer
+Subtitle keywords: Image, PDF, Compressor, Mac
 
-Keyword field (91/100 chars):
-`compress,png,jpeg,resize,batch,shrink,menubar,photo,converter,heic,screenshot,bulk,filesize`
+Keyword field (95/100 chars):
+`compress,png,jpeg,resize,batch,shrink,menubar,photo,converter,heic,screenshot,bulk,pdf,filesize`
 
 **Week 2 Check (Approval + 14 days):**
 - [ ] Search each keyword manually in Mac App Store

@@ -121,6 +121,26 @@ final class AppSettings {
     var pdfStripMetadata: Bool { didSet { defaults.set(pdfStripMetadata, forKey: Keys.pdfStripMetadata) } }
     var dropZoneVisibleOnLaunch: Bool { didSet { defaults.set(dropZoneVisibleOnLaunch, forKey: Keys.dropZoneVisibleOnLaunch) } }
 
+    // F2: Smart Format
+    var smartFormatEnabled: Bool { didSet { defaults.set(smartFormatEnabled, forKey: Keys.smartFormatEnabled) } }
+    var webpPreferred: Bool { didSet { defaults.set(webpPreferred, forKey: Keys.webpPreferred) } }
+
+    // F4: Pipeline Steps
+    var enabledPipelineStepsRaw: String { didSet { defaults.set(enabledPipelineStepsRaw, forKey: Keys.enabledPipelineStepsRaw) } }
+
+    // F8: Developer Mode
+    var developerModeEnabled: Bool { didSet { defaults.set(developerModeEnabled, forKey: Keys.developerModeEnabled) } }
+
+    // F3: Quality Guard
+    var qualityGuardEnabled: Bool { didSet { defaults.set(qualityGuardEnabled, forKey: Keys.qualityGuardEnabled) } }
+    var qualityGuardThreshold: Double { didSet { defaults.set(qualityGuardThreshold, forKey: Keys.qualityGuardThreshold) } }
+
+    // F1: Context-Aware
+    var appPresetMappingsData: String { didSet { defaults.set(appPresetMappingsData, forKey: Keys.appPresetMappingsData) } }
+
+    // F9: Folder Rules
+    var folderRulesData: String { didSet { defaults.set(folderRulesData, forKey: Keys.folderRulesData) } }
+
     private var watchedFoldersData: String { didSet { defaults.set(watchedFoldersData, forKey: Keys.watchedFoldersData) } }
 
     private enum Keys {
@@ -156,6 +176,14 @@ final class AppSettings {
         static let pdfImageQuality = "pdfImageQuality"
         static let pdfStripMetadata = "pdfStripMetadata"
         static let dropZoneVisibleOnLaunch = "dropZoneVisibleOnLaunch"
+        static let smartFormatEnabled = "smartFormatEnabled"
+        static let webpPreferred = "webpPreferred"
+        static let enabledPipelineStepsRaw = "enabledPipelineStepsRaw"
+        static let developerModeEnabled = "developerModeEnabled"
+        static let qualityGuardEnabled = "qualityGuardEnabled"
+        static let qualityGuardThreshold = "qualityGuardThreshold"
+        static let appPresetMappingsData = "appPresetMappingsData"
+        static let folderRulesData = "folderRulesData"
     }
 
     // Chosen behavior: if preferred output is JPEG but input has alpha, force PNG.
@@ -205,6 +233,15 @@ final class AppSettings {
         pdfImageQuality = defaults.object(forKey: Keys.pdfImageQuality) as? Double ?? 0.6
         pdfStripMetadata = defaults.object(forKey: Keys.pdfStripMetadata) as? Bool ?? true
         dropZoneVisibleOnLaunch = defaults.object(forKey: Keys.dropZoneVisibleOnLaunch) as? Bool ?? false
+
+        smartFormatEnabled = defaults.object(forKey: Keys.smartFormatEnabled) as? Bool ?? false
+        webpPreferred = defaults.object(forKey: Keys.webpPreferred) as? Bool ?? false
+        enabledPipelineStepsRaw = defaults.string(forKey: Keys.enabledPipelineStepsRaw) ?? PipelineStep.allCases.map(\.rawValue).joined(separator: ",")
+        developerModeEnabled = defaults.object(forKey: Keys.developerModeEnabled) as? Bool ?? false
+        qualityGuardEnabled = defaults.object(forKey: Keys.qualityGuardEnabled) as? Bool ?? true
+        qualityGuardThreshold = defaults.object(forKey: Keys.qualityGuardThreshold) as? Double ?? 0.90
+        appPresetMappingsData = defaults.string(forKey: Keys.appPresetMappingsData) ?? "[]"
+        folderRulesData = defaults.string(forKey: Keys.folderRulesData) ?? "[]"
 
         if storedPresetRaw != normalizedPresetRaw {
             defaults.set(normalizedPresetRaw, forKey: Keys.selectedPresetRaw)
@@ -300,6 +337,52 @@ final class AppSettings {
 
     var currentAllowTransparencyLoss: Bool {
         selectedPreset == .custom ? customAllowTransparencyLoss : selectedPreset.allowTransparencyLoss
+    }
+
+    // MARK: - Pipeline Steps
+
+    var enabledPipelineSteps: Set<PipelineStep> {
+        get {
+            let raw = enabledPipelineStepsRaw
+                .split(separator: ",")
+                .compactMap { PipelineStep(rawValue: String($0)) }
+            return Set(raw)
+        }
+        set {
+            enabledPipelineStepsRaw = newValue.map(\.rawValue).joined(separator: ",")
+        }
+    }
+
+    func isPipelineStepEnabled(_ step: PipelineStep) -> Bool {
+        enabledPipelineSteps.contains(step)
+    }
+
+    func togglePipelineStep(_ step: PipelineStep) {
+        var steps = enabledPipelineSteps
+        if steps.contains(step) {
+            steps.remove(step)
+        } else {
+            steps.insert(step)
+        }
+        enabledPipelineSteps = steps
+    }
+
+    // MARK: - New Settings Bindings
+
+    var smartFormatEnabledBinding: Binding<Bool> {
+        Binding(get: { self.smartFormatEnabled }, set: { self.smartFormatEnabled = $0 })
+    }
+    var webpPreferredBinding: Binding<Bool> {
+        Binding(get: { self.webpPreferred }, set: { self.webpPreferred = $0 })
+    }
+    var developerModeEnabledBinding: Binding<Bool> {
+        Binding(get: { self.developerModeEnabled }, set: { self.developerModeEnabled = $0 })
+    }
+    var qualityGuardEnabledBinding: Binding<Bool> {
+        Binding(get: { self.qualityGuardEnabled }, set: { self.qualityGuardEnabled = $0 })
+    }
+    var qualityGuardThresholdBinding: Binding<Double> {
+        Binding(get: { self.qualityGuardThreshold }, set: { self.qualityGuardThreshold = $0 })
     }
 
     var shouldPresentOnboarding: Bool {

@@ -55,6 +55,9 @@ struct PresetsTab: View {
                 VibeHintText(text: "PNG output ignores quality setting.")
             }
 
+            PipelineSection()
+                .environment(viewModel)
+
             VibeSettingsCard(title: "Advanced", icon: "tuningfork") {
                 HStack {
                     Text("Max Dimension")

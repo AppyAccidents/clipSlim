@@ -1,9 +1,10 @@
 # ClipSlim ASO Audit - Final Report
 
-**Date:** March 16, 2026
+**Date:** March 17, 2026 (updated from March 16 original)
 **Developer:** AppyAccidents
 **App:** ClipSlim - Clipboard Optimizer (App Store ID: 6759780567)
-**Status:** Version 1.0.0 submitted, WAITING FOR REVIEW
+**Status:** Version 1.0.0 (Build 8) submitted March 16, WAITING FOR REVIEW
+**Approval Expected:** March 17-19, 2026
 
 ---
 
@@ -11,7 +12,7 @@
 
 ClipSlim enters the Mac App Store in an uncontested niche. After analyzing 84 macOS apps via iTunes API and 7 off-store competitors via web research, the finding is clear: no Mac App Store app combines clipboard monitoring with image/PDF compression. Clop is the only direct competitor and distributes primarily off-store. ClipSlim's free pricing model (tip jar only) is more generous than every competitor in the category.
 
-The Guideline 3.1.1 rejection has been resolved. All Buy Me a Coffee references are removed. A native StoreKit 2 tip jar with 3 consumable IAPs ($2.99 / $4.99 / $9.99) is implemented and configured. Build 7 is uploaded, validated, and submitted for review.
+The Guideline 3.1.1 rejection has been resolved. All Buy Me a Coffee references are removed. A native StoreKit 2 tip jar with 3 consumable IAPs ($2.99 / $4.99 / $9.99) is implemented and configured. Build 8 is uploaded, validated, and submitted for review.
 
 ---
 

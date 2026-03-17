@@ -24,6 +24,7 @@ struct OverlayView: View {
     @State private var dominantHexCodes: [String] = []
     @State private var dominantCGColors: [CGColor] = []
     @State private var copiedHex: String? = nil
+    @State private var ssimScore: Double? = nil
 
     private let minResizeDimension = 16
     private let maxResizeDimension = 8192
@@ -64,7 +65,24 @@ struct OverlayView: View {
     private func content(_ item: OverlayItem) -> some View {
         VStack(alignment: .leading, spacing: blockSpacing) {
             header
+
+            // F1: Context-aware suggestion banner
+            if let presetName = item.suggestedPresetName, let appName = item.suggestedAppName {
+                suggestionBanner(appName: appName, presetName: presetName)
+            }
+
+            // F6: Duplicate detected badge
+            if item.isDuplicate {
+                duplicateBadge
+            }
+
             summary(item)
+
+            // F3: Quality score badge (visible to all users when below threshold)
+            if let score = item.qualityScore {
+                qualityBadge(score: score, belowThreshold: item.qualityBelowThreshold)
+            }
+
             OrangeDivider()
             primaryActions
             if item.pdfPageCount == nil {
@@ -76,6 +94,10 @@ struct OverlayView: View {
                 cropSection
                 OrangeDivider()
                 colorsSection
+            }
+            if showDevDetails {
+                OrangeDivider()
+                devDetailsSection(item)
             }
         }
         .padding(VibeCheckTheme.Spacing.xl)
@@ -208,10 +230,11 @@ struct OverlayView: View {
             Picker("Format", selection: $formatSelection) {
                 Text("JPEG").tag(ImageFormat.jpeg)
                 Text("PNG").tag(ImageFormat.png)
+                Text("WebP").tag(ImageFormat.webp)
             }
             .labelsHidden()
             .pickerStyle(.segmented)
-            .frame(width: 116)
+            .frame(width: 174)
 
             applyButton("Apply Format") {
                 overlayService.onApplyFormatOverride?(formatSelection)
@@ -334,6 +357,150 @@ struct OverlayView: View {
             }
         }
         .buttonStyle(.plain)
+    }
+
+    // MARK: - Suggestion Banner (F1)
+
+    private func suggestionBanner(appName: String, presetName: String) -> some View {
+        HStack(spacing: VibeCheckTheme.Spacing.sm) {
+            Image(systemName: "sparkle")
+                .foregroundColor(VibeCheckTheme.Colors.neonOrange)
+                .font(.system(size: 11))
+            Text("\(appName) detected — use \(presetName)?")
+                .font(VibeCheckTheme.Typography.caption)
+                .foregroundColor(VibeCheckTheme.Colors.textPrimary)
+                .lineLimit(1)
+            Spacer()
+            Button("Accept") {
+                overlayService.onAcceptSuggestion?()
+            }
+            .font(VibeCheckTheme.Typography.caption)
+            .buttonStyle(.borderless)
+            .foregroundColor(VibeCheckTheme.Colors.neonCyan)
+
+            Button("Dismiss") {
+                overlayService.onDismissSuggestion?()
+            }
+            .font(VibeCheckTheme.Typography.caption)
+            .buttonStyle(.borderless)
+            .foregroundColor(VibeCheckTheme.Colors.textTertiary)
+        }
+        .padding(VibeCheckTheme.Spacing.sm)
+        .background(VibeCheckTheme.Colors.neonOrange.opacity(0.1))
+        .cornerRadius(VibeCheckTheme.CornerRadius.sm)
+    }
+
+    // MARK: - Duplicate Badge (F6)
+
+    private var duplicateBadge: some View {
+        HStack(spacing: VibeCheckTheme.Spacing.sm) {
+            Image(systemName: "doc.on.doc.fill")
+                .foregroundColor(VibeCheckTheme.Colors.warning)
+                .font(.system(size: 11))
+            Text("Duplicate detected")
+                .font(VibeCheckTheme.Typography.caption)
+                .foregroundColor(VibeCheckTheme.Colors.warning)
+            Spacer()
+            Button("Reuse Previous") {
+                overlayService.onReuseDuplicate?()
+            }
+            .font(VibeCheckTheme.Typography.caption)
+            .buttonStyle(.borderless)
+            .foregroundColor(VibeCheckTheme.Colors.neonCyan)
+        }
+        .padding(VibeCheckTheme.Spacing.sm)
+        .background(VibeCheckTheme.Colors.warning.opacity(0.1))
+        .cornerRadius(VibeCheckTheme.CornerRadius.sm)
+    }
+
+    // MARK: - Quality Badge (F3)
+
+    private func qualityBadge(score: Double, belowThreshold: Bool) -> some View {
+        HStack(spacing: VibeCheckTheme.Spacing.sm) {
+            Image(systemName: belowThreshold ? "exclamationmark.triangle" : "checkmark.shield")
+                .foregroundColor(belowThreshold ? VibeCheckTheme.Colors.warning : VibeCheckTheme.Colors.statusOk)
+                .font(.system(size: 11))
+            Text("\(Int(score * 100))% match")
+                .font(VibeCheckTheme.Typography.monospacedBold)
+                .foregroundColor(belowThreshold ? VibeCheckTheme.Colors.warning : VibeCheckTheme.Colors.statusOk)
+            if belowThreshold {
+                Spacer()
+                Text("Quality below threshold")
+                    .font(VibeCheckTheme.Typography.caption)
+                    .foregroundColor(VibeCheckTheme.Colors.warning)
+            }
+        }
+    }
+
+    // MARK: - Dev Details (F8)
+
+    private var showDevDetails: Bool {
+        // Access AppSettings via a lightweight check — dev mode is a UserDefaults bool
+        UserDefaults.standard.bool(forKey: "developerModeEnabled")
+    }
+
+    private func devDetailsSection(_ item: OverlayItem) -> some View {
+        VStack(alignment: .leading, spacing: VibeCheckTheme.Spacing.xs) {
+            sectionLabel("DEV INFO")
+
+            Group {
+                devRow("Original", item.result.preciseOriginalSize)
+                devRow("Optimized", item.result.preciseOptimizedSize)
+                devRow("Duration", String(format: "%.1fms", item.result.duration * 1000))
+                devRow("Format", item.result.format.rawValue)
+                devRow("Orig dims", "\(item.result.originalDimensions.width)x\(item.result.originalDimensions.height)")
+                devRow("Opt dims", "\(item.result.optimizedDimensions.width)x\(item.result.optimizedDimensions.height)")
+
+                if let reason = item.result.formatReason {
+                    devRow("Reason", reason)
+                }
+                if let ct = item.result.contentType {
+                    devRow("Content", ct)
+                }
+                if let ssim = item.result.ssimScore {
+                    devRow("SSIM", String(format: "%.4f", ssim))
+                }
+                if let strategy = item.result.strategyUsed {
+                    devRow("Strategy", strategy)
+                }
+            }
+
+            if let score = ssimScore {
+                HStack(spacing: VibeCheckTheme.Spacing.xs) {
+                    Text("Quality Match")
+                        .font(VibeCheckTheme.Typography.caption)
+                        .foregroundColor(VibeCheckTheme.Colors.textTertiary)
+                    Text("\(Int(score * 100))%")
+                        .font(VibeCheckTheme.Typography.monospacedBold)
+                        .foregroundColor(score >= 0.90 ? VibeCheckTheme.Colors.statusOk : VibeCheckTheme.Colors.warning)
+                }
+            }
+        }
+        .onAppear {
+            computeSSIM(original: item.originalData, optimized: item.optimizedData)
+        }
+    }
+
+    private func devRow(_ label: String, _ value: String) -> some View {
+        HStack {
+            Text(label)
+                .font(VibeCheckTheme.Typography.caption)
+                .foregroundColor(VibeCheckTheme.Colors.textTertiary)
+                .frame(width: 70, alignment: .leading)
+            Text(value)
+                .font(VibeCheckTheme.Typography.monospacedFont)
+                .foregroundColor(VibeCheckTheme.Colors.textSecondary)
+                .lineLimit(1)
+        }
+    }
+
+    private func computeSSIM(original: Data, optimized: Data) {
+        Task.detached(priority: .utility) {
+            let score = QualityScorer.shared.computeSSIM(original: original, optimized: optimized)
+            await MainActor.run {
+                self.ssimScore = score
+            }
+        }
     }
 
     // MARK: - Shared Components

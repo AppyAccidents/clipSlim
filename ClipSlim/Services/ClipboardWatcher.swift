@@ -68,6 +68,8 @@ final class ClipboardWatcher {
                 return .png
             case .jpeg:
                 return NSPasteboard.PasteboardType(UTType.jpeg.identifier)
+            case .webp:
+                return NSPasteboard.PasteboardType(UTType.webP.identifier)
             }
         }()
         pb.setData(data, forType: pasteboardType)

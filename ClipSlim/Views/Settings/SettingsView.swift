@@ -12,10 +12,22 @@ struct SettingsView: View {
                     Label("General", systemImage: "gearshape")
                 }
 
+            AppMappingsTab()
+                .environment(viewModel)
+                .tabItem {
+                    Label("App Rules", systemImage: "app.badge")
+                }
+
             PresetsTab()
                 .environment(viewModel)
                 .tabItem {
                     Label("Presets", systemImage: "slider.horizontal.3")
+                }
+
+            StatsTab()
+                .environment(viewModel)
+                .tabItem {
+                    Label("Stats", systemImage: "chart.bar")
                 }
 
             FolderTab()
@@ -41,7 +53,7 @@ struct SettingsView: View {
                     Label("About", systemImage: "info.circle")
                 }
         }
-        .frame(width: 560, height: 620)
+        .frame(width: 560, height: 660)
         .font(VibeCheckTheme.Typography.body)
         .tint(VibeCheckTheme.Colors.neonOrange)
         .padding(VibeCheckTheme.Spacing.sm)

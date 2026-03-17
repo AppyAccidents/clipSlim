@@ -13,6 +13,8 @@ enum OptimizableFileType {
             return .image(.png)
         case "tiff", "tif", "bmp", "heic":
             return .image(.png) // These get processed as images, output format decided by settings
+        case "webp":
+            return .image(.webp)
         case "pdf":
             return .pdf
         default:

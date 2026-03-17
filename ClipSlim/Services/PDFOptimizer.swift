@@ -35,6 +35,7 @@ final class PDFOptimizer: Sendable {
     enum Strategy: String, Sendable {
         case pdfkit
         case rasterize
+        case hybrid
         case none
     }
 
@@ -114,6 +115,15 @@ final class PDFOptimizer: Sendable {
             }
         }
 
+        // F12: Try hybrid — preserve text pages, rasterize image pages
+        if contentType == .mixed || pageCount > 1 {
+            let hybridData = try optimizeHybrid(data: data, document: document, pageCount: pageCount, config: config)
+            if hybridData.count < bestData.count {
+                bestData = hybridData
+                bestStrategy = .hybrid
+            }
+        }
+
         let duration = CFAbsoluteTimeGetCurrent() - startTime
         let result = PDFOptimizationResult(
             originalSize: originalSize,
@@ -169,6 +179,148 @@ final class PDFOptimizer: Sendable {
         }
 
         return .mixed
+    }
+
+    /// F12: Per-page content type classification for hybrid mode.
+    /// Samples every 5th page (capped at 10) for efficiency.
+    private func classifyPages(document: CGPDFDocument, pageCount: Int) -> [Int: PDFContentType] {
+        var pageTypes: [Int: PDFContentType] = [:]
+        let step = max(1, pageCount / 10)
+
+        // Sample pages
+        var sampledTypes: [Int: PDFContentType] = [:]
+        for pageIndex in stride(from: 1, through: pageCount, by: step) {
+            let complexity = samplePageColorComplexity(document: document, pageIndex: pageIndex)
+            if complexity >= 110 {
+                sampledTypes[pageIndex] = .imageHeavy
+            } else if complexity <= 50 {
+                sampledTypes[pageIndex] = .textVector
+            } else {
+                sampledTypes[pageIndex] = .mixed
+            }
+        }
+
+        // Interpolate non-sampled pages from nearest sample
+        for pageIndex in 1...pageCount {
+            if let sampled = sampledTypes[pageIndex] {
+                pageTypes[pageIndex] = sampled
+            } else {
+                // Find nearest sampled page
+                let nearest = sampledTypes.keys.min(by: { abs($0 - pageIndex) < abs($1 - pageIndex) })
+                pageTypes[pageIndex] = nearest.flatMap { sampledTypes[$0] } ?? .mixed
+            }
+        }
+
+        return pageTypes
+    }
+
+    private func samplePageColorComplexity(document: CGPDFDocument, pageIndex: Int) -> Int {
+        guard let page = document.page(at: pageIndex) else { return 0 }
+
+        let size = CGSize(width: 200, height: 200)
+        let width = Int(size.width)
+        let height = Int(size.height)
+        let bytesPerRow = width * 4
+
+        guard let context = CGContext(
+            data: nil, width: width, height: height,
+            bitsPerComponent: 8, bytesPerRow: bytesPerRow,
+            space: CGColorSpaceCreateDeviceRGB(),
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+        ) else { return 0 }
+
+        context.setFillColor(CGColor.white)
+        context.fill(CGRect(origin: .zero, size: size))
+
+        let pageBox = page.getBoxRect(.mediaBox)
+        guard pageBox.width > 0, pageBox.height > 0 else { return 0 }
+
+        let scale = min(size.width / pageBox.width, size.height / pageBox.height)
+        context.saveGState()
+        context.translateBy(x: (size.width - pageBox.width * scale) / 2,
+                           y: (size.height - pageBox.height * scale) / 2)
+        context.scaleBy(x: scale, y: scale)
+        context.drawPDFPage(page)
+        context.restoreGState()
+
+        guard let buffer = context.data else { return 0 }
+        let pixels = buffer.bindMemory(to: UInt8.self, capacity: width * height * 4)
+        var quantizedColors = Set<UInt16>()
+
+        for offset in stride(from: 0, to: width * height * 4, by: 4) {
+            let r = UInt16(pixels[offset] >> 5)
+            let g = UInt16(pixels[offset + 1] >> 5)
+            let b = UInt16(pixels[offset + 2] >> 5)
+            quantizedColors.insert((r << 6) | (g << 3) | b)
+            if quantizedColors.count >= 256 { return quantizedColors.count }
+        }
+
+        return quantizedColors.count
+    }
+
+    /// F12: Hybrid optimization — text/vector pages preserved as-is, image-heavy pages rasterized
+    private func optimizeHybrid(data: Data, document: CGPDFDocument, pageCount: Int, config: PDFOptimizationConfig) throws -> Data {
+        let pageTypes = classifyPages(document: document, pageCount: pageCount)
+        let scale = Double(config.targetDPI) / 72.0
+
+        guard let sourcePDF = PDFDocument(data: data) else {
+            throw PDFOptimizationError.invalidPDF
+        }
+
+        let outputPDF = PDFDocument()
+
+        for pageIndex in 1...pageCount {
+            try autoreleasepool {
+                let contentType = pageTypes[pageIndex] ?? .mixed
+
+                if contentType == .textVector {
+                    // Preserve text/vector page as-is via PDFKit copy
+                    guard let page = sourcePDF.page(at: pageIndex - 1) else {
+                        throw PDFOptimizationError.pageRenderFailed(pageIndex)
+                    }
+                    outputPDF.insert(page, at: outputPDF.pageCount)
+                } else {
+                    // Rasterize image-heavy or mixed page
+                    guard let cgPage = document.page(at: pageIndex) else {
+                        throw PDFOptimizationError.pageRenderFailed(pageIndex)
+                    }
+
+                    let originalBox = cgPage.getBoxRect(.mediaBox)
+                    let pixelSize = clampedPixelSize(for: originalBox, scale: scale)
+                    guard pixelSize.width > 0, pixelSize.height > 0 else {
+                        throw PDFOptimizationError.pageRenderFailed(pageIndex)
+                    }
+
+                    guard let renderedImage = renderPage(cgPage, pixelSize: pixelSize, scale: scale) else {
+                        throw PDFOptimizationError.pageRenderFailed(pageIndex)
+                    }
+
+                    let jpegData = try encodeJPEG(image: renderedImage, quality: config.imageQuality)
+                    guard let imageRep = NSBitmapImageRep(data: jpegData) else {
+                        throw PDFOptimizationError.encodingFailed
+                    }
+
+                    let image = NSImage(size: NSSize(width: originalBox.width, height: originalBox.height))
+                    image.addRepresentation(imageRep)
+
+                    guard let pdfPage = PDFPage(image: image) else {
+                        throw PDFOptimizationError.encodingFailed
+                    }
+
+                    outputPDF.insert(pdfPage, at: outputPDF.pageCount)
+                }
+            }
+        }
+
+        if config.stripMetadata {
+            outputPDF.documentAttributes = [:]
+        }
+
+        guard let outputData = outputPDF.dataRepresentation() else {
+            throw PDFOptimizationError.encodingFailed
+        }
+
+        return outputData
     }
 
     private func sampleColorComplexity(document: CGPDFDocument) -> Int {

@@ -21,10 +21,12 @@ struct GeneralTab: View {
                 )) {
                     Text("JPEG").tag(ImageFormat.jpeg)
                     Text("PNG").tag(ImageFormat.png)
+                    Text("WebP").tag(ImageFormat.webp)
                 }
                 .pickerStyle(.segmented)
 
-                VibeHintText(text: "If JPEG is preferred and input has transparency, ClipSlim forces PNG to preserve alpha.")
+                Toggle("Smart Format Detection", isOn: viewModel.settings.smartFormatEnabledBinding)
+                VibeHintText(text: "When enabled, ClipSlim auto-selects the best format based on image content (screenshots → PNG, photos → JPEG/WebP).")
             }
 
             VibeSettingsCard(title: "Appearance", icon: "paintbrush") {
@@ -120,6 +122,24 @@ struct GeneralTab: View {
                         }
                     }
                 }
+            }
+
+            VibeSettingsCard(title: "Advanced", icon: "wrench.and.screwdriver") {
+                Toggle("Developer Mode", isOn: viewModel.settings.developerModeEnabledBinding)
+                VibeHintText(text: "Show detailed optimization info in the overlay: timing, format reasoning, SSIM score, content classification.")
+
+                Toggle("Quality Guard", isOn: viewModel.settings.qualityGuardEnabledBinding)
+                if viewModel.settings.qualityGuardEnabled {
+                    HStack {
+                        Text("Threshold")
+                        Spacer()
+                        Text("\(Int(viewModel.settings.qualityGuardThreshold * 100))%")
+                            .font(VibeCheckTheme.Typography.monospacedBold)
+                            .foregroundColor(VibeCheckTheme.Colors.neonCyan)
+                    }
+                    Slider(value: viewModel.settings.qualityGuardThresholdBinding, in: 0.70...0.99, step: 0.01)
+                }
+                VibeHintText(text: "Quality Guard warns when SSIM drops below the threshold and offers a choice.")
             }
 
             VibeSettingsCard(title: "Onboarding", icon: "sparkles") {

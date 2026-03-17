@@ -227,12 +227,22 @@ struct MenuBarView: View {
                 viewModel.undoLastOptimization()
             }
 
+            MenuActionButton(icon: "clock.badge.checkmark", title: "Clipboard History") {
+                openWindow(id: "clipboard-history")
+            }
+
             MenuActionButton(icon: "heart.fill", title: "Leave a Tip...") {
                 openSettings()
             }
 
             MenuActionButton(icon: "clock.arrow.circlepath", title: "Debug Log (Nerd View)") {
                 openWindow(id: "debug-log")
+            }
+
+            if viewModel.settings.developerModeEnabled {
+                MenuActionButton(icon: "square.and.arrow.up", title: "Export Session Log") {
+                    exportSessionLog()
+                }
             }
 
             MenuActionButton(icon: "gearshape", title: "Settings…") {
@@ -250,5 +260,13 @@ struct MenuBarView: View {
             }
         }
         .padding(.vertical, VibeCheckTheme.Spacing.xs)
+    }
+
+    private func exportSessionLog() {
+        let panel = NSSavePanel()
+        panel.allowedContentTypes = [.json]
+        panel.nameFieldStringValue = "clipslim-session.json"
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        try? SessionLogExporter.shared.exportToFile(events: viewModel.events, url: url)
     }
 }

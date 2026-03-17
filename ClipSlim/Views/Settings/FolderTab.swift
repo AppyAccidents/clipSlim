@@ -64,6 +64,9 @@ struct FolderTab: View {
                 VibeHintText(text: "Optimized outputs land in an \"Optimized\" subfolder, so ClipSlim doesn't eat its own tail.")
             }
 
+            FolderRulesSection()
+                .environment(viewModel)
+
             VibeSettingsCard(title: "Info", icon: "info.circle") {
                 Text("Supported formats: JPEG, PNG, TIFF, BMP, HEIC")
                     .font(VibeCheckTheme.Typography.caption)

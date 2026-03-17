@@ -1,7 +1,7 @@
-# Testing and Monitoring Tasks - clipSlim
+# Testing and Monitoring Tasks - ClipSlim
 
-**Last Updated:** 2026-03-05
-**Launch Target:** March 7-8, 2026
+**Last Updated:** 2026-03-17
+**Launch Target:** March 17-19, 2026 (approval expected)
 **Developer:** AppyAccidents
 
 ---
@@ -13,48 +13,36 @@
 Run these checks on the copy in `02-metadata/apple-metadata.md` before pasting into App Store Connect.
 
 - [ ] App Name: count characters manually or with a character counter tool. Must be 30 or fewer.
-  - Primary: "clipSlim - Image Optimizer" = 25 characters. PASS.
+  - Primary: "ClipSlim - Clipboard Optimizer" = 30 characters. PASS (at limit).
 - [ ] Subtitle: count characters. Must be 30 or fewer.
-  - Primary: "Clipboard & Folder Compression" = 30 characters. PASS (at limit).
+  - Primary: "Image & PDF Compressor for Mac" = 30 characters. PASS (at limit).
 - [ ] Promotional Text: count characters. Must be 170 or fewer.
-  - Primary: 148 characters. PASS.
+  - Primary: 152 characters. PASS.
 - [ ] Keywords Field: count characters. Must be 100 or fewer. Must contain NO spaces after commas.
-  - Primary: 92 characters. PASS.
-  - Verify no spaces: "image,compress,png,jpeg,optimizer,resize,batch,shrink,menubar,photo,converter,heic,clipboard" - confirmed no spaces.
+  - Primary: 95 characters. PASS.
+  - Verify no spaces: "compress,png,jpeg,resize,batch,shrink,menubar,photo,converter,heic,screenshot,bulk,pdf,filesize" - confirmed no spaces.
 - [ ] Description: count characters. Must be 4,000 or fewer.
-  - Primary: ~2,847 characters. PASS.
+  - Primary: ~2,963 characters. PASS.
 - [ ] What's New: count characters. Must be 4,000 or fewer.
-  - Primary: ~840 characters. PASS.
+  - Primary: ~420 characters. PASS.
 
 **Tool for quick character counting:** Paste any field into https://charactercounttool.com or use macOS's built-in word count in TextEdit.
 
 ### Keywords Field Spot Check
 - [ ] Open the Keywords field in apple-metadata.md
 - [ ] Confirm no word in the keywords field also appears in the App Name or Subtitle
-  - App Name words: clipSlim, Image, Optimizer
-  - Subtitle words: Clipboard, Folder, Compression
-  - Keywords field: image, compress, png, jpeg, optimizer, resize, batch, shrink, menubar, photo, converter, heic, clipboard
-  - CONFLICT FOUND: "image" appears in App Name AND keywords field. Remove "image" from keywords field.
-  - CONFLICT FOUND: "optimizer" appears in App Name AND keywords field. Remove "optimizer" from keywords field.
-  - CONFLICT FOUND: "clipboard" appears in Subtitle AND keywords field. Remove "clipboard" from keywords field.
+  - App Name words: ClipSlim, Clipboard, Optimizer
+  - Subtitle words: Image, PDF, Compressor, for, Mac
+  - Keywords field: compress,png,jpeg,resize,batch,shrink,menubar,photo,converter,heic,screenshot,bulk,pdf,filesize
+  - NOTE: "pdf" appears in both Subtitle and Keywords field. Apple may ignore the duplicate but it only costs 3 chars. Consider replacing with "lossless" or "local" if space is needed.
+  - All other keywords are unique to the field. PASS.
 
-**Corrected Keywords Field (after deduplication):**
+**Current Keywords Field (95/100 chars):**
 ```
-compress,png,jpeg,resize,batch,shrink,menubar,photo,converter,heic,local,privacy,lossless
-```
-Character count: 76/100 characters.
-
-You now have room to add more keywords. Candidates to fill remaining 24 characters:
-- `screenshot` (10 chars) - very relevant for Mac utility users
-- `bulk` (4 chars) - covers batch use case with a synonym
-- `filesize` (8 chars) - direct match for "reduce file size" searches
-
-**Updated Keywords Field (93/100 chars):**
-```
-compress,png,jpeg,resize,batch,shrink,menubar,photo,converter,heic,screenshot,bulk,filesize
+compress,png,jpeg,resize,batch,shrink,menubar,photo,converter,heic,screenshot,bulk,pdf,filesize
 ```
 
-Update the keywords field in `02-metadata/apple-metadata.md` with this corrected version before submitting.
+This is the version currently submitted and matches `02-metadata/apple-metadata.md`.
 
 ### App Store Connect Pre-Submission Review
 - [ ] Log in and confirm app record is in "Ready for Submission" or "Prepare for Submission" state
@@ -68,11 +56,11 @@ Update the keywords field in `02-metadata/apple-metadata.md` with this corrected
 
 ---
 
-## LAUNCH DAY TASKS (March 7-8, 2026)
+## LAUNCH DAY TASKS (Expected March 17-19, 2026)
 
 - [ ] Confirm app is approved and live in the Mac App Store
-- [ ] Search "clipSlim" in the Mac App Store - confirm the listing appears correctly
-- [ ] Search "image optimizer mac" - note position (may not rank immediately, that's normal)
+- [ ] Search "ClipSlim" in the Mac App Store - confirm the listing appears correctly
+- [ ] Search "clipboard optimizer" and "image compressor mac" - note position (may not rank immediately, that's normal)
 - [ ] Download and install the app from the store yourself (confirm store download works)
 - [ ] Test clipboard optimization flow after store download
 - [ ] Test folder watcher after store download

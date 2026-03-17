@@ -15,6 +15,18 @@ struct OverlayItem {
     let sourceAppBundleID: String
     let pdfPageCount: Int?
 
+    // F1: Context-aware suggestion
+    var suggestedPresetName: String?
+    var suggestedAppName: String?
+
+    // F3: Quality guard
+    var qualityScore: Double?
+    var qualityBelowThreshold: Bool = false
+
+    // F6: Duplicate detection
+    var isDuplicate: Bool = false
+    var duplicateOptimizedData: Data?
+
     init(originalData: Data, optimizedData: Data, result: OptimizationResult, formatOverrideSelection: ImageFormat, sourceAppBundleID: String, pdfPageCount: Int? = nil) {
         self.originalData = originalData
         self.optimizedData = optimizedData
@@ -39,6 +51,9 @@ final class OverlayService {
     var onOpenSettings: (() -> Void)?
     var onIgnoreImage: (() -> Void)?
     var onIgnoreApp: (() -> Void)?
+    var onAcceptSuggestion: (() -> Void)?
+    var onDismissSuggestion: (() -> Void)?
+    var onReuseDuplicate: (() -> Void)?
 
     private var panel: NSPanel?
     private var dismissTimer: Timer?
@@ -86,6 +101,9 @@ final class OverlayService {
         onOpenSettings = nil
         onIgnoreImage = nil
         onIgnoreApp = nil
+        onAcceptSuggestion = nil
+        onDismissSuggestion = nil
+        onReuseDuplicate = nil
     }
 
     private func scheduleDismiss() {

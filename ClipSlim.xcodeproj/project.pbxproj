@@ -53,6 +53,37 @@
 		A10000480000000000000048 /* DropZoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000480000000000000048 /* DropZoneView.swift */; };
 		A10000490000000000000049 /* PDFTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000490000000000000049 /* PDFTab.swift */; };
 		A10000500000000000000050 /* PDFOptimizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000500000000000000050 /* PDFOptimizerTests.swift */; };
+		A10000600000000000000060 /* ProcessingCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000600000000000000060 /* ProcessingCoordinator.swift */; };
+		A10000610000000000000061 /* SaveCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000610000000000000061 /* SaveCoordinator.swift */; };
+		A10000620000000000000062 /* HotkeyCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000620000000000000062 /* HotkeyCoordinator.swift */; };
+		A10000630000000000000063 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000630000000000000063 /* PersistenceController.swift */; };
+		A10000640000000000000064 /* PersistentOptimizationEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000640000000000000064 /* PersistentOptimizationEvent.swift */; };
+		A10000650000000000000065 /* ClipboardHistoryEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000650000000000000065 /* ClipboardHistoryEntry.swift */; };
+		A10000660000000000000066 /* ContentHashRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000660000000000000066 /* ContentHashRecord.swift */; };
+		A10000670000000000000067 /* ImageClassifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000670000000000000067 /* ImageClassifier.swift */; };
+		A10000680000000000000068 /* FormatSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000680000000000000068 /* FormatSelector.swift */; };
+		A10000690000000000000069 /* PipelineStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000690000000000000069 /* PipelineStep.swift */; };
+		A10000700000000000000070 /* PipelineSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000700000000000000070 /* PipelineSection.swift */; };
+		A10000710000000000000071 /* StatsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000710000000000000071 /* StatsService.swift */; };
+		A10000720000000000000072 /* StatsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000720000000000000072 /* StatsTab.swift */; };
+		A10000730000000000000073 /* ClipboardHistoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000730000000000000073 /* ClipboardHistoryService.swift */; };
+		A10000740000000000000074 /* ClipboardHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000740000000000000074 /* ClipboardHistoryView.swift */; };
+		A10000750000000000000075 /* AppPresetMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000750000000000000075 /* AppPresetMapping.swift */; };
+		A10000760000000000000076 /* ContextAwareService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000760000000000000076 /* ContextAwareService.swift */; };
+		A10000770000000000000077 /* AppMappingsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000770000000000000077 /* AppMappingsTab.swift */; };
+		A10000780000000000000078 /* QualityScorer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000780000000000000078 /* QualityScorer.swift */; };
+		A10000790000000000000079 /* FolderRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000790000000000000079 /* FolderRule.swift */; };
+		A10000800000000000000080 /* RuleEvaluator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000800000000000000080 /* RuleEvaluator.swift */; };
+		A10000810000000000000081 /* FolderRulesSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000810000000000000081 /* FolderRulesSection.swift */; };
+		A10000820000000000000082 /* QuickActionOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000820000000000000082 /* QuickActionOverlayView.swift */; };
+		A10000830000000000000083 /* SessionLogExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000830000000000000083 /* SessionLogExporter.swift */; };
+		A10000840000000000000084 /* ImageClassifierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000840000000000000084 /* ImageClassifierTests.swift */; };
+		A10000850000000000000085 /* FormatSelectorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000850000000000000085 /* FormatSelectorTests.swift */; };
+		A10000860000000000000086 /* QualityScorerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000860000000000000086 /* QualityScorerTests.swift */; };
+		A10000870000000000000087 /* RuleEvaluatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000870000000000000087 /* RuleEvaluatorTests.swift */; };
+		A10000880000000000000088 /* PipelineStepTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000880000000000000088 /* PipelineStepTests.swift */; };
+		A10000890000000000000089 /* ContextAwareServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000890000000000000089 /* ContextAwareServiceTests.swift */; };
+		A10000900000000000000090 /* DuplicateHashService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000900000000000000090 /* DuplicateHashService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -115,6 +146,37 @@
 		B10000480000000000000048 /* DropZoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropZoneView.swift; sourceTree = "<group>"; };
 		B10000490000000000000049 /* PDFTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFTab.swift; sourceTree = "<group>"; };
 		B10000500000000000000050 /* PDFOptimizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFOptimizerTests.swift; sourceTree = "<group>"; };
+		B10000600000000000000060 /* ProcessingCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessingCoordinator.swift; sourceTree = "<group>"; };
+		B10000610000000000000061 /* SaveCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveCoordinator.swift; sourceTree = "<group>"; };
+		B10000620000000000000062 /* HotkeyCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyCoordinator.swift; sourceTree = "<group>"; };
+		B10000630000000000000063 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
+		B10000640000000000000064 /* PersistentOptimizationEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistentOptimizationEvent.swift; sourceTree = "<group>"; };
+		B10000650000000000000065 /* ClipboardHistoryEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardHistoryEntry.swift; sourceTree = "<group>"; };
+		B10000660000000000000066 /* ContentHashRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentHashRecord.swift; sourceTree = "<group>"; };
+		B10000670000000000000067 /* ImageClassifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageClassifier.swift; sourceTree = "<group>"; };
+		B10000680000000000000068 /* FormatSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormatSelector.swift; sourceTree = "<group>"; };
+		B10000690000000000000069 /* PipelineStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PipelineStep.swift; sourceTree = "<group>"; };
+		B10000700000000000000070 /* PipelineSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PipelineSection.swift; sourceTree = "<group>"; };
+		B10000710000000000000071 /* StatsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsService.swift; sourceTree = "<group>"; };
+		B10000720000000000000072 /* StatsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsTab.swift; sourceTree = "<group>"; };
+		B10000730000000000000073 /* ClipboardHistoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardHistoryService.swift; sourceTree = "<group>"; };
+		B10000740000000000000074 /* ClipboardHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardHistoryView.swift; sourceTree = "<group>"; };
+		B10000750000000000000075 /* AppPresetMapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPresetMapping.swift; sourceTree = "<group>"; };
+		B10000760000000000000076 /* ContextAwareService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextAwareService.swift; sourceTree = "<group>"; };
+		B10000770000000000000077 /* AppMappingsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMappingsTab.swift; sourceTree = "<group>"; };
+		B10000780000000000000078 /* QualityScorer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QualityScorer.swift; sourceTree = "<group>"; };
+		B10000790000000000000079 /* FolderRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderRule.swift; sourceTree = "<group>"; };
+		B10000800000000000000080 /* RuleEvaluator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuleEvaluator.swift; sourceTree = "<group>"; };
+		B10000810000000000000081 /* FolderRulesSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderRulesSection.swift; sourceTree = "<group>"; };
+		B10000820000000000000082 /* QuickActionOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickActionOverlayView.swift; sourceTree = "<group>"; };
+		B10000830000000000000083 /* SessionLogExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionLogExporter.swift; sourceTree = "<group>"; };
+		B10000840000000000000084 /* ImageClassifierTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageClassifierTests.swift; sourceTree = "<group>"; };
+		B10000850000000000000085 /* FormatSelectorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormatSelectorTests.swift; sourceTree = "<group>"; };
+		B10000860000000000000086 /* QualityScorerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QualityScorerTests.swift; sourceTree = "<group>"; };
+		B10000870000000000000087 /* RuleEvaluatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuleEvaluatorTests.swift; sourceTree = "<group>"; };
+		B10000880000000000000088 /* PipelineStepTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PipelineStepTests.swift; sourceTree = "<group>"; };
+		B10000890000000000000089 /* ContextAwareServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextAwareServiceTests.swift; sourceTree = "<group>"; };
+		B10000900000000000000090 /* DuplicateHashService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuplicateHashService.swift; sourceTree = "<group>"; };
 		F10000010000000000000001 /* ClipSlim.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClipSlim.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F10000020000000000000002 /* ClipSlimTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClipSlimTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -153,6 +215,8 @@
 				D10000060000000000000006 /* App */,
 				D10000070000000000000007 /* Models */,
 				D10000080000000000000008 /* Services */,
+				D10000160000000000000016 /* Coordinators */,
+				D10000170000000000000017 /* Persistence */,
 				D10000090000000000000009 /* ViewModels */,
 				D1000010000000000000000A /* Views */,
 				D1000011000000000000000B /* Theme */,
@@ -170,6 +234,12 @@
 				B10000420000000000000042 /* MenuViewStateTests.swift */,
 				B10000440000000000000044 /* OptimizationDispatchTests.swift */,
 				B10000500000000000000050 /* PDFOptimizerTests.swift */,
+				B10000840000000000000084 /* ImageClassifierTests.swift */,
+				B10000850000000000000085 /* FormatSelectorTests.swift */,
+				B10000860000000000000086 /* QualityScorerTests.swift */,
+				B10000870000000000000087 /* RuleEvaluatorTests.swift */,
+				B10000880000000000000088 /* PipelineStepTests.swift */,
+				B10000890000000000000089 /* ContextAwareServiceTests.swift */,
 			);
 			path = ClipSlimTests;
 			sourceTree = "<group>";
@@ -201,6 +271,9 @@
 				B10000060000000000000006 /* OptimizationEvent.swift */,
 				B10000070000000000000007 /* ImageFormat.swift */,
 				B10000460000000000000046 /* FileType.swift */,
+				B10000690000000000000069 /* PipelineStep.swift */,
+				B10000750000000000000075 /* AppPresetMapping.swift */,
+				B10000790000000000000079 /* FolderRule.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -218,6 +291,15 @@
 				B10000320000000000000032 /* OverlayService.swift */,
 				B10000470000000000000047 /* DropZoneService.swift */,
 				B10000520000000000000052 /* TipStore.swift */,
+				B10000670000000000000067 /* ImageClassifier.swift */,
+				B10000680000000000000068 /* FormatSelector.swift */,
+				B10000710000000000000071 /* StatsService.swift */,
+				B10000730000000000000073 /* ClipboardHistoryService.swift */,
+				B10000760000000000000076 /* ContextAwareService.swift */,
+				B10000780000000000000078 /* QualityScorer.swift */,
+				B10000800000000000000080 /* RuleEvaluator.swift */,
+				B10000830000000000000083 /* SessionLogExporter.swift */,
+				B10000900000000000000090 /* DuplicateHashService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -239,6 +321,8 @@
 				B10000340000000000000034 /* OverlayView.swift */,
 				B10000350000000000000035 /* OnboardingFlowView.swift */,
 				B10000480000000000000048 /* DropZoneView.swift */,
+				B10000740000000000000074 /* ClipboardHistoryView.swift */,
+				B10000820000000000000082 /* QuickActionOverlayView.swift */,
 				D1000014000000000000000E /* Components */,
 				D1000015000000000000000F /* Settings */,
 			);
@@ -294,8 +378,41 @@
 				B10000490000000000000049 /* PDFTab.swift */,
 				B10000370000000000000037 /* SupportTab.swift */,
 				B1000023000000000000001D /* AboutTab.swift */,
+				B10000700000000000000070 /* PipelineSection.swift */,
+				B10000720000000000000072 /* StatsTab.swift */,
+				B10000770000000000000077 /* AppMappingsTab.swift */,
+				B10000810000000000000081 /* FolderRulesSection.swift */,
 			);
 			path = Settings;
+			sourceTree = "<group>";
+		};
+		D10000160000000000000016 /* Coordinators */ = {
+			isa = PBXGroup;
+			children = (
+				B10000600000000000000060 /* ProcessingCoordinator.swift */,
+				B10000610000000000000061 /* SaveCoordinator.swift */,
+				B10000620000000000000062 /* HotkeyCoordinator.swift */,
+			);
+			path = Coordinators;
+			sourceTree = "<group>";
+		};
+		D10000170000000000000017 /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				B10000630000000000000063 /* PersistenceController.swift */,
+				D10000180000000000000018 /* Models */,
+			);
+			path = Persistence;
+			sourceTree = "<group>";
+		};
+		D10000180000000000000018 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				B10000640000000000000064 /* PersistentOptimizationEvent.swift */,
+				B10000650000000000000065 /* ClipboardHistoryEntry.swift */,
+				B10000660000000000000066 /* ContentHashRecord.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -429,6 +546,31 @@
 				A10000470000000000000047 /* DropZoneService.swift in Sources */,
 				A10000480000000000000048 /* DropZoneView.swift in Sources */,
 				A10000490000000000000049 /* PDFTab.swift in Sources */,
+				A10000600000000000000060 /* ProcessingCoordinator.swift in Sources */,
+				A10000610000000000000061 /* SaveCoordinator.swift in Sources */,
+				A10000620000000000000062 /* HotkeyCoordinator.swift in Sources */,
+				A10000630000000000000063 /* PersistenceController.swift in Sources */,
+				A10000640000000000000064 /* PersistentOptimizationEvent.swift in Sources */,
+				A10000650000000000000065 /* ClipboardHistoryEntry.swift in Sources */,
+				A10000660000000000000066 /* ContentHashRecord.swift in Sources */,
+				A10000670000000000000067 /* ImageClassifier.swift in Sources */,
+				A10000680000000000000068 /* FormatSelector.swift in Sources */,
+				A10000690000000000000069 /* PipelineStep.swift in Sources */,
+				A10000700000000000000070 /* PipelineSection.swift in Sources */,
+				A10000710000000000000071 /* StatsService.swift in Sources */,
+				A10000720000000000000072 /* StatsTab.swift in Sources */,
+				A10000730000000000000073 /* ClipboardHistoryService.swift in Sources */,
+				A10000740000000000000074 /* ClipboardHistoryView.swift in Sources */,
+				A10000750000000000000075 /* AppPresetMapping.swift in Sources */,
+				A10000760000000000000076 /* ContextAwareService.swift in Sources */,
+				A10000770000000000000077 /* AppMappingsTab.swift in Sources */,
+				A10000780000000000000078 /* QualityScorer.swift in Sources */,
+				A10000790000000000000079 /* FolderRule.swift in Sources */,
+				A10000800000000000000080 /* RuleEvaluator.swift in Sources */,
+				A10000810000000000000081 /* FolderRulesSection.swift in Sources */,
+				A10000820000000000000082 /* QuickActionOverlayView.swift in Sources */,
+				A10000830000000000000083 /* SessionLogExporter.swift in Sources */,
+				A10000900000000000000090 /* DuplicateHashService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -441,6 +583,12 @@
 				A10000420000000000000042 /* MenuViewStateTests.swift in Sources */,
 				A10000440000000000000044 /* OptimizationDispatchTests.swift in Sources */,
 				A10000500000000000000050 /* PDFOptimizerTests.swift in Sources */,
+				A10000840000000000000084 /* ImageClassifierTests.swift in Sources */,
+				A10000850000000000000085 /* FormatSelectorTests.swift in Sources */,
+				A10000860000000000000086 /* QualityScorerTests.swift in Sources */,
+				A10000870000000000000087 /* RuleEvaluatorTests.swift in Sources */,
+				A10000880000000000000088 /* PipelineStepTests.swift in Sources */,
+				A10000890000000000000089 /* ContextAwareServiceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -637,7 +785,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 8;
 				DEAD_CODE_STRIPPING = YES;
@@ -656,7 +804,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 8;
 				DEAD_CODE_STRIPPING = YES;

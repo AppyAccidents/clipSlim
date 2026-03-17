@@ -25,6 +25,7 @@ final class DropZoneService {
     var totalSaved: Int = 0
 
     var onFilesDropped: (([URL]) -> Void)?
+    var onSingleFileDropped: ((URL) -> Void)?  // F7: Quick action for single-item drops
 
     private var panel: NSPanel?
     private var closeObserver: NSObjectProtocol?
@@ -57,6 +58,7 @@ final class DropZoneService {
         dropItems.removeAll()
         totalSaved = 0
         onFilesDropped = nil
+        onSingleFileDropped = nil
     }
 
     func addPendingItem(fileName: String, originalSize: Int) -> UUID {

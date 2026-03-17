@@ -7,6 +7,12 @@ struct OptimizationResult {
     let duration: TimeInterval
     let originalDimensions: (width: Int, height: Int)
     let optimizedDimensions: (width: Int, height: Int)
+
+    // F8: Dev mode metadata (optional, populated when developer mode is on)
+    var formatReason: String?
+    var contentType: String?
+    var ssimScore: Double?
+    var strategyUsed: String?
     
     var savingsPercentage: Double {
         guard originalSize > 0 else { return 0 }

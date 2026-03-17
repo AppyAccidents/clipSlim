@@ -143,6 +143,8 @@ final class ImageOptimizer: Sendable {
                 outputData = try encodeJPEG(image: cgImage, quality: config.quality, stripMetadata: config.stripMetadata, source: source)
             case .png:
                 outputData = try encodePNG(image: cgImage, stripMetadata: config.stripMetadata, source: source)
+            case .webp:
+                outputData = try encodeWebP(image: cgImage, quality: config.quality, stripMetadata: config.stripMetadata, source: source)
             }
 
             let duration = CFAbsoluteTimeGetCurrent() - startTime
@@ -193,6 +195,7 @@ final class ImageOptimizer: Sendable {
 
     static func requiresVisibleTransparencyCheck(config: OptimizationConfig) -> Bool {
         let candidate = config.outputFormatOverride ?? config.preferredFormat
+        // WebP supports alpha natively, so no transparency check needed
         return candidate == .jpeg
             && !config.allowTransparencyLoss
             && config.preserveAlphaByForcingPNG
@@ -200,13 +203,19 @@ final class ImageOptimizer: Sendable {
 
     private func decideOutputFormat(hasAlpha: Bool, config: OptimizationConfig) -> ImageFormat {
         let candidate = config.outputFormatOverride ?? config.preferredFormat
-        if candidate == .jpeg && hasAlpha {
-            if config.allowTransparencyLoss {
-                return .jpeg
+        switch candidate {
+        case .jpeg:
+            if hasAlpha {
+                if config.allowTransparencyLoss { return .jpeg }
+                return config.preserveAlphaByForcingPNG ? .png : .jpeg
             }
-            return config.preserveAlphaByForcingPNG ? .png : .jpeg
+            return .jpeg
+        case .webp:
+            // WebP supports alpha, so no forced override needed
+            return .webp
+        case .png:
+            return .png
         }
-        return candidate
     }
 
     private func getImageDimensions(source: CGImageSource) -> (width: Int, height: Int) {
@@ -332,6 +341,40 @@ final class ImageOptimizer: Sendable {
 
         guard CGImageDestinationFinalize(destination) else {
             throw OptimizationError.encodingFailed
+        }
+
+        return data as Data
+    }
+
+    private func encodeWebP(image: CGImage, quality: Double, stripMetadata: Bool, source: CGImageSource) throws -> Data {
+        let data = NSMutableData()
+        guard let destination = CGImageDestinationCreateWithData(data as CFMutableData, UTType.webP.identifier as CFString, 1, nil) else {
+            // WebP encoding not available — fall back to JPEG
+            return try encodeJPEG(image: image, quality: quality, stripMetadata: stripMetadata, source: source)
+        }
+
+        var options: [CFString: Any] = [
+            kCGImageDestinationLossyCompressionQuality: quality,
+            kCGImageDestinationEmbedThumbnail: false
+        ]
+
+        if stripMetadata {
+            options[kCGImageDestinationOptimizeColorForSharing] = true
+        } else {
+            if let metadata = CGImageSourceCopyMetadataAtIndex(source, 0, nil) {
+                let metadataOptions: [CFString: Any] = [
+                    kCGImageDestinationMergeMetadata: true,
+                    kCGImageDestinationMetadata: metadata
+                ]
+                CGImageDestinationSetProperties(destination, metadataOptions as CFDictionary)
+            }
+        }
+
+        CGImageDestinationAddImage(destination, image, options as CFDictionary)
+
+        guard CGImageDestinationFinalize(destination) else {
+            // Finalization failed — fall back to JPEG
+            return try encodeJPEG(image: image, quality: quality, stripMetadata: stripMetadata, source: source)
         }
 
         return data as Data

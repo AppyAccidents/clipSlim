@@ -1,23 +1,35 @@
 # ClipSlim - Master ASO Action Plan
 
-**Updated:** March 16, 2026
+**Updated:** March 17, 2026
 **Platform:** Mac App Store (macOS)
 **App Store ID:** 6759780567
-**Current Status:** Version 1.0.0 (Build 7) -- WAITING FOR REVIEW
+**Current Status:** Version 1.0.0 (Build 8) -- WAITING FOR REVIEW (submitted March 16)
+**Estimated Timeline:** 4-6 weeks to full optimization baseline
 
 ---
 
 ## CURRENT STATE
 
-The app has been submitted to App Review after resolving a Guideline 3.1.1 rejection (external Buy Me a Coffee link replaced with native StoreKit 2 tip jar). All code changes, IAP configuration, and binary upload are complete.
+The app has been submitted to App Review (March 16) after resolving a Guideline 3.1.1 rejection (external Buy Me a Coffee link replaced with native StoreKit 2 tip jar). All code changes, IAP configuration, and binary upload are complete. Approval expected March 17-19.
 
 **What is done:**
 - StoreKit 2 tip jar implemented (TipStore.swift)
 - 3 consumable IAPs created in App Store Connect ($2.99 / $4.99 / $9.99) with localizations, pricing, review screenshots
-- Build 7 uploaded, processed, and validated (encryption exempt)
+- Build 8 uploaded, processed, and validated (encryption exempt)
 - All BMC references removed from codebase (verified with grep)
 - ITSAppUsesNonExemptEncryption = NO in Info.plist
-- App submitted -- status is WAITING_FOR_REVIEW
+- App submitted March 16 -- status is WAITING_FOR_REVIEW
+- Full ASO audit completed: 35 keywords identified, 10 competitors analyzed, metadata optimized (92/100 score)
+
+---
+
+## QUICK START
+
+1. Read this master plan top to bottom (10 minutes)
+2. Follow phases in order -- Phase 1 is active now
+3. Check boxes as you complete tasks
+4. Each phase links to detailed files in subfolders
+5. Estimated total time investment: 8-12 hours over first month, then 1-2 hours/week ongoing
 
 ---
 
@@ -28,12 +40,13 @@ The app has been submitted to App Review after resolving a Guideline 3.1.1 rejec
 - [x] Final BMC grep verification -- zero matches
 - [x] StoreKit 2 tip jar implemented with 3 consumable IAPs
 - [x] IAPs created in App Store Connect with localizations and review screenshots
-- [x] Build 7 uploaded and processed (VALID)
+- [x] Build 8 uploaded and processed (VALID)
 - [x] Encryption exemption declared (ITSAppUsesNonExemptEncryption = NO)
-- [x] App submitted for review -- WAITING_FOR_REVIEW
+- [x] App submitted for review -- WAITING_FOR_REVIEW (March 16)
 - [ ] Monitor App Store Connect status twice daily (morning + evening)
 - [ ] Be available for App Review questions via Resolution Center
 - [ ] Prepare post-approval announcements while waiting (see 04-launch/action-launch.md for drafts)
+- [ ] If no response by Friday March 20, contact App Review via Resolution Center
 
 ### Phase 2: Approval Day (Expected March 17-19)
 
@@ -93,14 +106,31 @@ The app has been submitted to App Review after resolving a Guideline 3.1.1 rejec
 - [ ] Test 3: App Name -- sequential submission test (run after 4 weeks of baseline)
 - [ ] Log all test results in test log (03-testing/ab-test-setup.md)
 
-### Phase 7: Ongoing Optimization (Monthly)
+### Phase 7: Ongoing Optimization (Continuous)
+**See:** 05-optimization/action-optimization.md
 
-- [ ] Update promotional text every 4-6 weeks (no review needed)
-- [ ] Refresh keywords quarterly based on App Store Connect search data
-- [ ] Respond to all reviews within 24 hours
-- [ ] Monthly competitor deep dive (Clop, Zipic, Squash, Optimage, Compresto)
-- [ ] Quarterly full keyword research refresh
-- [ ] Evaluate localization ROI after Month 3 (Japanese, German, French are top Mac utility markets)
+**Daily (15 min/day, first 2 weeks):**
+- [ ] Check reviews, crash reports, downloads in App Store Connect
+- [ ] Respond to all reviews within 24 hours (templates in 05-optimization/review-responses.md)
+
+**Weekly (1 hour/week, starting Week 2):**
+- [ ] Keyword ranking check for primary terms
+- [ ] Conversion rate analysis (impressions > page views > installs)
+- [ ] Competitor update check (Clop, Zipic, Squash)
+- [ ] Update promotional text if messaging needs refinement
+
+**Monthly (2-3 hours/month, starting Month 2):**
+- [ ] Full ASO health review (keywords, CVR, ratings, reviews)
+- [ ] Metadata refresh evaluation
+- [ ] Screenshot effectiveness review
+- [ ] Review deep dive (categorize all reviews from past month)
+- [ ] Competitor deep dive (Clop, Zipic, Squash, Optimage, Compresto)
+
+**Quarterly (4-6 hours):**
+- [ ] Full keyword research refresh
+- [ ] Evaluate localization ROI (Japanese, German, French are top Mac utility markets)
+- [ ] Visual asset overhaul if needed
+- [ ] Competitive positioning review
 
 ---
 

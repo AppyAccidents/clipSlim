@@ -139,9 +139,9 @@ final class CoreFeatureTests: XCTestCase {
         XCTAssertTrue(settings.saveToDisk)
     }
 
-    func testClipboardWatcherRejectsPDFPasteboardType() {
+    func testClipboardWatcherAcceptsPDFPasteboardType() {
         let pdfType = NSPasteboard.PasteboardType("com.adobe.pdf")
-        XCTAssertFalse(ClipboardWatcher.isSupportedImagePasteboardType(pdfType))
+        XCTAssertTrue(ClipboardWatcher.isSupportedImagePasteboardType(pdfType))
     }
 
     func testClipboardWatcherAcceptsImagePasteboardTypes() {
@@ -150,8 +150,8 @@ final class CoreFeatureTests: XCTestCase {
         XCTAssertTrue(ClipboardWatcher.isSupportedImagePasteboardType(NSPasteboard.PasteboardType("public.jpeg")))
     }
 
-    func testFolderWatcherRejectsPDFAndNonImageExtensions() {
-        XCTAssertFalse(FolderWatcher.isSupportedImageFileExtension("pdf"))
+    func testFolderWatcherAcceptsPDFAndRejectsNonImageExtensions() {
+        XCTAssertTrue(FolderWatcher.isSupportedImageFileExtension("pdf"))
         XCTAssertFalse(FolderWatcher.isSupportedImageFileExtension("txt"))
     }
 
