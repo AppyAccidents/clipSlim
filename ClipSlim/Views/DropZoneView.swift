@@ -20,9 +20,9 @@ struct DropZoneView: View {
                 summaryFooter
             }
         }
-        .frame(minWidth: 320, minHeight: 400)
+        .frame(minWidth: 320, minHeight: 260)
         .font(VibeCheckTheme.Typography.body)
-        .tint(VibeCheckTheme.Colors.neonCyan)
+        .tint(VibeCheckTheme.Colors.neonOrange)
         .background(
             ZStack {
                 VibeCheckTheme.Colors.background
@@ -88,7 +88,7 @@ struct DropZoneView: View {
                 .foregroundColor(VibeCheckTheme.Colors.textTertiary)
         }
         .frame(maxWidth: .infinity)
-        .frame(height: 180)
+        .frame(height: 120)
         .background(
             RoundedRectangle(cornerRadius: VibeCheckTheme.CornerRadius.lg)
                 .strokeBorder(

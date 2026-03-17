@@ -45,10 +45,16 @@ struct AboutTab: View {
             
             Spacer()
             
-            Text("© 2026 AppyAccidents")
-                .font(VibeCheckTheme.Typography.tiny)
-                .foregroundColor(VibeCheckTheme.Colors.textTertiary)
-                .padding(.bottom, VibeCheckTheme.Spacing.md)
+            VStack(spacing: VibeCheckTheme.Spacing.xs) {
+                Link("appyaccidents.com", destination: URL(string: "https://appyaccidents.com")!)
+                    .font(VibeCheckTheme.Typography.caption)
+                    .foregroundColor(VibeCheckTheme.Colors.neonCyan)
+
+                Text("© 2026 AppyAccidents")
+                    .font(VibeCheckTheme.Typography.tiny)
+                    .foregroundColor(VibeCheckTheme.Colors.textTertiary)
+            }
+            .padding(.bottom, VibeCheckTheme.Spacing.md)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

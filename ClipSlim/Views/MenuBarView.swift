@@ -48,7 +48,7 @@ struct MenuBarView: View {
         }
         .frame(width: 340)
         .font(VibeCheckTheme.Typography.body)
-        .tint(VibeCheckTheme.Colors.neonCyan)
+        .tint(VibeCheckTheme.Colors.neonOrange)
         .background(VibeCheckTheme.Colors.background)
         .onAppear {
             viewModel.startServices()
@@ -103,8 +103,7 @@ struct MenuBarView: View {
             QuickToggleRow(
                 icon: "folder",
                 title: "Folder Watch",
-                isOn: folderWatchBinding,
-                accentColor: VibeCheckTheme.Colors.neonOrange
+                isOn: folderWatchBinding
             )
         }
         .padding(.vertical, VibeCheckTheme.Spacing.xs)

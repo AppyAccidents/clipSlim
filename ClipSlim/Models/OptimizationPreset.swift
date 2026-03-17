@@ -8,10 +8,10 @@ enum OptimizationPreset: String, Codable, CaseIterable {
     
     var quality: Double {
         switch self {
-        case .highQuality: return 0.90
-        case .webQuality: return 0.75
-        case .compressed: return 0.60
-        case .custom: return 0.75
+        case .highQuality: return 0.85
+        case .webQuality: return 0.70
+        case .compressed: return 0.50
+        case .custom: return 0.72
         }
     }
     

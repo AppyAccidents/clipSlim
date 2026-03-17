@@ -4,7 +4,7 @@ struct QuickToggleRow: View {
     let icon: String
     let title: String
     @Binding var isOn: Bool
-    var accentColor: Color = VibeCheckTheme.Colors.neonCyan
+    var accentColor: Color = VibeCheckTheme.Colors.neonOrange
     
     var body: some View {
         HStack(spacing: VibeCheckTheme.Spacing.md) {

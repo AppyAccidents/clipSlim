@@ -43,7 +43,7 @@ struct SettingsView: View {
         }
         .frame(width: 560, height: 620)
         .font(VibeCheckTheme.Typography.body)
-        .tint(Color(hex: "FB8A10"))
+        .tint(VibeCheckTheme.Colors.neonOrange)
         .padding(VibeCheckTheme.Spacing.sm)
         .background(VibeCheckTheme.Colors.background)
         .preferredColorScheme(.dark)

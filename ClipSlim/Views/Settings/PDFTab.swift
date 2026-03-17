@@ -79,7 +79,7 @@ struct PDFTab: View {
                 .foregroundColor(settings.pdfTargetDPI == dpi ? VibeCheckTheme.Colors.backgroundPrimary : VibeCheckTheme.Colors.textSecondary)
                 .padding(.horizontal, VibeCheckTheme.Spacing.sm)
                 .padding(.vertical, VibeCheckTheme.Spacing.xs)
-                .background(settings.pdfTargetDPI == dpi ? VibeCheckTheme.Colors.neonCyan : Color.white.opacity(0.07))
+                .background(settings.pdfTargetDPI == dpi ? VibeCheckTheme.Colors.neonOrange : Color.white.opacity(0.07))
                 .cornerRadius(VibeCheckTheme.CornerRadius.sm)
         }
         .buttonStyle(.plain)

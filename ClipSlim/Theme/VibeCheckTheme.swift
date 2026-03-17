@@ -134,7 +134,7 @@ struct VibeButton: View {
             case .primary: return VibeCheckTheme.Colors.neonCyan
             case .secondary: return VibeCheckTheme.Colors.surface
             case .danger: return VibeCheckTheme.Colors.error
-            case .donation: return Color(hex: "FB8A10")
+            case .donation: return VibeCheckTheme.Colors.neonOrange
             }
         }
 
@@ -143,7 +143,7 @@ struct VibeButton: View {
             case .primary: return VibeCheckTheme.Colors.background
             case .secondary: return VibeCheckTheme.Colors.neonCyan
             case .danger: return VibeCheckTheme.Colors.textPrimary
-            case .donation: return Color(hex: "0D0D0F")
+            case .donation: return VibeCheckTheme.Colors.backgroundPrimary
             }
         }
 
@@ -152,7 +152,7 @@ struct VibeButton: View {
             case .primary: return VibeCheckTheme.Colors.neonCyan
             case .secondary: return nil
             case .danger: return VibeCheckTheme.Colors.error
-            case .donation: return Color(hex: "FB8A10")
+            case .donation: return VibeCheckTheme.Colors.neonOrange
             }
         }
     }

@@ -281,12 +281,20 @@ final class ImageOptimizer: Sendable {
         }
 
         var options: [CFString: Any] = [
-            kCGImageDestinationLossyCompressionQuality: quality
+            kCGImageDestinationLossyCompressionQuality: quality,
+            kCGImageDestinationEmbedThumbnail: false
         ]
 
-        if !stripMetadata,
-           let sourceProperties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any] {
-            options[kCGImageDestinationMetadata] = sourceProperties
+        if stripMetadata {
+            options[kCGImageDestinationOptimizeColorForSharing] = true
+        } else {
+            if let metadata = CGImageSourceCopyMetadataAtIndex(source, 0, nil) {
+                let metadataOptions: [CFString: Any] = [
+                    kCGImageDestinationMergeMetadata: true,
+                    kCGImageDestinationMetadata: metadata
+                ]
+                CGImageDestinationSetProperties(destination, metadataOptions as CFDictionary)
+            }
         }
 
         CGImageDestinationAddImage(destination, image, options as CFDictionary)
@@ -304,11 +312,20 @@ final class ImageOptimizer: Sendable {
             throw OptimizationError.encodingFailed
         }
 
-        var options: [CFString: Any] = [:]
+        var options: [CFString: Any] = [
+            kCGImageDestinationEmbedThumbnail: false
+        ]
 
-        if !stripMetadata,
-           let sourceProperties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any] {
-            options[kCGImageDestinationMetadata] = sourceProperties
+        if stripMetadata {
+            options[kCGImageDestinationOptimizeColorForSharing] = true
+        } else {
+            if let metadata = CGImageSourceCopyMetadataAtIndex(source, 0, nil) {
+                let metadataOptions: [CFString: Any] = [
+                    kCGImageDestinationMergeMetadata: true,
+                    kCGImageDestinationMetadata: metadata
+                ]
+                CGImageDestinationSetProperties(destination, metadataOptions as CFDictionary)
+            }
         }
 
         CGImageDestinationAddImage(destination, image, options as CFDictionary)

@@ -69,14 +69,6 @@ struct FolderTab: View {
                     .font(VibeCheckTheme.Typography.caption)
                     .foregroundColor(VibeCheckTheme.Colors.textSecondary)
 
-                Text("PDF support: Coming soon")
-                    .font(VibeCheckTheme.Typography.caption)
-                    .foregroundColor(VibeCheckTheme.Colors.textSecondary)
-
-                Text("PDF page separation/stitching: Coming soon")
-                    .font(VibeCheckTheme.Typography.caption)
-                    .foregroundColor(VibeCheckTheme.Colors.textSecondary)
-
                 if viewModel.folderWatcher.isWatching {
                     VStack(alignment: .leading, spacing: 6) {
                         ForEach(viewModel.folderWatcher.watchedPaths, id: \.self) { path in

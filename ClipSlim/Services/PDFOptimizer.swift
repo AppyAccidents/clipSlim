@@ -309,6 +309,7 @@ final class PDFOptimizer: Sendable {
             return nil
         }
 
+        bitmapContext.interpolationQuality = .high
         bitmapContext.setFillColor(CGColor.white)
         bitmapContext.fill(CGRect(x: 0, y: 0, width: pixelSize.width, height: pixelSize.height))
         bitmapContext.scaleBy(x: scale, y: scale)
@@ -329,7 +330,9 @@ final class PDFOptimizer: Sendable {
         }
 
         let options: [CFString: Any] = [
-            kCGImageDestinationLossyCompressionQuality: quality
+            kCGImageDestinationLossyCompressionQuality: quality,
+            kCGImageDestinationOptimizeColorForSharing: true,
+            kCGImageDestinationEmbedThumbnail: false
         ]
 
         CGImageDestinationAddImage(destination, image, options as CFDictionary)

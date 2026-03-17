@@ -41,7 +41,7 @@ struct SupportTab: View {
                 VStack(spacing: VibeCheckTheme.Spacing.xs) {
                     Image(systemName: "heart.fill")
                         .font(.system(size: 24))
-                        .foregroundColor(Color(hex: "FB8A10"))
+                        .foregroundColor(VibeCheckTheme.Colors.neonOrange)
                     Text("Thank you!")
                         .font(VibeCheckTheme.Typography.headline)
                         .foregroundColor(VibeCheckTheme.Colors.textPrimary)

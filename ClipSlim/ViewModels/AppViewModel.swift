@@ -101,6 +101,9 @@ final class AppViewModel {
         }
         hasStartedServices = true
         presentOnboardingIfNeeded()
+        if settings.dropZoneVisibleOnLaunch {
+            dropZoneService.show()
+        }
         refreshPauseState()
         Task { await tipStore.loadProducts() }
     }

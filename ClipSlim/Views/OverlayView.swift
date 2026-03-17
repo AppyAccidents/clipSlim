@@ -1,7 +1,7 @@
 import SwiftUI
 import AppKit
 
-private let accentOrange = Color(hex: "FB8A10")
+private let accentOrange = VibeCheckTheme.Colors.neonOrange
 
 private struct OrangeDivider: View {
     var body: some View {
