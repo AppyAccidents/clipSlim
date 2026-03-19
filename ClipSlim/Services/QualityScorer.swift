@@ -55,7 +55,7 @@ final class QualityScorer: Sendable {
             return nil
         }
 
-        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        let colorSpace = image.colorSpace ?? CGColorSpaceCreateDeviceRGB()
         let bytesPerRow = size * 4
         guard let context = CGContext(
             data: nil, width: size, height: size,

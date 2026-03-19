@@ -124,7 +124,14 @@ final class ImageOptimizer: Sendable {
                     }
                     cgImage = thumbnail
                 } else {
-                    guard let image = CGImageSourceCreateImageAtIndex(source, 0, nil) else {
+                    let maxDim = max(originalDimensions.width, originalDimensions.height)
+                    let options: [CFString: Any] = [
+                        kCGImageSourceCreateThumbnailFromImageAlways: true,
+                        kCGImageSourceThumbnailMaxPixelSize: maxDim,
+                        kCGImageSourceCreateThumbnailWithTransform: true,
+                        kCGImageSourceShouldCacheImmediately: true
+                    ]
+                    guard let image = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else {
                         throw OptimizationError.invalidImageData
                     }
                     cgImage = image
@@ -135,16 +142,25 @@ final class ImageOptimizer: Sendable {
                 throw OptimizationError.resizeFailed
             }
 
-            let optimizedDimensions = (width: cgImage.width, height: cgImage.height)
+            // Normalize high bit-depth images (e.g. 10-bit HEIC → 8-bit) to prevent
+            // garbled output from encoders that can't handle 16-bpc CGImages.
+            let finalImage: CGImage
+            if cgImage.bitsPerComponent > 8 {
+                finalImage = normalizeToSRGB8(cgImage) ?? cgImage
+            } else {
+                finalImage = cgImage
+            }
+
+            let optimizedDimensions = (width: finalImage.width, height: finalImage.height)
 
             let outputData: Data
             switch outputFormat {
             case .jpeg:
-                outputData = try encodeJPEG(image: cgImage, quality: config.quality, stripMetadata: config.stripMetadata, source: source)
+                outputData = try encodeJPEG(image: finalImage, quality: config.quality, stripMetadata: config.stripMetadata, source: source)
             case .png:
-                outputData = try encodePNG(image: cgImage, stripMetadata: config.stripMetadata, source: source)
+                outputData = try encodePNG(image: finalImage, stripMetadata: config.stripMetadata, source: source)
             case .webp:
-                outputData = try encodeWebP(image: cgImage, quality: config.quality, stripMetadata: config.stripMetadata, source: source)
+                outputData = try encodeWebP(image: finalImage, quality: config.quality, stripMetadata: config.stripMetadata, source: source)
             }
 
             let duration = CFAbsoluteTimeGetCurrent() - startTime
@@ -165,8 +181,6 @@ final class ImageOptimizer: Sendable {
     private func resizeImage(image: CGImage, width: Int, height: Int) throws -> CGImage {
         let safeWidth = max(1, width)
         let safeHeight = max(1, height)
-        let bytesPerPixel = 4
-        let bytesPerRow = safeWidth * bytesPerPixel
         let bitmapInfo = CGImageAlphaInfo.premultipliedLast.rawValue
 
         guard let context = CGContext(
@@ -174,8 +188,8 @@ final class ImageOptimizer: Sendable {
             width: safeWidth,
             height: safeHeight,
             bitsPerComponent: 8,
-            bytesPerRow: bytesPerRow,
-            space: CGColorSpaceCreateDeviceRGB(),
+            bytesPerRow: 0,
+            space: image.colorSpace ?? CGColorSpaceCreateDeviceRGB(),
             bitmapInfo: bitmapInfo
         ) else {
             throw OptimizationError.resizeFailed
@@ -189,6 +203,27 @@ final class ImageOptimizer: Sendable {
         }
 
         return resized
+    }
+
+    /// Convert a high bit-depth CGImage (e.g. 16-bpc from 10-bit HEIC) to standard 8-bpc sRGB.
+    private func normalizeToSRGB8(_ image: CGImage) -> CGImage? {
+        let w = image.width
+        let h = image.height
+        guard let sRGB = CGColorSpace(name: CGColorSpace.sRGB),
+              let context = CGContext(
+                  data: nil,
+                  width: w,
+                  height: h,
+                  bitsPerComponent: 8,
+                  bytesPerRow: 0,
+                  space: sRGB,
+                  bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+              ) else {
+            return nil
+        }
+        context.interpolationQuality = .high
+        context.draw(image, in: CGRect(x: 0, y: 0, width: w, height: h))
+        return context.makeImage()
     }
 
     // MARK: - Private Helpers
@@ -255,7 +290,7 @@ final class ImageOptimizer: Sendable {
             height: sampleHeight,
             bitsPerComponent: bitsPerComponent,
             bytesPerRow: bytesPerRow,
-            space: CGColorSpaceCreateDeviceRGB(),
+            space: image.colorSpace ?? CGColorSpaceCreateDeviceRGB(),
             bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
         ) else {
             return true
@@ -442,7 +477,7 @@ final class ImageOptimizer: Sendable {
             height: clampedDiameter,
             bitsPerComponent: 8,
             bytesPerRow: 0,
-            space: CGColorSpaceCreateDeviceRGB(),
+            space: squareCrop.colorSpace ?? CGColorSpaceCreateDeviceRGB(),
             bitmapInfo: bitmapInfo.rawValue
         ) else {
             throw OptimizationError.resizeFailed
@@ -480,7 +515,7 @@ final class ImageOptimizer: Sendable {
 
         // Scale down to 80×80 for speed
         let thumbSize = 80
-        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        let colorSpace = fullImage.colorSpace ?? CGColorSpaceCreateDeviceRGB()
         let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)
         guard let ctx = CGContext(
             data: nil, width: thumbSize, height: thumbSize,

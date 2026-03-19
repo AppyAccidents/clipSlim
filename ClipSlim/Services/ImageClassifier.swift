@@ -78,7 +78,7 @@ final class ImageClassifier: Sendable {
     /// Compute edge density and uniform region ratio from a downsampled image
     private func analyzePixels(image: CGImage) -> (edgeDensity: Double, uniformRegionRatio: Double) {
         let sampleSize = 128
-        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        let colorSpace = image.colorSpace ?? CGColorSpaceCreateDeviceRGB()
         let bytesPerRow = sampleSize * 4
 
         guard let context = CGContext(
@@ -142,7 +142,7 @@ final class ImageClassifier: Sendable {
     /// Compute color histogram variance from an 80x80 downsample
     private func colorHistogramVariance(image: CGImage) -> Double {
         let thumbSize = 80
-        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        let colorSpace = image.colorSpace ?? CGColorSpaceCreateDeviceRGB()
         let bytesPerRow = thumbSize * 4
 
         guard let ctx = CGContext(
