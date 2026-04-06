@@ -25,6 +25,7 @@ struct OverlayView: View {
     @State private var dominantCGColors: [CGColor] = []
     @State private var copiedHex: String? = nil
     @State private var ssimScore: Double? = nil
+    @State private var showComparison: Bool = false
 
     private let minResizeDimension = 16
     private let maxResizeDimension = 8192
@@ -77,6 +78,11 @@ struct OverlayView: View {
             }
 
             summary(item)
+
+            // Before/After comparison toggle + view
+            if item.pdfPageCount == nil {
+                comparisonSection(item)
+            }
 
             // F3: Quality score badge (visible to all users when below threshold)
             if let score = item.qualityScore {
@@ -204,6 +210,34 @@ struct OverlayView: View {
             RoundedRectangle(cornerRadius: VibeCheckTheme.CornerRadius.sm)
                 .stroke(Color.white.opacity(0.18), lineWidth: 1)
         )
+    }
+
+    // MARK: - Comparison
+
+    private func comparisonSection(_ item: OverlayItem) -> some View {
+        VStack(alignment: .leading, spacing: VibeCheckTheme.Spacing.xs) {
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    showComparison.toggle()
+                }
+            } label: {
+                HStack(spacing: VibeCheckTheme.Spacing.xs) {
+                    Image(systemName: showComparison ? "eye.slash" : "eye")
+                        .font(.system(size: 10))
+                    Text(showComparison ? "Hide Comparison" : "Compare")
+                        .font(VibeCheckTheme.Typography.caption)
+                }
+                .foregroundColor(VibeCheckTheme.Colors.neonCyan)
+            }
+            .buttonStyle(.plain)
+
+            if showComparison {
+                ComparisonSliderView(
+                    originalData: item.originalData,
+                    optimizedData: item.optimizedData
+                )
+            }
+        }
     }
 
     // MARK: - Primary Actions
