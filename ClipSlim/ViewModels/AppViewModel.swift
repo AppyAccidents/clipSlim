@@ -4,6 +4,7 @@ import Carbon.HIToolbox
 import ImageIO
 import SwiftUI
 import SwiftData
+import StoreKit
 
 @MainActor
 @Observable
@@ -125,6 +126,23 @@ final class AppViewModel {
         }
         totalSaved += event.result.savingsBytes
         totalOptimized += 1
+        requestReviewIfAppropriate()
+    }
+
+    private func requestReviewIfAppropriate() {
+        let key = "lastReviewRequestOptimizationCount"
+        let lastRequestCount = UserDefaults.standard.integer(forKey: key)
+        // Request after 3rd, 20th, and every 50th optimization thereafter
+        let shouldRequest = (totalOptimized == 3 && lastRequestCount < 3)
+            || (totalOptimized == 20 && lastRequestCount < 20)
+            || (totalOptimized >= 50 && totalOptimized % 50 == 0 && lastRequestCount < totalOptimized)
+        guard shouldRequest else { return }
+        UserDefaults.standard.set(totalOptimized, forKey: key)
+        // Delay to avoid interrupting the user mid-paste
+        Task { @MainActor in
+            try? await Task.sleep(for: .seconds(3))
+            SKStoreReviewController.requestReview()
+        }
     }
 
     // MARK: - Public
