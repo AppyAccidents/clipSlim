@@ -570,6 +570,80 @@ final class ImageOptimizer: Sendable {
         return outputData as Data
     }
 
+    /// Center-crops the image to fill the target dimensions exactly.
+    /// If source is wider than target aspect ratio, crops sides. If taller, crops top/bottom.
+    /// Generalizes cropToSquare to arbitrary aspect ratios.
+    func cropToFill(data: Data, width targetWidth: Int, height targetHeight: Int) throws -> Data {
+        guard targetWidth >= 1 && targetHeight >= 1 else { throw OptimizationError.resizeFailed }
+
+        guard let source = CGImageSourceCreateWithData(data as CFData, nil),
+              let cgImage = CGImageSourceCreateImageAtIndex(source, 0, nil) else {
+            throw OptimizationError.invalidImageData
+        }
+
+        let srcW = cgImage.width
+        let srcH = cgImage.height
+
+        // Calculate crop rect to match target aspect ratio, centered
+        let targetAspect = CGFloat(targetWidth) / CGFloat(targetHeight)
+        let srcAspect = CGFloat(srcW) / CGFloat(srcH)
+
+        let cropRect: CGRect
+        if srcAspect > targetAspect {
+            // Source is wider — crop sides
+            let cropHeight = CGFloat(srcH)
+            let cropWidth = cropHeight * targetAspect
+            let originX = (CGFloat(srcW) - cropWidth) / 2
+            cropRect = CGRect(x: originX, y: 0, width: cropWidth, height: cropHeight)
+        } else {
+            // Source is taller — crop top/bottom
+            let cropWidth = CGFloat(srcW)
+            let cropHeight = cropWidth / targetAspect
+            let originY = (CGFloat(srcH) - cropHeight) / 2
+            cropRect = CGRect(x: 0, y: originY, width: cropWidth, height: cropHeight)
+        }
+
+        guard let cropped = cgImage.cropping(to: cropRect) else {
+            throw OptimizationError.resizeFailed
+        }
+
+        // Resize cropped image to exact target dimensions
+        let colorSpace = cropped.colorSpace ?? CGColorSpaceCreateDeviceRGB()
+        let hasAlpha = cropped.alphaInfo != .none && cropped.alphaInfo != .noneSkipFirst && cropped.alphaInfo != .noneSkipLast
+        let bitmapInfo: CGBitmapInfo = hasAlpha
+            ? CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)
+            : CGBitmapInfo(rawValue: CGImageAlphaInfo.noneSkipLast.rawValue)
+
+        guard let context = CGContext(
+            data: nil,
+            width: targetWidth,
+            height: targetHeight,
+            bitsPerComponent: 8,
+            bytesPerRow: 0,
+            space: colorSpace,
+            bitmapInfo: bitmapInfo.rawValue
+        ) else {
+            throw OptimizationError.resizeFailed
+        }
+
+        context.interpolationQuality = .high
+        context.draw(cropped, in: CGRect(x: 0, y: 0, width: targetWidth, height: targetHeight))
+
+        guard let resultImage = context.makeImage() else {
+            throw OptimizationError.resizeFailed
+        }
+
+        let outputData = NSMutableData()
+        guard let destination = CGImageDestinationCreateWithData(outputData as CFMutableData, UTType.png.identifier as CFString, 1, nil) else {
+            throw OptimizationError.encodingFailed
+        }
+        CGImageDestinationAddImage(destination, resultImage, nil)
+        guard CGImageDestinationFinalize(destination) else {
+            throw OptimizationError.encodingFailed
+        }
+        return outputData as Data
+    }
+
     func cropToCircle(data: Data, radius: Int) throws -> Data {
         guard radius >= 1 else { throw OptimizationError.resizeFailed }
 

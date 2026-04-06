@@ -89,6 +89,30 @@
 		A10000930000000000000093 /* ComparisonSliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000930000000000000093 /* ComparisonSliderView.swift */; };
 		A10000940000000000000094 /* OptimizeImageIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000940000000000000094 /* OptimizeImageIntent.swift */; };
 		A10000950000000000000095 /* ShortcutsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000950000000000000095 /* ShortcutsProvider.swift */; };
+		A10000960000000000000096 /* VideoOptimizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000960000000000000096 /* VideoOptimizer.swift */; };
+		A10000970000000000000097 /* GIFOptimizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000970000000000000097 /* GIFOptimizer.swift */; };
+		A10000980000000000000098 /* FileTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000980000000000000098 /* FileTypeTests.swift */; };
+		A10000990000000000000099 /* VideoOptimizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000990000000000000099 /* VideoOptimizerTests.swift */; };
+		A100009A000000000000009A /* GIFOptimizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100009A000000000000009A /* GIFOptimizerTests.swift */; };
+		A100009B000000000000009B /* SVGOptimizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100009B000000000000009B /* SVGOptimizer.swift */; };
+		A100009C000000000000009C /* SVGOptimizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100009C000000000000009C /* SVGOptimizerTests.swift */; };
+		A100009D000000000000009D /* LosslessPresetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100009D000000000000009D /* LosslessPresetTests.swift */; };
+		A100009E000000000000009E /* VideoTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100009E000000000000009E /* VideoTab.swift */; };
+		A100009F000000000000009F /* ShortcutAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100009F000000000000009F /* ShortcutAction.swift */; };
+		A10000A30000000000000A3 /* KeyRecorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000A30000000000000A3 /* KeyRecorderView.swift */; };
+		A10000A00000000000000A0 /* QuickResizePanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000A00000000000000A0 /* QuickResizePanel.swift */; };
+		A10000A10000000000000A1 /* QuickCropPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000A10000000000000A1 /* QuickCropPanel.swift */; };
+		A10000A20000000000000A2 /* ShortcutActionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000A20000000000000A2 /* ShortcutActionTests.swift */; };
+		CE24697FF02282929484BFF0 /* BatchRenamer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1F8206F8FC96225AA8613D /* BatchRenamer.swift */; };
+		EC1B1D895F72A000E084095C /* RenameContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4BF6A73312916B33353CC0 /* RenameContext.swift */; };
+		7E737798A38C946CE922B4E9 /* BatchRenamerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44B20B47D7EE605D63BE026 /* BatchRenamerTests.swift */; };
+		A10000B00000000000000B0 /* WatermarkConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000B00000000000000B0 /* WatermarkConfig.swift */; };
+		A10000B10000000000000B1 /* WatermarkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000B10000000000000B1 /* WatermarkService.swift */; };
+		A10000B20000000000000B2 /* WatermarkTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000B20000000000000B2 /* WatermarkTab.swift */; };
+		A10000B30000000000000B3 /* WatermarkServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000B30000000000000B3 /* WatermarkServiceTests.swift */; };
+		A10000C00000000000000C0 /* SocialMediaPreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000C00000000000000C0 /* SocialMediaPreset.swift */; };
+		A10000C10000000000000C1 /* SocialMediaPresetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000C10000000000000C1 /* SocialMediaPresetTests.swift */; };
+		A10000C20000000000000C2 /* ImageOptimizerCropToFillTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000C20000000000000C2 /* ImageOptimizerCropToFillTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -187,8 +211,32 @@
 		B10000930000000000000093 /* ComparisonSliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComparisonSliderView.swift; sourceTree = "<group>"; };
 		B10000940000000000000094 /* OptimizeImageIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimizeImageIntent.swift; sourceTree = "<group>"; };
 		B10000950000000000000095 /* ShortcutsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutsProvider.swift; sourceTree = "<group>"; };
+		B10000960000000000000096 /* VideoOptimizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoOptimizer.swift; sourceTree = "<group>"; };
+		B10000970000000000000097 /* GIFOptimizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GIFOptimizer.swift; sourceTree = "<group>"; };
+		B10000980000000000000098 /* FileTypeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTypeTests.swift; sourceTree = "<group>"; };
+		B10000990000000000000099 /* VideoOptimizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoOptimizerTests.swift; sourceTree = "<group>"; };
+		B100009A000000000000009A /* GIFOptimizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GIFOptimizerTests.swift; sourceTree = "<group>"; };
+		B100009B000000000000009B /* SVGOptimizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVGOptimizer.swift; sourceTree = "<group>"; };
+		B100009C000000000000009C /* SVGOptimizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVGOptimizerTests.swift; sourceTree = "<group>"; };
+		B100009D000000000000009D /* LosslessPresetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LosslessPresetTests.swift; sourceTree = "<group>"; };
+		B100009E000000000000009E /* VideoTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTab.swift; sourceTree = "<group>"; };
+		B100009F000000000000009F /* ShortcutAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutAction.swift; sourceTree = "<group>"; };
+		B10000A30000000000000A3 /* KeyRecorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyRecorderView.swift; sourceTree = "<group>"; };
+		B10000A00000000000000A0 /* QuickResizePanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickResizePanel.swift; sourceTree = "<group>"; };
+		B10000A10000000000000A1 /* QuickCropPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickCropPanel.swift; sourceTree = "<group>"; };
+		B10000A20000000000000A2 /* ShortcutActionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutActionTests.swift; sourceTree = "<group>"; };
 		F10000010000000000000001 /* ClipSlim.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClipSlim.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F10000020000000000000002 /* ClipSlimTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClipSlimTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D1F8206F8FC96225AA8613D /* BatchRenamer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchRenamer.swift; sourceTree = "<group>"; };
+		2C4BF6A73312916B33353CC0 /* RenameContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenameContext.swift; sourceTree = "<group>"; };
+		F44B20B47D7EE605D63BE026 /* BatchRenamerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchRenamerTests.swift; sourceTree = "<group>"; };
+		B10000B00000000000000B0 /* WatermarkConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatermarkConfig.swift; sourceTree = "<group>"; };
+		B10000B10000000000000B1 /* WatermarkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatermarkService.swift; sourceTree = "<group>"; };
+		B10000B20000000000000B2 /* WatermarkTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatermarkTab.swift; sourceTree = "<group>"; };
+		B10000B30000000000000B3 /* WatermarkServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatermarkServiceTests.swift; sourceTree = "<group>"; };
+		B10000C00000000000000C0 /* SocialMediaPreset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialMediaPreset.swift; sourceTree = "<group>"; };
+		B10000C10000000000000C1 /* SocialMediaPresetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialMediaPresetTests.swift; sourceTree = "<group>"; };
+		B10000C20000000000000C2 /* ImageOptimizerCropToFillTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageOptimizerCropToFillTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -252,6 +300,16 @@
 				B10000880000000000000088 /* PipelineStepTests.swift */,
 				B10000890000000000000089 /* ContextAwareServiceTests.swift */,
 				B10000920000000000000092 /* MetadataPolicyTests.swift */,
+				B10000980000000000000098 /* FileTypeTests.swift */,
+				B10000990000000000000099 /* VideoOptimizerTests.swift */,
+				B100009A000000000000009A /* GIFOptimizerTests.swift */,
+				B100009C000000000000009C /* SVGOptimizerTests.swift */,
+				B100009D000000000000009D /* LosslessPresetTests.swift */,
+				B10000A20000000000000A2 /* ShortcutActionTests.swift */,
+				F44B20B47D7EE605D63BE026 /* BatchRenamerTests.swift */,
+				B10000B30000000000000B3 /* WatermarkServiceTests.swift */,
+				B10000C10000000000000C1 /* SocialMediaPresetTests.swift */,
+				B10000C20000000000000C2 /* ImageOptimizerCropToFillTests.swift */,
 			);
 			path = ClipSlimTests;
 			sourceTree = "<group>";
@@ -287,6 +345,10 @@
 				B10000750000000000000075 /* AppPresetMapping.swift */,
 				B10000790000000000000079 /* FolderRule.swift */,
 				B10000910000000000000091 /* MetadataPolicy.swift */,
+				B100009F000000000000009F /* ShortcutAction.swift */,
+				2C4BF6A73312916B33353CC0 /* RenameContext.swift */,
+				B10000B00000000000000B0 /* WatermarkConfig.swift */,
+				B10000C00000000000000C0 /* SocialMediaPreset.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -313,6 +375,11 @@
 				B10000800000000000000080 /* RuleEvaluator.swift */,
 				B10000830000000000000083 /* SessionLogExporter.swift */,
 				B10000900000000000000090 /* DuplicateHashService.swift */,
+				B10000960000000000000096 /* VideoOptimizer.swift */,
+				B10000970000000000000097 /* GIFOptimizer.swift */,
+				B100009B000000000000009B /* SVGOptimizer.swift */,
+				1D1F8206F8FC96225AA8613D /* BatchRenamer.swift */,
+				B10000B10000000000000B1 /* WatermarkService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -336,6 +403,8 @@
 				B10000480000000000000048 /* DropZoneView.swift */,
 				B10000740000000000000074 /* ClipboardHistoryView.swift */,
 				B10000820000000000000082 /* QuickActionOverlayView.swift */,
+				B10000A00000000000000A0 /* QuickResizePanel.swift */,
+				B10000A10000000000000A1 /* QuickCropPanel.swift */,
 				D1000014000000000000000E /* Components */,
 				D1000015000000000000000F /* Settings */,
 			);
@@ -378,6 +447,7 @@
 				B10000180000000000000012 /* MenuActionButton.swift */,
 				B10000390000000000000039 /* SettingsDesign.swift */,
 				B10000930000000000000093 /* ComparisonSliderView.swift */,
+				B10000A30000000000000A3 /* KeyRecorderView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -390,12 +460,14 @@
 				B1000021000000000000001B /* PresetsTab.swift */,
 				B1000022000000000000001C /* FolderTab.swift */,
 				B10000490000000000000049 /* PDFTab.swift */,
+				B100009E000000000000009E /* VideoTab.swift */,
 				B10000370000000000000037 /* SupportTab.swift */,
 				B1000023000000000000001D /* AboutTab.swift */,
 				B10000700000000000000070 /* PipelineSection.swift */,
 				B10000720000000000000072 /* StatsTab.swift */,
 				B10000770000000000000077 /* AppMappingsTab.swift */,
 				B10000810000000000000081 /* FolderRulesSection.swift */,
+				B10000B20000000000000B2 /* WatermarkTab.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -537,6 +609,8 @@
 				A10000060000000000000006 /* OptimizationEvent.swift in Sources */,
 				A10000070000000000000007 /* ImageFormat.swift in Sources */,
 				A10000080000000000000008 /* ImageOptimizer.swift in Sources */,
+				EC1B1D895F72A000E084095C /* RenameContext.swift in Sources */,
+				CE24697FF02282929484BFF0 /* BatchRenamer.swift in Sources */,
 				A10000430000000000000043 /* OptimizationDispatch.swift in Sources */,
 				A10000090000000000000009 /* ClipboardWatcher.swift in Sources */,
 				A1000010000000000000000A /* FolderWatcher.swift in Sources */,
@@ -570,6 +644,11 @@
 				A10000470000000000000047 /* DropZoneService.swift in Sources */,
 				A10000480000000000000048 /* DropZoneView.swift in Sources */,
 				A10000490000000000000049 /* PDFTab.swift in Sources */,
+				A100009E000000000000009E /* VideoTab.swift in Sources */,
+				A100009F000000000000009F /* ShortcutAction.swift in Sources */,
+				A10000A30000000000000A3 /* KeyRecorderView.swift in Sources */,
+				A10000A00000000000000A0 /* QuickResizePanel.swift in Sources */,
+				A10000A10000000000000A1 /* QuickCropPanel.swift in Sources */,
 				A10000600000000000000060 /* ProcessingCoordinator.swift in Sources */,
 				A10000610000000000000061 /* SaveCoordinator.swift in Sources */,
 				A10000620000000000000062 /* HotkeyCoordinator.swift in Sources */,
@@ -598,6 +677,13 @@
 				A10000910000000000000091 /* MetadataPolicy.swift in Sources */,
 				A10000940000000000000094 /* OptimizeImageIntent.swift in Sources */,
 				A10000950000000000000095 /* ShortcutsProvider.swift in Sources */,
+				A10000960000000000000096 /* VideoOptimizer.swift in Sources */,
+				A10000970000000000000097 /* GIFOptimizer.swift in Sources */,
+				A100009B000000000000009B /* SVGOptimizer.swift in Sources */,
+				A10000B00000000000000B0 /* WatermarkConfig.swift in Sources */,
+				A10000B10000000000000B1 /* WatermarkService.swift in Sources */,
+				A10000B20000000000000B2 /* WatermarkTab.swift in Sources */,
+				A10000C00000000000000C0 /* SocialMediaPreset.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -617,6 +703,16 @@
 				A10000880000000000000088 /* PipelineStepTests.swift in Sources */,
 				A10000890000000000000089 /* ContextAwareServiceTests.swift in Sources */,
 				A10000920000000000000092 /* MetadataPolicyTests.swift in Sources */,
+				A10000980000000000000098 /* FileTypeTests.swift in Sources */,
+				A10000990000000000000099 /* VideoOptimizerTests.swift in Sources */,
+				A100009A000000000000009A /* GIFOptimizerTests.swift in Sources */,
+				A100009C000000000000009C /* SVGOptimizerTests.swift in Sources */,
+				A100009D000000000000009D /* LosslessPresetTests.swift in Sources */,
+				A10000A20000000000000A2 /* ShortcutActionTests.swift in Sources */,
+				7E737798A38C946CE922B4E9 /* BatchRenamerTests.swift in Sources */,
+				A10000B30000000000000B3 /* WatermarkServiceTests.swift in Sources */,
+				A10000C10000000000000C1 /* SocialMediaPresetTests.swift in Sources */,
+				A10000C20000000000000C2 /* ImageOptimizerCropToFillTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -760,7 +856,7 @@
 				CODE_SIGN_ENTITLEMENTS = ClipSlim/Resources/ClipSlim.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 11;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 56ZVD96SR4;
 				ENABLE_APP_SANDBOX = YES;
@@ -773,7 +869,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.appyaccidents.ClipSlim;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -788,7 +884,7 @@
 				CODE_SIGN_ENTITLEMENTS = ClipSlim/Resources/ClipSlim.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 11;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 56ZVD96SR4;
 				ENABLE_APP_SANDBOX = YES;
@@ -801,7 +897,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.appyaccidents.ClipSlim;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -815,11 +911,11 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 11;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 56ZVD96SR4;
 				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.appyaccidents.ClipSlimTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -834,11 +930,11 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 11;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 56ZVD96SR4;
 				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.appyaccidents.ClipSlimTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;

@@ -5,6 +5,7 @@ enum PresetParameter: String, AppEnum {
     case webQuality = "Web Quality"
     case highQuality = "High Quality"
     case compressed = "Compressed"
+    case lossless = "Lossless"
 
     static var typeDisplayRepresentation: TypeDisplayRepresentation {
         "Optimization Preset"
@@ -14,7 +15,8 @@ enum PresetParameter: String, AppEnum {
         [
             .webQuality: "Web Quality",
             .highQuality: "High Quality",
-            .compressed: "Compressed"
+            .compressed: "Compressed",
+            .lossless: "Lossless"
         ]
     }
 
@@ -23,6 +25,7 @@ enum PresetParameter: String, AppEnum {
         case .webQuality: return .webQuality
         case .highQuality: return .highQuality
         case .compressed: return .compressed
+        case .lossless: return .lossless
         }
     }
 }

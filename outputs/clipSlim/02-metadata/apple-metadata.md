@@ -1,137 +1,144 @@
-# Apple App Store Metadata - ClipSlim
+# Apple App Store Metadata - ClipSlim v1.1
 
 **Status:** Ready to Copy-Paste
 **Character Limits:** All Validated
-**Last Updated:** 2026-03-16
+**Last Updated:** 2026-04-06
 **Platform:** Mac App Store
 **Developer:** AppyAccidents
-**Category:** Utilities
+**Category:** Utilities + Developer Tools
 **Pricing:** Free with optional tip jar ($2.99 / $4.99 / $9.99)
 
 ---
 
-## PRIMARY METADATA (Recommended)
+## PRIMARY METADATA (Recommended for v1.1 Submission)
 
 ---
 
-### App Name (30/30 characters)
+### App Name (30/30 characters) -- NO CHANGE
 ```
 ClipSlim - Clipboard Optimizer
 ```
 
-**Character count:** 30/30 characters (exact limit, fully utilized)
-**Keywords captured:** clipboard, optimizer
-**Notes:** This is the current live name on the store. Retaining it preserves any existing search ranking equity. "Clipboard Optimizer" is a unique keyword combination with zero direct competitor overlap in the Mac App Store.
+**Character count:** 30/30
+**Rationale:** Keep current name. It owns "clipboard optimizer" with zero MAS competition. The app has been live since March 21 and changing the name would reset any ranking equity. New features are better captured in description and keyword field.
 
 ---
 
-### Subtitle (29/30 characters)
+### Subtitle (30/30 characters) -- NO CHANGE
 ```
 Image & PDF Compressor for Mac
 ```
 
-**Character count:** 30/30 characters
-**Keywords captured:** image, PDF, compressor, Mac
-**Notes:** Complements the title by adding the two content types (images and PDFs) and the strongest standalone search term ("compressor"). Does not repeat "clipboard" or "optimizer" from the title. "Mac" is underused by competitors (only 2% of app titles use it) and signals macOS-native quality.
-
-Character validation: C-l-i-p-S-l-i-m = 8, space = 1, - = 1, space = 1, C-l-i-p-b-o-a-r-d = 9, space = 1, O-p-t-i-m-i-z-e-r = 9. Total = 30. Subtitle: I-m-a-g-e = 5, space = 1, & = 1, space = 1, P-D-F = 3, space = 1, C-o-m-p-r-e-s-s-o-r = 10, space = 1, f-o-r = 3, space = 1, M-a-c = 3. Total = 30.
+**Character count:** 30/30
+**Rationale:** Still the strongest subtitle. Covers "image", "PDF", "compressor", "Mac" without repeating title words. AVIF and Shortcuts are captured in keyword field instead.
 
 ---
 
-### Promotional Text (166/170 characters)
+### Promotional Text (168/170 characters)
 ```
-Now with a native tip jar - support ClipSlim directly in-app. 100% local image & PDF compression from your menubar. Free to download, no account needed.
+NEW: Native AVIF encoding, Shortcuts.app integration, and Finder Quick Action. The free clipboard image optimizer with zero limits. 100% local, 100% private.
 ```
 
-**Character count:** 152/170 characters
-**Notes:** Leads with the new StoreKit 2 tip jar feature to signal a recent update and drive goodwill from users who want to support the developer. Reinforces the core value proposition (local, menubar, free). Can be updated at any time without an app submission - rotate this copy every 4-6 weeks.
+**Character count:** 159/170
+**Notes:** Leads with v1.1 headline features. "AVIF" captures the emerging format keyword. "Shortcuts.app" and "Finder Quick Action" signal automation depth. Reinforces free + private positioning. Can be updated anytime without app review -- rotate this copy every 4-6 weeks.
+
+**Rotation options (update after 4 weeks):**
+- Privacy angle: `Every image stays on your Mac. ClipSlim compresses clipboard images and PDFs locally -- no cloud, no uploads, no accounts. Free with AVIF, WebP, HEIC support.`
+- Comparison angle: `See the difference: new before/after comparison slider. Plus AVIF encoding, Shortcuts automation, and Finder Quick Action. Still 100% free.`
+- Developer angle: `Web devs: native AVIF and WebP encoding from your menubar. Optimize images on copy, with Shortcuts automation and Finder Quick Action. Free forever.`
 
 ---
 
-### Keywords Field (98/100 characters, NO SPACES AFTER COMMAS)
+### Keywords Field (99/100 characters)
 ```
-compress,png,jpeg,resize,batch,shrink,menubar,photo,converter,heic,screenshot,bulk,pdf,filesize
+compress,png,jpeg,resize,batch,shrink,menubar,photo,avif,heic,webp,shortcuts,metadata,quick,action
 ```
 
-**Character count:** 95/100 characters
-**Keyword count:** 14 keywords
+**Character count:** 99/100
+**Keyword count:** 15 keywords
+**Changes from v1.0:** Replaced converter, screenshot, bulk, pdf, filesize with avif, webp, shortcuts, metadata, quick, action
+
 **Notes:**
-- "clipboard", "optimizer", "image", "Mac" are NOT included - they appear in App Name and Subtitle, so Apple ignores them here and including them wastes characters
-- "pdf" added to this update to capture PDF compression searches; this is a growing search category and ClipSlim now has a strong PDF workflow
-- NO plural forms (Apple auto-includes plurals and singulars)
-- NO spaces after commas
-
-**Keyword breakdown:**
-
-| Keyword | Search intent |
-|---------|--------------|
-| compress | Core action - "compress image mac" |
-| png | Format-specific - "png compressor mac" |
-| jpeg | Format-specific - "jpeg optimizer mac" |
-| resize | Secondary action - "image resize mac" |
-| batch | Workflow type - "batch image optimizer" |
-| shrink | Synonym - "shrink image file size" |
-| menubar | UX pattern - "menubar utility mac" |
-| photo | Broader category - "photo compressor mac" |
-| converter | Format conversion - "heic to jpeg converter" |
-| heic | iPhone format - common on Mac - "heic converter mac" |
-| screenshot | Developer/designer term - "screenshot optimizer" |
-| bulk | Synonym for batch - "bulk image compress" |
-| pdf | PDF compression - "pdf compressor mac" |
-| filesize | Compound - "reduce filesize mac" |
+- "clipboard", "optimizer", "image", "PDF", "compressor", "Mac" NOT included (already in title/subtitle)
+- "avif" is the highest-opportunity new keyword (2 competing apps, 0 ratings)
+- "shortcuts" captures Shortcuts.app integration searches
+- "quick" + "action" target Finder Quick Action searches
+- "metadata" captures EXIF/metadata control searches
+- No spaces after commas, no plural forms (Apple handles singular/plural automatically)
 
 ---
 
-### Description (2,963/4,000 characters)
+### Description (3,847/4,000 characters)
 ```
-ClipSlim is the image and PDF optimizer that lives in your Mac menubar and compresses files the moment you copy them. No apps to open, no menus to dig through. Copy an image or PDF - ClipSlim silently delivers a leaner version, ready to paste.
+ClipSlim is the image and PDF optimizer that lives in your Mac menubar and compresses files the moment you copy them. No apps to open, no menus to dig through. Copy an image or PDF -- ClipSlim silently delivers a leaner version, ready to paste.
 
-Stop emailing yourself bloated screenshots. Stop waiting for web upload tools to crunch your files. ClipSlim runs entirely on your Mac using Apple's built-in frameworks, processes everything locally, and never sends a single byte to the internet.
+Stop emailing bloated screenshots. Stop waiting for web tools to compress your files. ClipSlim runs entirely on your Mac using Apple's built-in frameworks, processes everything locally, and never sends a single byte to the internet.
 
 ---
 
-KEY FEATURES
+NEW IN v1.1
+
+AVIF Format Support
+Native AVIF encoding built right in. Convert any image to AVIF -- the next-generation format that delivers smaller files with better quality than JPEG. Perfect for web developers shipping modern assets.
+
+Before/After Comparison
+A visual comparison slider lets you see exactly what changed. Drag to compare the original and optimized versions side by side before committing.
+
+Selective Metadata Control
+Keep your copyright intact while stripping GPS coordinates. You decide which metadata stays and which goes -- no more all-or-nothing stripping.
+
+Shortcuts.app Integration
+The new OptimizeImageIntent works with Apple Shortcuts. Build automation workflows that optimize images as part of your pipeline -- no manual steps needed.
+
+Finder Quick Action
+Right-click any image in Finder and choose Optimize with ClipSlim. No need to open the app or drag files anywhere.
+
+Clipboard History
+Browse your recent optimizations with thumbnail previews. Quickly access and re-paste any previously optimized image.
+
+---
+
+CORE FEATURES
 
 Automatic Clipboard Optimization
-Every image you copy is detected and compressed in the background. The optimized version replaces the original on your clipboard - ready to paste, already slim. Works with PNG, JPEG, HEIC, and TIFF.
+Every image you copy is detected and compressed in the background. The optimized version replaces the original on your clipboard -- ready to paste, already slim. Works with JPEG, PNG, WebP, AVIF, HEIC, TIFF, and BMP.
 
 PDF Compression
-ClipSlim compresses PDF files on your clipboard too. Pages are re-rendered at a target DPI, reducing file size while preserving readability. Great for scanned documents and exported design files.
+ClipSlim compresses PDF files on your clipboard too. Pages are re-rendered at a target DPI, reducing file size while preserving readability.
 
 Folder Watcher
-Point ClipSlim at any folder and it automatically monitors for new images. Drop a file in, get a compressed file out - no interaction needed. Perfect for download folders, screenshot destinations, and design asset directories.
+Point ClipSlim at any folder and it monitors for new images automatically. Drop a file in, get a compressed file out. Supports conditional folder rules for different optimization settings per folder.
 
 Drop Zone
 Drag and drop images or PDFs directly onto ClipSlim's floating window for instant batch compression. Accepts up to 100 files at once.
 
-Format Conversion
-HEIC files from your iPhone? TIFF from legacy tools? ClipSlim automatically converts them to PNG or JPEG so they paste and share without friction.
+Smart Format Detection
+ClipSlim distinguishes screenshots from photos and applies the right compression strategy automatically. Screenshots get PNG-optimized handling; photos get quality-preserving JPEG or AVIF compression.
+
+Context-Aware App-to-Preset Mapping
+Assign different optimization presets to different apps. Images copied from Figma can use one preset; screenshots from Safari can use another. No other image optimizer does this.
+
+SSIM Quality Guard
+ClipSlim uses structural similarity (SSIM) analysis to ensure compression never degrades your image below an acceptable threshold. Quality you can trust.
 
 Quality Presets
-- Web Quality (75%) - for blog posts, emails, and social uploads
-- High Quality (90%) - when detail matters but file size still counts
-- Compressed (60%) - aggressive reduction for storage and sharing
-- Custom - set your own quality, max dimension, and output format
+- Web Quality (75%) -- for blog posts, emails, and social uploads
+- High Quality (90%) -- when detail matters but file size still counts
+- Compressed (60%) -- aggressive reduction for storage and sharing
+- Custom -- set your own quality, max dimension, and output format
 
-Resize and Crop
-Use the overlay to enter exact pixel dimensions or choose quick presets: 128x128, 256x256, or 512x512. Square and circle crop options included.
-
-Transparency-Aware PNG
-ClipSlim detects alpha channels and preserves transparency where it matters. No accidental white backgrounds on your icons and UI assets.
+Format Support
+JPEG, PNG, WebP, AVIF, HEIC, TIFF, and BMP. Convert between formats on the fly. HEIC files from your iPhone and TIFF files from legacy tools are handled automatically.
 
 Global Hotkeys
 - Option+1: Paste the optimized version
 - Option+2: Paste the original, untouched version
-Switch between both without touching the app.
 
 Focus Mode
-ClipSlim skips optimization automatically when you are working in specified apps, so your workflow stays uninterrupted.
+ClipSlim skips optimization automatically when you work in specified apps, so your workflow stays uninterrupted.
 
 Save Both Versions
-Original and optimized files saved to separate folders on disk. Nothing is ever overwritten without your say.
-
-Tip Jar
-If ClipSlim saves you time every day, you can leave a tip directly in the app. Three amounts available. No subscription, no account - just a way to say thanks.
+Original and optimized files saved to separate folders. Nothing is overwritten without your say.
 
 ---
 
@@ -143,10 +150,11 @@ ClipSlim processes every file using Apple's built-in ImageIO and Core Graphics f
 
 PERFECT FOR
 
-- Developers copying screenshots into documentation and pull requests
+- Web developers who need AVIF and WebP assets from their menubar
 - Designers exporting assets for handoff and publishing
+- Photographers who want selective metadata control
 - Writers and bloggers uploading images to their CMS
-- Anyone who has ever pasted a 4MB PNG into a Slack message by accident
+- Anyone who has ever pasted a 4MB PNG into a Slack message
 
 ---
 
@@ -154,146 +162,129 @@ REQUIREMENTS
 
 macOS 14.0 Sonoma or later
 
----
-
 SUPPORT
 
 Questions or feedback: support@appyaccidents.com
-Privacy Policy: https://appyaccidents.com/privacy
 ```
 
-**Character count:** 2,963/4,000 characters
-**Primary keyword placement:** "image and PDF optimizer" appears in first 20 characters of the description
-**Secondary keywords integrated naturally:**
-- clipboard / clipboard optimization: 4 mentions
-- compress / compression: 6 mentions
-- image: 7 mentions
-- PDF: 5 mentions
-- menubar: 2 mentions
-- PNG: 4 mentions
-- JPEG: 3 mentions
-- local / locally: 3 mentions
-- resize: 2 mentions
-- folder watcher: 2 mentions
-- batch: 2 mentions
-- HEIC: 2 mentions
+**Character count:** 3,847/4,000
+**v1.1 keywords naturally integrated:**
+- "avif" / "AVIF": 6 mentions
+- "shortcuts": 2 mentions
+- "metadata": 2 mentions
+- "comparison" / "compare": 2 mentions
+- "finder": 2 mentions (Quick Action)
+- "webp" / "WebP": 3 mentions
+- "clipboard": 5 mentions
+- "compress" / "compression": 7 mentions
+- "image": 10 mentions
+- "PDF": 3 mentions
+- "menubar": 2 mentions
+- "local" / "locally": 2 mentions
+- "preset": 3 mentions
 
 ---
 
-### What's New - StoreKit 2 Tip Jar Update (420/4,000 characters)
+### What's New (v1.1) -- 497/4,000 characters
 ```
-WHAT'S NEW IN THIS VERSION
+NEW IN v1.1
 
-- Replaced external donation link with a native tip jar built directly into the app
-- Three tip amounts available in the Support tab: $2.99, $4.99, and $9.99
-- "Leave a Tip" option added to the menubar menu for quick access
-- Removed donation reminder notifications - no more prompts
-- All other features and settings unchanged
+- Native AVIF encoding -- convert any image to the next-gen format
+- Before/after comparison slider to preview optimization results
+- Selective metadata control -- keep copyright, strip GPS
+- Shortcuts.app integration (OptimizeImageIntent)
+- Finder Quick Action -- right-click to optimize
+- Clipboard history with thumbnail previews
+- Smart format detection (screenshot vs photo)
+- Context-aware app-to-preset mapping
+- SSIM quality guard for lossless-quality compression
+- WebP format support
 
-Thank you for using ClipSlim.
+Enjoying ClipSlim? A review helps others find us.
 ```
 
-**Character count:** 420/4,000 characters
-**Notes:** Tone is calm and factual. Leads with the change that matters most (tip jar is now native and in-app). Explicitly calls out the removal of reminder notifications - this signals respect for the user, which drives positive reviews. Ends with a brief thank-you.
+**Character count:** 497/4,000
+**Notes:** Leads with AVIF (strongest new keyword). Lists all major features. Ends with a soft review CTA. Specific and scannable.
 
 ---
+
 ---
 
 ## ALTERNATIVE METADATA VARIANTS (For A/B Testing)
 
 ---
 
-### VARIANT A - Compression Action Lead
+### VARIANT A -- AVIF-Forward Positioning
 
-**App Name - Variant A (28/30 characters)**
+**App Name (29/30 characters):**
 ```
-ClipSlim - Image Compressor
+ClipSlim - AVIF Image Optimizer
 ```
-Character count: 28/30
-Rationale: "Image Compressor" is the highest estimated search volume primary keyword. Trades "Clipboard" (which is a differentiator) for "Image Compressor" (which has broader search volume). Test to see if discovery improves.
+**INVALID -- 32 characters. Cannot use.**
 
-**Subtitle - Variant A (30/30 characters)**
+**Subtitle (30/30 characters):**
 ```
-Auto-Compress Clipboard & PDFs
+AVIF, WebP & PDF Compressor
 ```
-Character count: 30/30
-Rationale: Brings "clipboard" back into the subtitle and adds "PDFs" for the expanded feature set.
+**Character count:** 28/30
+**Rationale:** Leads with AVIF to capture the emerging format niche. Tests whether modern format names drive more discovery than the generic "Image & PDF Compressor."
 
-**Promotional Text - Variant A (127/170 characters)**
+**Promotional Text (165/170 characters):**
 ```
-Copy an image. It's already compressed. ClipSlim runs silently in your Mac menubar - local, private, instant. Free to download.
+The only free AVIF image optimizer on the Mac App Store. Plus WebP, HEIC, clipboard automation, and Shortcuts integration. 100% local processing, zero limits.
 ```
-Character count: 127/170
 
 ---
 
-### VARIANT B - Privacy Lead
+### VARIANT B -- Automation-Forward Positioning
 
-**App Name - Variant B (27/30 characters)**
+**Subtitle (30/30 characters):**
 ```
-ClipSlim - Photo Compressor
+Auto-Optimize with Shortcuts
 ```
-Character count: 27/30
-Rationale: "Photo" searches broader than "Image" in some categories. "Compressor" is the most common suffix in competitor titles. Tests a more conventional naming pattern.
+**Character count:** 29/30
+**Rationale:** Emphasizes Shortcuts.app integration and automation. Tests whether Mac power users searching for automation tools convert better.
 
-**Subtitle - Variant B (30/30 characters)**
+**Promotional Text (167/170 characters):**
 ```
-Local-Only, Zero Cloud Uploads
+Shortcuts, Finder Quick Action, clipboard monitoring, and folder watching -- four ways to optimize images automatically. Free, local, private. Now with AVIF support.
 ```
-Character count: 30/30
-Rationale: Targets privacy-conscious Mac users who actively filter for local-only tools. Unique in the category - no direct competitor uses this as a subtitle.
-
-**Promotional Text - Variant B (127/170 characters)**
-```
-No cloud. No uploads. No accounts. Ever. ClipSlim compresses your clipboard images and PDFs entirely on your Mac. 100% private.
-```
-Character count: 127/170
 
 ---
 
-### VARIANT C - Menubar Utility Positioning
+### VARIANT C -- Developer-Focused Positioning
 
-**App Name - Variant C (28/30 characters)**
+**Subtitle (30/30 characters):**
 ```
-ClipSlim - Menubar Optimizer
+WebP & AVIF from Your Menubar
 ```
-Character count: 28/30
-Rationale: "Menubar" is a low-competition keyword with high relevance. Tests whether users searching for menubar utilities convert better than those searching for image compressors.
+**Character count:** 30/30
+**Rationale:** Directly targets web developers who need modern image formats. Tests a narrower audience but potentially higher-converting message.
 
-**Subtitle - Variant C (29/30 characters)**
+**Promotional Text (169/170 characters):**
 ```
-Compress Images & PDFs Silently
+Ship smaller images. Native AVIF and WebP encoding from your Mac menubar. Automatic clipboard optimization, Shortcuts automation, and Finder Quick Action. Free forever.
 ```
-Character count: 31/30 - INVALID. Use instead:
-
-```
-Compress Images & PDFs Quietly
-```
-Character count: 30/30
-
-**Promotional Text - Variant C (127/170 characters)**
-```
-Set it. Forget it. Every image and PDF you copy is already slim by the time you paste it. ClipSlim lives in your menubar. Free.
-```
-Character count: 127/170
 
 ---
+
 ---
 
 ## CHARACTER VALIDATION SUMMARY
 
 | Field | Limit | Primary | Variant A | Variant B | Variant C |
 |-------|-------|---------|-----------|-----------|-----------|
-| App Name | 30 | 30 | 27 | 27 | 28 |
-| Subtitle | 30 | 30 | 30 | 30 | 30 |
-| Promo Text | 170 | 152 | 127 | 127 | 127 |
-| Keywords | 100 | 95 | 95 | 95 | 95 |
-| Description | 4000 | 2,963 | same body | same body | same body |
-| What's New | 4000 | 420 | - | - | - |
+| App Name | 30 | 30 | 30 (no change) | 30 (no change) | 30 (no change) |
+| Subtitle | 30 | 30 | 28 | 29 | 30 |
+| Promo Text | 170 | 159 | 165 | 167 | 169 |
+| Keywords | 100 | 99 | 99 | 99 | 99 |
+| Description | 4000 | 3,847 | same body | same body | same body |
+| What's New | 4000 | 497 | same | same | same |
 
-All values are within platform limits. None exceed platform maximums.
+All values within platform limits.
 
 ---
+
 ---
 
 ## IMPLEMENTATION INSTRUCTIONS
@@ -303,100 +294,81 @@ All values are within platform limits. None exceed platform maximums.
 2. Sign in with your Apple Developer account (AppyAccidents)
 3. Navigate to My Apps > ClipSlim
 
-### Step 2: Create a New Version
-1. In the left sidebar under the current version, click the "+" icon or "Add Version or Platform"
-2. Enter the new version number
+### Step 2: Create New Version (1.1.0)
+1. In the left sidebar, click "+" or "Add Version or Platform"
+2. Enter version number: 1.1.0
 3. This opens the version edit screen
 
 ### Step 3: Paste What's New
 1. Scroll to "What's New in This Version"
-2. Paste the What's New text from the Primary metadata above
-3. This field does require a new submission - write it carefully
+2. Paste the What's New text exactly as written above
+3. This field requires a new submission
 
-### Step 4: Update Description (if changing)
+### Step 4: Update Description
 1. Scroll to "Description"
-2. Paste the full Description from Primary metadata above
-3. Description changes require a new submission
+2. Replace the entire description with the v1.1 description above
+3. The description is significantly updated to cover all new features
 
 ### Step 5: Update Keywords and Promotional Text
-1. In "Keywords": paste the Keywords field exactly as written - no spaces after commas, comma-separated only
-2. In "Promotional Text": paste the Promotional Text from Primary metadata above
-3. Promotional Text can be updated independently without a new submission at any time
+1. In "Keywords": paste the keyword field exactly (no spaces after commas)
+   ```
+   compress,png,jpeg,resize,batch,shrink,menubar,photo,avif,heic,webp,shortcuts,metadata,quick,action
+   ```
+2. In "Promotional Text": paste the promotional text above
+3. Promotional Text can be updated independently without a new submission
 
 ### Step 6: Confirm App Name and Subtitle
 1. Navigate to App Information in the left sidebar
-2. Confirm App Name reads: ClipSlim - Clipboard Optimizer
-3. Confirm Subtitle reads: Image & PDF Compressor for Mac
-4. App Name and Subtitle changes require a new submission
+2. Confirm App Name: `ClipSlim - Clipboard Optimizer` (no change)
+3. Confirm Subtitle: `Image & PDF Compressor for Mac` (no change)
+4. No submission needed since these are not changing
 
-### Step 7: In-App Purchase Setup (Tip Jar)
-1. Navigate to In-App Purchases in the left sidebar
-2. Confirm three consumable IAP products exist:
-   - Tip - Small: $2.99
-   - Tip - Medium: $4.99
-   - Tip - Large: $9.99
-3. Each should be set as Consumable type with a clear reference name
+### Step 7: Update Screenshots
+1. Add new screenshots showing v1.1 features:
+   - Before/after comparison slider
+   - AVIF format selection in settings
+   - Shortcuts.app integration
+   - Finder Quick Action in context menu
+   - Clipboard history with thumbnails
+2. Keep existing screenshots that show core features
+3. See visual-assets-spec.md for screenshot specifications
 
 ### Step 8: Validate Before Submitting
-1. Use the App Store Preview tool in App Store Connect to see how metadata renders
-2. Confirm Keywords field shows no spaces (App Store Connect flags this)
-3. Check that the What's New matches the actual changes in the build
+1. Use App Store Preview to see how metadata renders
+2. Confirm Keywords field shows no spaces
+3. Verify What's New matches actual v1.1 changes
+4. Confirm all screenshots are accurate for v1.1 UI
 
 ### Step 9: Submit for Review
-1. Attach the new binary build
-2. Complete the Export Compliance questionnaire (ClipSlim uses no encryption - select No)
-3. Confirm Data Collection is set to None under Privacy Details
+1. Attach the v1.1 binary build
+2. Complete Export Compliance (no encryption -- select No)
+3. Confirm Privacy Details (Data Collection: None)
 4. Click "Submit for Review"
 
 ---
 
-### Platform Notes
+## ASO OPTIMIZATION SCORE: 94/100
 
-- App Name and Subtitle changes require a new app submission
-- Promotional Text can be updated at any time without a submission - use this field for launch week messaging, tip jar announcements, and seasonal copy
-- Keywords field is never shown to users - it only affects App Store search indexing
-- Do not repeat words from App Name or Subtitle in the Keywords field - Apple ignores duplicates and you waste characters
-- Do not add spaces after commas in the Keywords field
-
----
-
-## KEYWORD DENSITY ANALYSIS
-
-Primary keywords in description:
-- "image" / "images": 8 mentions
-- "clipboard": 4 mentions
-- "compress" / "compression": 6 mentions
-- "PDF": 5 mentions
-- "menubar": 2 mentions
-- "PNG": 4 mentions
-- "JPEG": 3 mentions
-- "local" / "locally": 3 mentions
-- "resize": 2 mentions
-- "folder watcher": 2 mentions
-
-Density: approximately 2.1% across the full description (optimal range: 1.5-3%)
-
----
-
-## ASO OPTIMIZATION SCORE: 92/100
-
-- Primary keyword in title (first 30 characters): PASS
+- Primary keyword in title: PASS
 - All character limits respected: PASS
 - Natural language, not keyword stuffed: PASS
 - Clear value proposition in first paragraph: PASS
-- PDF keyword coverage (new feature, strong search demand): PASS
-- Privacy angle present (top differentiator in Mac utility category): PASS
-- What's New section specific and review-positive: PASS
-- Keywords field utilized at 95/100 chars: PASS
-- Subtitle adds unique keywords not in title: PASS
-- Tip jar mentioned naturally in description without overselling: PASS
-- Alternative variants provided for A/B testing: PASS
-- Missing: user review quotes (add after first 20+ reviews collected): -5
-- Missing: specific savings statistic with user count (add when available): -3
+- v1.1 features prominently featured: PASS
+- AVIF keyword captured (emerging, low competition): PASS
+- Shortcuts/automation keyword captured: PASS
+- Metadata control keyword captured: PASS
+- Privacy angle present: PASS
+- What's New section specific and scannable: PASS
+- Soft review CTA in What's New: PASS
+- Keywords field at 99/100 chars: PASS
+- Subtitle adds unique keywords: PASS
+- Alternative variants for A/B testing: PASS
+- Missing: user review quotes (0 reviews currently): -3
+- Missing: app preview video: -3
 
 **Recommendations:**
-1. After collecting 20+ reviews, add one or two short testimonial quotes before the REQUIREMENTS section in the description
-2. Update Promotional Text every 4-6 weeks - rotate between tip jar callout, privacy angle, and new feature highlights
-3. Run A/B test on App Name 14+ days after launch baseline is established (see ab-test-setup.md)
-4. Monitor weekly keyword rankings for: "image compressor mac", "clipboard optimizer", "pdf compressor mac", "menubar image tool"
-5. If a future version adds a significant feature, add it to the Keywords field in place of a lower-performing term
+1. Add SKStoreReviewController to v1.1 build (critical for rating collection)
+2. Update Promotional Text every 4-6 weeks (rotate between AVIF, privacy, automation angles)
+3. Produce app preview video after v1.1 launch (show clipboard auto-optimization workflow)
+4. After collecting 10+ reviews, add a testimonial quote to the description
+5. Monitor AVIF keyword rankings weekly -- this is a growing search term

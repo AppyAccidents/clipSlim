@@ -23,6 +23,7 @@ struct OverlayView: View {
     @State private var cropSize: Int = 512
     @State private var dominantHexCodes: [String] = []
     @State private var dominantCGColors: [CGColor] = []
+    @State private var selectedSocialPreset: SocialMediaPreset?
     @State private var copiedHex: String? = nil
     @State private var ssimScore: Double? = nil
     @State private var showComparison: Bool = false
@@ -55,6 +56,67 @@ struct OverlayView: View {
         .onHover { hovering in
             if hovering { overlayService.pauseDismiss() } else { overlayService.resumeDismiss() }
         }
+        .onKeyPress(.escape) {
+            overlayService.dismiss()
+            return .handled
+        }
+        .onKeyPress(keys: [.init("z")], phases: .down) { press in
+            if press.modifiers.contains(.command) {
+                overlayService.onUndo?()
+                return .handled
+            }
+            return .ignored
+        }
+        .onKeyPress(keys: [.init("s")], phases: .down) { press in
+            if press.modifiers.contains(.command) {
+                overlayService.onSaveAs?()
+                return .handled
+            }
+            return .ignored
+        }
+        .onKeyPress(keys: [.init("c")], phases: .down) { press in
+            if press.modifiers.contains(.command) {
+                if let data = overlayService.currentItem?.optimizedData,
+                   let format = overlayService.currentItem?.result.format {
+                    let pb = NSPasteboard.general
+                    pb.clearContents()
+                    let uti: String
+                    switch format {
+                    case .png: uti = "public.png"
+                    case .webp: uti = "org.webmproject.webp"
+                    case .avif: uti = "public.avif"
+                    default: uti = "public.jpeg"
+                    }
+                    pb.setData(data, forType: NSPasteboard.PasteboardType(uti))
+                }
+                return .handled
+            }
+            return .ignored
+        }
+        .onKeyPress(.space) {
+            showComparison.toggle()
+            return .handled
+        }
+        .onKeyPress(keys: [.init("1")], phases: .down) { _ in
+            formatSelection = .jpeg
+            overlayService.onApplyFormatOverride?(.jpeg)
+            return .handled
+        }
+        .onKeyPress(keys: [.init("2")], phases: .down) { _ in
+            formatSelection = .png
+            overlayService.onApplyFormatOverride?(.png)
+            return .handled
+        }
+        .onKeyPress(keys: [.init("3")], phases: .down) { _ in
+            formatSelection = .webp
+            overlayService.onApplyFormatOverride?(.webp)
+            return .handled
+        }
+        .onKeyPress(keys: [.init("4")], phases: .down) { _ in
+            formatSelection = .avif
+            overlayService.onApplyFormatOverride?(.avif)
+            return .handled
+        }
         .onChange(of: overlayService.currentItem?.result.optimizedSize) { _, _ in
             syncSelectionFromCurrentItem()
         }
@@ -78,6 +140,91 @@ struct OverlayView: View {
             }
 
             summary(item)
+
+            // Media-specific details
+            if let videoResult = item.videoResult {
+                OrangeDivider()
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack {
+                        Text("Duration:")
+                            .font(VibeCheckTheme.Typography.caption)
+                            .foregroundColor(VibeCheckTheme.Colors.textSecondary)
+                        Text(videoResult.formattedDuration)
+                            .font(VibeCheckTheme.Typography.monospacedBold)
+                            .foregroundColor(VibeCheckTheme.Colors.neonCyan)
+                    }
+                    HStack {
+                        Text("Codec:")
+                            .font(VibeCheckTheme.Typography.caption)
+                            .foregroundColor(VibeCheckTheme.Colors.textSecondary)
+                        Text(videoResult.codec.rawValue)
+                            .font(VibeCheckTheme.Typography.monospacedBold)
+                            .foregroundColor(VibeCheckTheme.Colors.neonOrange)
+                    }
+                    HStack {
+                        Text("Resolution:")
+                            .font(VibeCheckTheme.Typography.caption)
+                            .foregroundColor(VibeCheckTheme.Colors.textSecondary)
+                        Text(videoResult.formattedResolution)
+                            .font(VibeCheckTheme.Typography.monospacedBold)
+                            .foregroundColor(VibeCheckTheme.Colors.textPrimary)
+                    }
+                }
+            }
+
+            if let gifResult = item.gifResult {
+                OrangeDivider()
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack {
+                        Text("Frames:")
+                            .font(VibeCheckTheme.Typography.caption)
+                            .foregroundColor(VibeCheckTheme.Colors.textSecondary)
+                        Text("\(gifResult.originalFrameCount) \u{2192} \(gifResult.frameCount)")
+                            .font(VibeCheckTheme.Typography.monospacedBold)
+                            .foregroundColor(VibeCheckTheme.Colors.neonCyan)
+                    }
+                    HStack {
+                        Text("Colors:")
+                            .font(VibeCheckTheme.Typography.caption)
+                            .foregroundColor(VibeCheckTheme.Colors.textSecondary)
+                        Text("\(gifResult.colorCount)")
+                            .font(VibeCheckTheme.Typography.monospacedBold)
+                            .foregroundColor(VibeCheckTheme.Colors.textPrimary)
+                    }
+                    if gifResult.duration > 0 {
+                        HStack {
+                            Text("Duration:")
+                                .font(VibeCheckTheme.Typography.caption)
+                                .foregroundColor(VibeCheckTheme.Colors.textSecondary)
+                            Text(String(format: "%.1fs", gifResult.duration))
+                                .font(VibeCheckTheme.Typography.monospacedBold)
+                                .foregroundColor(VibeCheckTheme.Colors.textPrimary)
+                        }
+                    }
+                }
+            }
+
+            if let svgResult = item.svgResult {
+                OrangeDivider()
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack {
+                        Text("Elements removed:")
+                            .font(VibeCheckTheme.Typography.caption)
+                            .foregroundColor(VibeCheckTheme.Colors.textSecondary)
+                        Text("\(svgResult.elementsRemoved)")
+                            .font(VibeCheckTheme.Typography.monospacedBold)
+                            .foregroundColor(VibeCheckTheme.Colors.neonCyan)
+                    }
+                    HStack {
+                        Text("Comments removed:")
+                            .font(VibeCheckTheme.Typography.caption)
+                            .foregroundColor(VibeCheckTheme.Colors.textSecondary)
+                        Text("\(svgResult.commentsRemoved)")
+                            .font(VibeCheckTheme.Typography.monospacedBold)
+                            .foregroundColor(VibeCheckTheme.Colors.textPrimary)
+                    }
+                }
+            }
 
             // Before/After comparison toggle + view
             if item.pdfPageCount == nil {
@@ -297,6 +444,33 @@ struct OverlayView: View {
                     }
                 }
                 Spacer()
+            }
+
+            // Social media presets
+            HStack(spacing: VibeCheckTheme.Spacing.xs) {
+                Text("Social")
+                    .font(VibeCheckTheme.Typography.caption)
+                    .foregroundColor(VibeCheckTheme.Colors.textSecondary)
+
+                Picker("", selection: $selectedSocialPreset) {
+                    Text("None").tag(nil as SocialMediaPreset?)
+                    ForEach(SocialMediaPreset.grouped, id: \.platform) { group in
+                        Section(header: Text(group.platform)) {
+                            ForEach(group.presets) { preset in
+                                Text("\(preset.displayName) (\(preset.dimensionLabel))")
+                                    .tag(preset as SocialMediaPreset?)
+                            }
+                        }
+                    }
+                }
+                .labelsHidden()
+                .frame(maxWidth: .infinity)
+                .onChange(of: selectedSocialPreset) { _, preset in
+                    if let preset {
+                        targetWidth = preset.width
+                        targetHeight = preset.height
+                    }
+                }
             }
 
             applyButton("Apply Size") {

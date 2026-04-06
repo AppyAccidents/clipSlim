@@ -17,6 +17,9 @@ final class ProcessingCoordinator {
 
     private let optimizer = ImageOptimizer.shared
     private let pdfOptimizer = PDFOptimizer.shared
+    private let videoOptimizer = VideoOptimizer.shared
+    private let gifOptimizer = GIFOptimizer.shared
+    private let svgOptimizer = SVGOptimizer.shared
     private let log = Logger.shared
 
     private var optimizationCache: [String: (Data, OptimizationResult)] = [:]
@@ -59,6 +62,17 @@ final class ProcessingCoordinator {
         if let fileType = OptimizableFileType.from(data: data), fileType.isPDF {
             await processClipboardPDF(data, sourceBundleID: sourceBundleID)
             return
+        }
+
+        if let fileType = OptimizableFileType.from(data: data) {
+            if fileType.isGIF {
+                await processGIFData(data, source: source, fileName: fileName)
+                return
+            }
+            if fileType.isSVG {
+                await processSVGData(data, source: source, fileName: fileName)
+                return
+            }
         }
 
         if settings.isPausedNow { return }
@@ -168,6 +182,12 @@ final class ProcessingCoordinator {
                 optimizedData = optimizedTuple.data
                 result = optimizedTuple.result
                 cacheOptimization(cacheKey: cacheKey, data: optimizedData, result: result)
+            }
+
+            // Lossless skip guard: if optimized is larger or equal, use original
+            if settings.selectedPreset == .lossless && result.optimizedSize >= result.originalSize {
+                log.app("Lossless mode: optimized (\(result.optimizedSize)) >= original (\(result.originalSize)), skipping")
+                return
             }
 
             var bestData = optimizedData
@@ -340,6 +360,36 @@ final class ProcessingCoordinator {
             return
         }
 
+        if case .video = fileType {
+            do {
+                let data = try Data(contentsOf: url)
+                await processVideoData(data, source: .folder, fileName: url.lastPathComponent)
+            } catch {
+                log.error("Failed to read video file \(url.lastPathComponent): \(error.localizedDescription)", category: "folder")
+            }
+            return
+        }
+
+        if case .gif = fileType {
+            do {
+                let data = try Data(contentsOf: url)
+                await processGIFData(data, source: .folder, fileName: url.lastPathComponent)
+            } catch {
+                log.error("Failed to read GIF file \(url.lastPathComponent): \(error.localizedDescription)", category: "folder")
+            }
+            return
+        }
+
+        if case .svg = fileType {
+            do {
+                let data = try Data(contentsOf: url)
+                await processSVGData(data, source: .folder, fileName: url.lastPathComponent)
+            } catch {
+                log.error("Failed to read SVG file \(url.lastPathComponent): \(error.localizedDescription)", category: "folder")
+            }
+            return
+        }
+
         do {
             // F9: Evaluate folder rules
             let rulesData = settings.folderRulesData
@@ -367,6 +417,12 @@ final class ProcessingCoordinator {
                 let data = try Data(contentsOf: url)
                 let (optimizedData, result) = try await ImageOptimizer.shared.optimize(data: data, config: config)
                 return (data, optimizedData, result)
+            }
+
+            // Lossless skip guard: if optimized is larger or equal, use original
+            if settings.selectedPreset == .lossless && result.optimizedSize >= result.originalSize {
+                log.folder("Lossless mode: no savings for \(url.lastPathComponent), skipping")
+                return
             }
 
             guard isMeaningfulSavings(result) else {
@@ -619,6 +675,18 @@ final class ProcessingCoordinator {
                         savingsPercent: pdfResult.savingsPercentage
                     ))
 
+                case .video:
+                    dropZoneService.updateItem(id: itemID, state: .failed("Video optimization coming soon"))
+                    continue
+
+                case .gif:
+                    dropZoneService.updateItem(id: itemID, state: .failed("GIF optimization coming soon"))
+                    continue
+
+                case .svg:
+                    dropZoneService.updateItem(id: itemID, state: .failed("SVG optimization coming soon"))
+                    continue
+
                 case .image, nil:
                     let data = try Data(contentsOf: url)
                     let config = ImageOptimizer.OptimizationConfig(from: settings)
@@ -663,6 +731,190 @@ final class ProcessingCoordinator {
                 dropZoneService.updateItem(id: itemID, state: .failed(error.localizedDescription))
                 log.error("Drop zone optimization failed for \(url.lastPathComponent): \(error.localizedDescription)", category: "dropzone")
             }
+        }
+    }
+
+    // MARK: - Video Processing
+
+    func processVideoData(_ data: Data, source: OptimizationEvent.Source, fileName: String?) async {
+        if settings.isPausedNow { return }
+
+        guard !isProcessing else {
+            log.app("Already processing, skipping video")
+            return
+        }
+
+        isProcessing = true
+        defer { isProcessing = false }
+
+        do {
+            // Write video data to temp file (video must be processed from URL)
+            let tempDir = FileManager.default.temporaryDirectory
+            let tempURL = tempDir.appendingPathComponent(UUID().uuidString).appendingPathExtension("mp4")
+            try data.write(to: tempURL, options: .atomic)
+            defer { try? FileManager.default.removeItem(at: tempURL) }
+
+            let config = VideoOptimizationConfig(from: settings)
+            let (outputURL, videoResult) = try await OptimizationDispatch.run {
+                try await VideoOptimizer.shared.optimize(inputURL: tempURL, config: config)
+            }
+            defer { try? FileManager.default.removeItem(at: outputURL) }
+
+            let optimizedData = try Data(contentsOf: outputURL)
+
+            // Create a compatible OptimizationResult for the overlay
+            let result = OptimizationResult(
+                originalSize: videoResult.originalSize,
+                optimizedSize: videoResult.optimizedSize,
+                format: .jpeg, // Placeholder format for video
+                duration: videoResult.processingTime,
+                originalDimensions: (videoResult.resolutionWidth, videoResult.resolutionHeight),
+                optimizedDimensions: (videoResult.resolutionWidth, videoResult.resolutionHeight)
+            )
+
+            let event = OptimizationEvent(
+                timestamp: Date(),
+                source: source,
+                result: result,
+                fileName: fileName ?? "Video"
+            )
+            onEventRecorded?(event)
+
+            if settings.notificationsEnabled {
+                notificationService.sendOptimizationNotification(result: result, source: source)
+            }
+
+            log.app("Video optimized: \(videoResult.formattedOriginalSize) -> \(videoResult.formattedOptimizedSize) (\(String(format: "%.1f", videoResult.savingsPercentage))%)")
+        } catch {
+            lastError = error.localizedDescription
+            log.error("Video processing failed: \(error.localizedDescription)", category: "video")
+        }
+    }
+
+    // MARK: - GIF Processing
+
+    func processGIFData(_ data: Data, source: OptimizationEvent.Source, fileName: String?) async {
+        if settings.isPausedNow { return }
+
+        guard !isProcessing else {
+            log.app("Already processing, skipping GIF")
+            return
+        }
+
+        isProcessing = true
+        defer { isProcessing = false }
+
+        do {
+            let config = GIFOptimizationConfig(from: settings)
+            let (optimizedData, gifResult) = try await OptimizationDispatch.run {
+                try await GIFOptimizer.shared.optimizeGIF(data: data, config: config)
+            }
+
+            // Skip if no savings
+            guard gifResult.optimizedSize < gifResult.originalSize else {
+                log.app("GIF optimization: no savings, skipping")
+                return
+            }
+
+            lastOriginalData = data
+            lastOptimizedData = optimizedData
+
+            let result = OptimizationResult(
+                originalSize: gifResult.originalSize,
+                optimizedSize: gifResult.optimizedSize,
+                format: .png, // Placeholder format for GIF
+                duration: gifResult.processingTime,
+                originalDimensions: (0, 0),
+                optimizedDimensions: (0, 0)
+            )
+
+            if source == .clipboard {
+                // Write optimized GIF back to clipboard
+                let pb = NSPasteboard.general
+                pb.clearContents()
+                pb.setData(optimizedData, forType: NSPasteboard.PasteboardType("com.compuserve.gif"))
+                clipboardWatcher.updateHashTracking(data: optimizedData)
+            }
+
+            let event = OptimizationEvent(
+                timestamp: Date(),
+                source: source,
+                result: result,
+                fileName: fileName ?? "GIF"
+            )
+            onEventRecorded?(event)
+
+            if settings.notificationsEnabled {
+                notificationService.sendOptimizationNotification(result: result, source: source)
+            }
+
+            log.app("GIF optimized: \(gifResult.formattedOriginalSize) -> \(gifResult.formattedOptimizedSize) (\(String(format: "%.1f", gifResult.savingsPercentage))%) frames: \(gifResult.originalFrameCount) -> \(gifResult.frameCount)")
+        } catch {
+            lastError = error.localizedDescription
+            log.error("GIF processing failed: \(error.localizedDescription)", category: "gif")
+        }
+    }
+
+    // MARK: - SVG Processing
+
+    func processSVGData(_ data: Data, source: OptimizationEvent.Source, fileName: String?) async {
+        if settings.isPausedNow { return }
+
+        guard !isProcessing else {
+            log.app("Already processing, skipping SVG")
+            return
+        }
+
+        isProcessing = true
+        defer { isProcessing = false }
+
+        do {
+            let (optimizedData, svgResult) = try await OptimizationDispatch.run {
+                try await SVGOptimizer.shared.optimize(data: data)
+            }
+
+            // Skip if no savings
+            guard svgResult.optimizedSize < svgResult.originalSize else {
+                log.app("SVG optimization: no savings, skipping")
+                return
+            }
+
+            lastOriginalData = data
+            lastOptimizedData = optimizedData
+
+            let result = OptimizationResult(
+                originalSize: svgResult.originalSize,
+                optimizedSize: svgResult.optimizedSize,
+                format: .png, // Placeholder format for SVG
+                duration: svgResult.processingTime,
+                originalDimensions: (0, 0),
+                optimizedDimensions: (0, 0)
+            )
+
+            if source == .clipboard {
+                // Write optimized SVG back to clipboard
+                let pb = NSPasteboard.general
+                pb.clearContents()
+                pb.setData(optimizedData, forType: NSPasteboard.PasteboardType("public.svg-image"))
+                clipboardWatcher.updateHashTracking(data: optimizedData)
+            }
+
+            let event = OptimizationEvent(
+                timestamp: Date(),
+                source: source,
+                result: result,
+                fileName: fileName ?? "SVG"
+            )
+            onEventRecorded?(event)
+
+            if settings.notificationsEnabled {
+                notificationService.sendOptimizationNotification(result: result, source: source)
+            }
+
+            log.app("SVG optimized: \(svgResult.formattedOriginalSize) -> \(svgResult.formattedOptimizedSize) (\(String(format: "%.1f", svgResult.savingsPercentage))%) elements removed: \(svgResult.elementsRemoved), comments: \(svgResult.commentsRemoved)")
+        } catch {
+            lastError = error.localizedDescription
+            log.error("SVG processing failed: \(error.localizedDescription)", category: "svg")
         }
     }
 

@@ -96,6 +96,8 @@ struct PresetsTab: View {
                 Text("Maximum compression")
             case .custom:
                 Text("Use sliders below to tune")
+            case .lossless:
+                Text("Strip metadata only, no quality loss")
             }
         }
         .font(VibeCheckTheme.Typography.caption)

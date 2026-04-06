@@ -122,6 +122,19 @@ final class AppSettings {
     var pdfStripMetadata: Bool { didSet { defaults.set(pdfStripMetadata, forKey: Keys.pdfStripMetadata) } }
     var dropZoneVisibleOnLaunch: Bool { didSet { defaults.set(dropZoneVisibleOnLaunch, forKey: Keys.dropZoneVisibleOnLaunch) } }
 
+    // Video settings
+    var videoCompressionEnabled: Bool { didSet { defaults.set(videoCompressionEnabled, forKey: Keys.videoCompressionEnabled) } }
+    var videoCodecRaw: String { didSet { defaults.set(videoCodecRaw, forKey: Keys.videoCodecRaw) } }
+    var videoQuality: Double { didSet { defaults.set(videoQuality, forKey: Keys.videoQuality) } }
+    var videoMaxResolution: Int { didSet { defaults.set(videoMaxResolution, forKey: Keys.videoMaxResolution) } }
+    var videoStripMetadata: Bool { didSet { defaults.set(videoStripMetadata, forKey: Keys.videoStripMetadata) } }
+
+    // GIF settings
+    var gifMaxColors: Int { didSet { defaults.set(gifMaxColors, forKey: Keys.gifMaxColors) } }
+    var gifFrameSkip: Int { didSet { defaults.set(gifFrameSkip, forKey: Keys.gifFrameSkip) } }
+    var gifMaxDimension: Int { didSet { defaults.set(gifMaxDimension, forKey: Keys.gifMaxDimension) } }
+    var videoToGifFPS: Int { didSet { defaults.set(videoToGifFPS, forKey: Keys.videoToGifFPS) } }
+
     // F2: Smart Format
     var smartFormatEnabled: Bool { didSet { defaults.set(smartFormatEnabled, forKey: Keys.smartFormatEnabled) } }
     var webpPreferred: Bool { didSet { defaults.set(webpPreferred, forKey: Keys.webpPreferred) } }
@@ -142,6 +155,12 @@ final class AppSettings {
 
     // F9: Folder Rules
     var folderRulesData: String { didSet { defaults.set(folderRulesData, forKey: Keys.folderRulesData) } }
+
+    // Shortcuts
+    var shortcutBindingsData: String { didSet { defaults.set(shortcutBindingsData, forKey: Keys.shortcutBindingsData) } }
+
+    // Batch rename
+    var renameTemplate: String { didSet { defaults.set(renameTemplate, forKey: Keys.renameTemplate) } }
 
     private var watchedFoldersData: String { didSet { defaults.set(watchedFoldersData, forKey: Keys.watchedFoldersData) } }
 
@@ -188,6 +207,21 @@ final class AppSettings {
         static let qualityGuardThreshold = "qualityGuardThreshold"
         static let appPresetMappingsData = "appPresetMappingsData"
         static let folderRulesData = "folderRulesData"
+        static let shortcutBindingsData = "shortcutBindingsData"
+        static let renameTemplate = "renameTemplate"
+
+        // Video settings
+        static let videoCompressionEnabled = "videoCompressionEnabled"
+        static let videoCodecRaw = "videoCodecRaw"
+        static let videoQuality = "videoQuality"
+        static let videoMaxResolution = "videoMaxResolution"
+        static let videoStripMetadata = "videoStripMetadata"
+
+        // GIF settings
+        static let gifMaxColors = "gifMaxColors"
+        static let gifFrameSkip = "gifFrameSkip"
+        static let gifMaxDimension = "gifMaxDimension"
+        static let videoToGifFPS = "videoToGifFPS"
     }
 
     // Chosen behavior: if preferred output is JPEG but input has alpha, force PNG.
@@ -248,6 +282,21 @@ final class AppSettings {
         qualityGuardThreshold = defaults.object(forKey: Keys.qualityGuardThreshold) as? Double ?? 0.90
         appPresetMappingsData = defaults.string(forKey: Keys.appPresetMappingsData) ?? "[]"
         folderRulesData = defaults.string(forKey: Keys.folderRulesData) ?? "[]"
+        shortcutBindingsData = defaults.string(forKey: Keys.shortcutBindingsData) ?? ""
+        renameTemplate = defaults.string(forKey: Keys.renameTemplate) ?? "{name}_optimized"
+
+        // Video settings
+        videoCompressionEnabled = defaults.object(forKey: Keys.videoCompressionEnabled) as? Bool ?? true
+        videoCodecRaw = defaults.string(forKey: Keys.videoCodecRaw) ?? VideoCodec.h264.rawValue
+        videoQuality = defaults.object(forKey: Keys.videoQuality) as? Double ?? 0.7
+        videoMaxResolution = defaults.object(forKey: Keys.videoMaxResolution) as? Int ?? VideoMaxResolution.p1080.rawValue
+        videoStripMetadata = defaults.object(forKey: Keys.videoStripMetadata) as? Bool ?? true
+
+        // GIF settings
+        gifMaxColors = defaults.object(forKey: Keys.gifMaxColors) as? Int ?? 256
+        gifFrameSkip = defaults.object(forKey: Keys.gifFrameSkip) as? Int ?? 0
+        gifMaxDimension = defaults.object(forKey: Keys.gifMaxDimension) as? Int ?? 480
+        videoToGifFPS = defaults.object(forKey: Keys.videoToGifFPS) as? Int ?? 10
 
         if storedPresetRaw != normalizedPresetRaw {
             defaults.set(normalizedPresetRaw, forKey: Keys.selectedPresetRaw)
@@ -387,6 +436,25 @@ final class AppSettings {
             steps.insert(step)
         }
         enabledPipelineSteps = steps
+    }
+
+    // MARK: - Shortcut Bindings
+
+    var shortcutBindings: ShortcutBindingsStore {
+        get {
+            guard !shortcutBindingsData.isEmpty,
+                  let data = shortcutBindingsData.data(using: .utf8),
+                  let store = try? JSONDecoder().decode(ShortcutBindingsStore.self, from: data) else {
+                return ShortcutBindingsStore()
+            }
+            return store
+        }
+        set {
+            if let data = try? JSONEncoder().encode(newValue),
+               let string = String(data: data, encoding: .utf8) {
+                shortcutBindingsData = string
+            }
+        }
     }
 
     // MARK: - New Settings Bindings
@@ -529,6 +597,51 @@ final class AppSettings {
             return []
         }
         return decoded
+    }
+
+    // MARK: - Video/GIF Computed Properties
+
+    var videoCodec: VideoCodec {
+        get { VideoCodec(rawValue: videoCodecRaw) ?? .h264 }
+        set { videoCodecRaw = newValue.rawValue }
+    }
+
+    var videoMaxResolutionEnum: VideoMaxResolution {
+        get { VideoMaxResolution(rawValue: videoMaxResolution) ?? .p1080 }
+        set { videoMaxResolution = newValue.rawValue }
+    }
+
+    // MARK: - Video/GIF Bindings
+
+    var videoCompressionEnabledBinding: Binding<Bool> {
+        Binding(get: { self.videoCompressionEnabled }, set: { self.videoCompressionEnabled = $0 })
+    }
+    var videoCodecBinding: Binding<VideoCodec> {
+        Binding(get: { self.videoCodec }, set: { self.videoCodec = $0 })
+    }
+    var videoQualityBinding: Binding<Double> {
+        Binding(get: { self.videoQuality }, set: { self.videoQuality = $0 })
+    }
+    var videoMaxResolutionBinding: Binding<VideoMaxResolution> {
+        Binding(get: { self.videoMaxResolutionEnum }, set: { self.videoMaxResolutionEnum = $0 })
+    }
+    var videoStripMetadataBinding: Binding<Bool> {
+        Binding(get: { self.videoStripMetadata }, set: { self.videoStripMetadata = $0 })
+    }
+    var gifMaxColorsBinding: Binding<Int> {
+        Binding(get: { self.gifMaxColors }, set: { self.gifMaxColors = $0 })
+    }
+    var gifFrameSkipBinding: Binding<Int> {
+        Binding(get: { self.gifFrameSkip }, set: { self.gifFrameSkip = $0 })
+    }
+    var gifMaxDimensionBinding: Binding<Int> {
+        Binding(get: { self.gifMaxDimension }, set: { self.gifMaxDimension = $0 })
+    }
+    var videoToGifFPSBinding: Binding<Int> {
+        Binding(get: { self.videoToGifFPS }, set: { self.videoToGifFPS = $0 })
+    }
+    var renameTemplateBinding: Binding<String> {
+        Binding(get: { self.renameTemplate }, set: { self.renameTemplate = $0 })
     }
 
     private static func normalizeLegacyPresetRawValue(_ raw: String) -> String {

@@ -47,6 +47,7 @@ struct PresetButtonGroup: View {
         case (.compact, .webQuality): return "Web"
         case (.compact, .compressed): return "Comp"
         case (.compact, .custom): return "Custom"
+        case (.compact, .lossless): return "Lossless"
         case (.full, _): return preset.rawValue
         }
     }
