@@ -18,6 +18,9 @@ final class ClipboardWatcher {
     private let log = Logger.shared
 
     var onImageDetected: ((Data) -> Void)?
+    var onVideoDetected: ((Data) -> Void)?
+    var onGIFDetected: ((Data) -> Void)?
+    var onSVGDetected: ((Data) -> Void)?
 
     enum PollingProfile: TimeInterval {
         case active = 0.5
@@ -52,6 +55,9 @@ final class ClipboardWatcher {
     func shutdown() {
         stop()
         onImageDetected = nil
+        onVideoDetected = nil
+        onGIFDetected = nil
+        onSVGDetected = nil
         lastWrittenHash = ""
         isWritingToPasteboard = false
         lastSeenChangeCount = 0
@@ -147,6 +153,19 @@ final class ClipboardWatcher {
     static func isSupportedImagePasteboardType(_ type: NSPasteboard.PasteboardType) -> Bool {
         if type == .png || type == .tiff { return true }
         if type.rawValue == "com.adobe.pdf" { return true }
+
+        // Video types
+        if type.rawValue == "public.movie" || type.rawValue == "public.mpeg-4" { return true }
+        if let utType = UTType(type.rawValue), utType.conforms(to: .movie) { return true }
+
+        // GIF type
+        if type.rawValue == "com.compuserve.gif" { return true }
+        if let utType = UTType(type.rawValue), utType.conforms(to: UTType(filenameExtension: "gif") ?? .data) { return true }
+
+        // SVG type
+        if type.rawValue == "public.svg-image" { return true }
+        if let utType = UTType(type.rawValue), utType.conforms(to: .svg) { return true }
+
         if let utType = UTType(type.rawValue), utType.conforms(to: .pdf) { return true }
         return UTType(type.rawValue)?.conforms(to: .image) ?? false
     }
@@ -214,6 +233,77 @@ final class ClipboardWatcher {
         }
         guard hasImageItemType else { return nil }
 
+        // Check for specific media types in priority order: PDF > Video > GIF > SVG > Image
+
+        // PDF check (handled by existing processImageData routing)
+        for item in items {
+            for type in item.types {
+                if type.rawValue == "com.adobe.pdf" {
+                    if let data = item.data(forType: type), !data.isEmpty {
+#if DEBUG
+                        debugDirectExtractionCount += 1
+#endif
+                        return data
+                    }
+                }
+            }
+        }
+
+        // Video check
+        for item in items {
+            for type in item.types {
+                if type.rawValue == "public.movie" || type.rawValue == "public.mpeg-4" {
+                    if let data = item.data(forType: type), !data.isEmpty {
+#if DEBUG
+                        debugDirectExtractionCount += 1
+#endif
+                        onVideoDetected?(data)
+                        return nil // Don't pass to onImageDetected
+                    }
+                }
+                if let utType = UTType(type.rawValue), utType.conforms(to: .movie) {
+                    if let data = item.data(forType: type), !data.isEmpty {
+#if DEBUG
+                        debugDirectExtractionCount += 1
+#endif
+                        onVideoDetected?(data)
+                        return nil
+                    }
+                }
+            }
+        }
+
+        // GIF check
+        for item in items {
+            for type in item.types {
+                if type.rawValue == "com.compuserve.gif" {
+                    if let data = item.data(forType: type), !data.isEmpty {
+#if DEBUG
+                        debugDirectExtractionCount += 1
+#endif
+                        onGIFDetected?(data)
+                        return nil
+                    }
+                }
+            }
+        }
+
+        // SVG check
+        for item in items {
+            for type in item.types {
+                if type.rawValue == "public.svg-image" {
+                    if let data = item.data(forType: type), !data.isEmpty {
+#if DEBUG
+                        debugDirectExtractionCount += 1
+#endif
+                        onSVGDetected?(data)
+                        return nil
+                    }
+                }
+            }
+        }
+
+        // Fall through to general image extraction
         for item in items {
             for type in item.types where isImagePasteboardType(type) {
                 if let data = item.data(forType: type), !data.isEmpty {
@@ -236,13 +326,12 @@ final class ClipboardWatcher {
 
         if let urls = pb.readObjects(forClasses: [NSURL.self], options: [
             .urlReadingContentsConformToTypes: [UTType.image.identifier]
-        ]) as? [URL], let url = urls.first {
-            if let data = try? Data(contentsOf: url), !data.isEmpty {
+        ]) as? [URL], let firstURL = urls.first,
+           let data = try? Data(contentsOf: firstURL) {
 #if DEBUG
-                debugURLFallbackCount += 1
+            debugURLFallbackCount += 1
 #endif
-                return data
-            }
+            return data
         }
 
         return nil
