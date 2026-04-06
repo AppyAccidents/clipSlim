@@ -245,6 +245,35 @@ final class ImageOptimizerTests: XCTestCase {
         }
     }
     
+    func testStripAllMetadata() async throws {
+        guard let pngData = makeTestPNG() else {
+            XCTFail("Failed to create test PNG")
+            return
+        }
+        let config = ImageOptimizer.OptimizationConfig(
+            quality: 0.85,
+            maxDimension: 1920,
+            metadataPolicy: .stripAll
+        )
+        let (optimizedData, _) = try await optimizer.optimize(data: pngData, config: config)
+        XCTAssertFalse(optimizedData.isEmpty)
+    }
+
+    func testKeepAllMetadata() async throws {
+        guard let pngData = makeTestPNG() else {
+            XCTFail("Failed to create test PNG")
+            return
+        }
+        let config = ImageOptimizer.OptimizationConfig(
+            quality: 0.85,
+            maxDimension: 1920,
+            stripMetadata: false,
+            metadataPolicy: .keepAll
+        )
+        let (optimizedData, _) = try await optimizer.optimize(data: pngData, config: config)
+        XCTAssertFalse(optimizedData.isEmpty)
+    }
+
     func testSavingsCalculation() {
         let result = OptimizationResult(
             originalSize: 1000,

@@ -92,6 +92,7 @@ final class AppSettings {
     var customMaxDimension: Int { didSet { defaults.set(customMaxDimension, forKey: Keys.customMaxDimension) } }
     var customStripMetadata: Bool { didSet { defaults.set(customStripMetadata, forKey: Keys.customStripMetadata) } }
     var customAllowTransparencyLoss: Bool { didSet { defaults.set(customAllowTransparencyLoss, forKey: Keys.customAllowTransparencyLoss) } }
+    var metadataPolicyData: String { didSet { defaults.set(metadataPolicyData, forKey: Keys.metadataPolicyData) } }
 
     var maxFileSizeMB: Int { didSet { defaults.set(maxFileSizeMB, forKey: Keys.maxFileSizeMB) } }
     var launchAtLogin: Bool { didSet { defaults.set(launchAtLogin, forKey: Keys.launchAtLogin) } }
@@ -153,6 +154,7 @@ final class AppSettings {
         static let customMaxDimension = "customMaxDimension"
         static let customStripMetadata = "customStripMetadata"
         static let customAllowTransparencyLoss = "customAllowTransparencyLoss"
+        static let metadataPolicyData = "metadataPolicyData"
         static let maxFileSizeMB = "maxFileSizeMB"
         static let launchAtLogin = "launchAtLogin"
         static let saveToDisk = "saveToDisk"
@@ -205,6 +207,7 @@ final class AppSettings {
         customMaxDimension = defaults.object(forKey: Keys.customMaxDimension) as? Int ?? 1920
         customStripMetadata = defaults.object(forKey: Keys.customStripMetadata) as? Bool ?? true
         customAllowTransparencyLoss = defaults.object(forKey: Keys.customAllowTransparencyLoss) as? Bool ?? false
+        metadataPolicyData = defaults.string(forKey: Keys.metadataPolicyData) ?? ""
 
         maxFileSizeMB = defaults.object(forKey: Keys.maxFileSizeMB) as? Int ?? 50
         launchAtLogin = defaults.object(forKey: Keys.launchAtLogin) as? Bool ?? false
@@ -336,6 +339,22 @@ final class AppSettings {
 
     var currentStripMetadata: Bool {
         selectedPreset == .custom ? customStripMetadata : selectedPreset.stripMetadata
+    }
+
+    var currentMetadataPolicy: MetadataPolicy {
+        if !metadataPolicyData.isEmpty,
+           let data = metadataPolicyData.data(using: .utf8),
+           let policy = try? JSONDecoder().decode(MetadataPolicy.self, from: data) {
+            return policy
+        }
+        return MetadataPolicy.fromLegacy(stripMetadata: currentStripMetadata)
+    }
+
+    func setMetadataPolicy(_ policy: MetadataPolicy) {
+        if let data = try? JSONEncoder().encode(policy),
+           let string = String(data: data, encoding: .utf8) {
+            metadataPolicyData = string
+        }
     }
 
     var currentAllowTransparencyLoss: Bool {
