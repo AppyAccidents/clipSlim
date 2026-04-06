@@ -188,6 +188,24 @@ final class AppViewModel {
         log.app("Event history cleared")
     }
 
+    func restoreOriginalFromHistory(_ entry: ClipboardHistoryEntry) {
+        processingCoordinator.clipboardHistoryService?.restoreOriginal(entry: entry)
+        if let path = entry.originalFileURL, let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
+            clipboardWatcher.updateHashTracking(data: data)
+        }
+    }
+
+    func restoreOptimizedFromHistory(_ entry: ClipboardHistoryEntry) {
+        processingCoordinator.clipboardHistoryService?.restoreOptimized(entry: entry)
+        if let path = entry.optimizedFileURL, let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
+            clipboardWatcher.updateHashTracking(data: data)
+        }
+    }
+
+    func clearAllHistory() {
+        processingCoordinator.clipboardHistoryService?.clearAll()
+    }
+
     func clearLastError() {
         processingCoordinator.clearLastError()
     }
