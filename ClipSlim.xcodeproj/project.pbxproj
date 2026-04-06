@@ -87,6 +87,8 @@
 		A10000910000000000000091 /* MetadataPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000910000000000000091 /* MetadataPolicy.swift */; };
 		A10000920000000000000092 /* MetadataPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000920000000000000092 /* MetadataPolicyTests.swift */; };
 		A10000930000000000000093 /* ComparisonSliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000930000000000000093 /* ComparisonSliderView.swift */; };
+		A10000940000000000000094 /* OptimizeImageIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000940000000000000094 /* OptimizeImageIntent.swift */; };
+		A10000950000000000000095 /* ShortcutsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000950000000000000095 /* ShortcutsProvider.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -183,6 +185,8 @@
 		B10000910000000000000091 /* MetadataPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataPolicy.swift; sourceTree = "<group>"; };
 		B10000920000000000000092 /* MetadataPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataPolicyTests.swift; sourceTree = "<group>"; };
 		B10000930000000000000093 /* ComparisonSliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComparisonSliderView.swift; sourceTree = "<group>"; };
+		B10000940000000000000094 /* OptimizeImageIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimizeImageIntent.swift; sourceTree = "<group>"; };
+		B10000950000000000000095 /* ShortcutsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutsProvider.swift; sourceTree = "<group>"; };
 		F10000010000000000000001 /* ClipSlim.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClipSlim.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F10000020000000000000002 /* ClipSlimTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClipSlimTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -223,6 +227,7 @@
 				D10000080000000000000008 /* Services */,
 				D10000160000000000000016 /* Coordinators */,
 				D10000170000000000000017 /* Persistence */,
+				D10000190000000000000019 /* ShortcutsIntents */,
 				D10000090000000000000009 /* ViewModels */,
 				D1000010000000000000000A /* Views */,
 				D1000011000000000000000B /* Theme */,
@@ -424,6 +429,15 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		D10000190000000000000019 /* ShortcutsIntents */ = {
+			isa = PBXGroup;
+			children = (
+				B10000940000000000000094 /* OptimizeImageIntent.swift */,
+				B10000950000000000000095 /* ShortcutsProvider.swift */,
+			);
+			path = ShortcutsIntents;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -582,6 +596,8 @@
 				A10000830000000000000083 /* SessionLogExporter.swift in Sources */,
 				A10000900000000000000090 /* DuplicateHashService.swift in Sources */,
 				A10000910000000000000091 /* MetadataPolicy.swift in Sources */,
+				A10000940000000000000094 /* OptimizeImageIntent.swift in Sources */,
+				A10000950000000000000095 /* ShortcutsProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
