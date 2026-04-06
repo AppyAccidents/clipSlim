@@ -422,7 +422,7 @@ final class ImageOptimizer: Sendable {
 
     private func encodeAVIF(image: CGImage, quality: Double, stripMetadata: Bool, source: CGImageSource) throws -> Data {
         let data = NSMutableData()
-        guard let destination = CGImageDestinationCreateWithData(data as CFMutableData, "public.avif" as CFString, 1, nil) else {
+        guard let destination = CGImageDestinationCreateWithData(data as CFMutableData, ImageFormat.avif.utType as CFString, 1, nil) else {
             // AVIF encoding not available — fall back to JPEG
             return try encodeJPEG(image: image, quality: quality, stripMetadata: stripMetadata, source: source)
         }

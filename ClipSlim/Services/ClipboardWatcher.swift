@@ -71,7 +71,7 @@ final class ClipboardWatcher {
             case .webp:
                 return NSPasteboard.PasteboardType(UTType.webP.identifier)
             case .avif:
-                return NSPasteboard.PasteboardType("public.avif")
+                return NSPasteboard.PasteboardType(ImageFormat.avif.utType)
             }
         }()
         pb.setData(data, forType: pasteboardType)
