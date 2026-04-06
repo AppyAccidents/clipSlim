@@ -518,6 +518,24 @@ final class AppViewModel {
                 )
             }
         }
+        clipboardWatcher.onVideoDetected = { [weak self] data in
+            guard let self else { return }
+            Task { @MainActor in
+                await self.processingCoordinator.processVideoData(data, source: .clipboard, fileName: nil)
+            }
+        }
+        clipboardWatcher.onGIFDetected = { [weak self] data in
+            guard let self else { return }
+            Task { @MainActor in
+                await self.processingCoordinator.processGIFData(data, source: .clipboard, fileName: nil)
+            }
+        }
+        clipboardWatcher.onSVGDetected = { [weak self] data in
+            guard let self else { return }
+            Task { @MainActor in
+                await self.processingCoordinator.processSVGData(data, source: .clipboard, fileName: nil)
+            }
+        }
     }
 
     private func setupFolderWatcher() {
