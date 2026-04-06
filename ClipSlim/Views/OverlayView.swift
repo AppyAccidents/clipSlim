@@ -231,6 +231,7 @@ struct OverlayView: View {
                 Text("JPEG").tag(ImageFormat.jpeg)
                 Text("PNG").tag(ImageFormat.png)
                 Text("WebP").tag(ImageFormat.webp)
+                Text("AVIF").tag(ImageFormat.avif)
             }
             .labelsHidden()
             .pickerStyle(.segmented)

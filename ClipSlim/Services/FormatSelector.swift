@@ -10,15 +10,18 @@ final class FormatSelector: Sendable {
     struct FormatSelectorConfig: Sendable {
         let smartFormatEnabled: Bool
         let webpPreferred: Bool
+        let avifPreferred: Bool
 
-        init(smartFormatEnabled: Bool = false, webpPreferred: Bool = false) {
+        init(smartFormatEnabled: Bool = false, webpPreferred: Bool = false, avifPreferred: Bool = false) {
             self.smartFormatEnabled = smartFormatEnabled
             self.webpPreferred = webpPreferred
+            self.avifPreferred = avifPreferred
         }
 
         init(from settings: AppSettings) {
             self.smartFormatEnabled = settings.smartFormatEnabled
             self.webpPreferred = settings.webpPreferred
+            self.avifPreferred = settings.avifPreferred
         }
     }
 
@@ -39,6 +42,9 @@ final class FormatSelector: Sendable {
             if hasAlpha {
                 return .png
             }
+            if config.avifPreferred {
+                return .avif
+            }
             if config.webpPreferred {
                 return .webp
             }
@@ -47,6 +53,9 @@ final class FormatSelector: Sendable {
         case .mixed:
             if hasAlpha {
                 return .png
+            }
+            if config.avifPreferred {
+                return .avif
             }
             if config.webpPreferred {
                 return .webp

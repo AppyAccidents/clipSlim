@@ -124,6 +124,7 @@ final class AppSettings {
     // F2: Smart Format
     var smartFormatEnabled: Bool { didSet { defaults.set(smartFormatEnabled, forKey: Keys.smartFormatEnabled) } }
     var webpPreferred: Bool { didSet { defaults.set(webpPreferred, forKey: Keys.webpPreferred) } }
+    var avifPreferred: Bool { didSet { defaults.set(avifPreferred, forKey: Keys.avifPreferred) } }
 
     // F4: Pipeline Steps
     var enabledPipelineStepsRaw: String { didSet { defaults.set(enabledPipelineStepsRaw, forKey: Keys.enabledPipelineStepsRaw) } }
@@ -178,6 +179,7 @@ final class AppSettings {
         static let dropZoneVisibleOnLaunch = "dropZoneVisibleOnLaunch"
         static let smartFormatEnabled = "smartFormatEnabled"
         static let webpPreferred = "webpPreferred"
+        static let avifPreferred = "avifPreferred"
         static let enabledPipelineStepsRaw = "enabledPipelineStepsRaw"
         static let developerModeEnabled = "developerModeEnabled"
         static let qualityGuardEnabled = "qualityGuardEnabled"
@@ -236,6 +238,7 @@ final class AppSettings {
 
         smartFormatEnabled = defaults.object(forKey: Keys.smartFormatEnabled) as? Bool ?? false
         webpPreferred = defaults.object(forKey: Keys.webpPreferred) as? Bool ?? false
+        avifPreferred = defaults.object(forKey: Keys.avifPreferred) as? Bool ?? false
         enabledPipelineStepsRaw = defaults.string(forKey: Keys.enabledPipelineStepsRaw) ?? PipelineStep.allCases.map(\.rawValue).joined(separator: ",")
         developerModeEnabled = defaults.object(forKey: Keys.developerModeEnabled) as? Bool ?? false
         qualityGuardEnabled = defaults.object(forKey: Keys.qualityGuardEnabled) as? Bool ?? true
@@ -374,6 +377,9 @@ final class AppSettings {
     }
     var webpPreferredBinding: Binding<Bool> {
         Binding(get: { self.webpPreferred }, set: { self.webpPreferred = $0 })
+    }
+    var avifPreferredBinding: Binding<Bool> {
+        Binding(get: { self.avifPreferred }, set: { self.avifPreferred = $0 })
     }
     var developerModeEnabledBinding: Binding<Bool> {
         Binding(get: { self.developerModeEnabled }, set: { self.developerModeEnabled = $0 })
