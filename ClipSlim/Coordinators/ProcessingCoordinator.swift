@@ -170,6 +170,12 @@ final class ProcessingCoordinator {
                 cacheOptimization(cacheKey: cacheKey, data: optimizedData, result: result)
             }
 
+            // Lossless skip guard: if optimized is larger or equal, use original
+            if settings.selectedPreset == .lossless && result.optimizedSize >= result.originalSize {
+                log.app("Lossless mode: optimized (\(result.optimizedSize)) >= original (\(result.originalSize)), skipping")
+                return
+            }
+
             var bestData = optimizedData
             var bestResult = result
             let isForcedTransformation = outputFormatOverride != nil || targetDimensions != nil
@@ -367,6 +373,12 @@ final class ProcessingCoordinator {
                 let data = try Data(contentsOf: url)
                 let (optimizedData, result) = try await ImageOptimizer.shared.optimize(data: data, config: config)
                 return (data, optimizedData, result)
+            }
+
+            // Lossless skip guard: if optimized is larger or equal, use original
+            if settings.selectedPreset == .lossless && result.optimizedSize >= result.originalSize {
+                log.folder("Lossless mode: no savings for \(url.lastPathComponent), skipping")
+                return
             }
 
             guard isMeaningfulSavings(result) else {

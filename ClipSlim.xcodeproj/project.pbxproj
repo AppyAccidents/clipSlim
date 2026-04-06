@@ -96,6 +96,7 @@
 		A100009A000000000000009A /* GIFOptimizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100009A000000000000009A /* GIFOptimizerTests.swift */; };
 		A100009B000000000000009B /* SVGOptimizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100009B000000000000009B /* SVGOptimizer.swift */; };
 		A100009C000000000000009C /* SVGOptimizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100009C000000000000009C /* SVGOptimizerTests.swift */; };
+		A100009D000000000000009D /* LosslessPresetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100009D000000000000009D /* LosslessPresetTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -201,6 +202,7 @@
 		B100009A000000000000009A /* GIFOptimizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GIFOptimizerTests.swift; sourceTree = "<group>"; };
 		B100009B000000000000009B /* SVGOptimizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVGOptimizer.swift; sourceTree = "<group>"; };
 		B100009C000000000000009C /* SVGOptimizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVGOptimizerTests.swift; sourceTree = "<group>"; };
+		B100009D000000000000009D /* LosslessPresetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LosslessPresetTests.swift; sourceTree = "<group>"; };
 		F10000010000000000000001 /* ClipSlim.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClipSlim.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F10000020000000000000002 /* ClipSlimTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClipSlimTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -270,6 +272,7 @@
 				B10000990000000000000099 /* VideoOptimizerTests.swift */,
 				B100009A000000000000009A /* GIFOptimizerTests.swift */,
 				B100009C000000000000009C /* SVGOptimizerTests.swift */,
+				B100009D000000000000009D /* LosslessPresetTests.swift */,
 			);
 			path = ClipSlimTests;
 			sourceTree = "<group>";
@@ -645,6 +648,7 @@
 				A10000990000000000000099 /* VideoOptimizerTests.swift in Sources */,
 				A100009A000000000000009A /* GIFOptimizerTests.swift in Sources */,
 				A100009C000000000000009C /* SVGOptimizerTests.swift in Sources */,
+				A100009D000000000000009D /* LosslessPresetTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
