@@ -1,224 +1,169 @@
-# Keyword Research - ClipSlim
+# Keyword Research - ClipSlim v1.1
 
-**Date:** 2026-03-16 (updated from 2026-03-05 original)
+**Date:** 2026-04-06
 **Data Sources:**
-- iTunes Search API (84 unique macOS apps analyzed, 2026-03-05)
-- WebFetch scraping: Clop, Squash, Compresto product pages (2026-03-16)
-- WebSearch: competitor reviews, comparison articles, ASO research (2026-03-16)
+- iTunes Search API (live queries, 2026-04-06)
+- Prior research baseline (84 unique macOS apps, 2026-03-05/03-16)
+- Live App Store listing data (app approved 2026-03-21, version 1.0.0)
 **App:** ClipSlim -- Clipboard Optimizer
-**Platform:** macOS App Store (Utilities)
+**Platform:** macOS App Store (Utilities + Developer Tools)
 **App Store ID:** 6759780567
+**Current Store Status:** Live, Free, 0 ratings, v1.0.0
 
 ---
 
-## Primary Keywords (Use in Title + Subtitle)
+## What Changed Since v1.0 Research
 
-These keywords should appear in the Mac App Store title (30 chars) and subtitle (30 chars). They have the highest combination of search volume, relevance, and strategic value.
+ClipSlim v1.1 adds six features that open new keyword opportunities:
 
-| # | Keyword | Est. Monthly Search Vol | Competition | Relevance | Priority |
-|---|---------|------------------------|-------------|-----------|----------|
-| 1 | **image compressor** | 8,000-12,000 | HIGH (19 MAS apps + Zipic, Compresto, Optimage off-store) | 0.95 | CRITICAL |
-| 2 | **clipboard optimizer** | 500-1,000 | VERY LOW (only Clop competes directly) | 1.00 | CRITICAL |
-| 3 | **image optimizer** | 5,000-8,000 | HIGH (7 MAS apps + ImageOptim, Optimage) | 0.90 | HIGH |
-| 4 | **pdf compressor** | 3,000-5,000 | MEDIUM (Clop, Compresto, Zipic also do PDF) | 0.90 | HIGH |
-| 5 | **compress images** | 12,000-18,000 | HIGH (saturated action term) | 0.90 | HIGH |
-| 6 | **image resize** | 6,000-10,000 | HIGH (12 MAS apps + Squash) | 0.75 | MEDIUM |
+| New Feature | New Keyword Opportunities |
+|-------------|--------------------------|
+| AVIF format support | avif, avif converter, next-gen image format |
+| Before/after comparison slider | image comparison, before after |
+| Selective metadata control | metadata, exif, strip gps, copyright |
+| Clipboard history with thumbnails | clipboard history, image history |
+| Shortcuts.app integration | shortcuts, automation, workflow |
+| Finder Quick Action | finder, quick action, right-click |
+
+---
+
+## Primary Keywords (Title + Subtitle)
+
+| # | Keyword | Est. Monthly Search Vol | Competition | Relevance | Priority | Change from v1.0 |
+|---|---------|------------------------|-------------|-----------|----------|-------------------|
+| 1 | **image compressor** | 8,000-12,000 | HIGH (19+ MAS apps) | 0.95 | CRITICAL | Unchanged |
+| 2 | **clipboard optimizer** | 500-1,000 | VERY LOW (only Clop) | 1.00 | CRITICAL | Unchanged |
+| 3 | **image optimizer** | 5,000-8,000 | HIGH (7+ MAS apps) | 0.90 | HIGH | Unchanged |
+| 4 | **pdf compressor** | 3,000-5,000 | MEDIUM | 0.90 | HIGH | Unchanged |
+| 5 | **compress images** | 12,000-18,000 | HIGH (saturated) | 0.90 | HIGH | Unchanged |
+| 6 | **avif converter** | 1,000-2,000 | VERY LOW (2 niche apps, 0 ratings) | 0.95 | **NEW - HIGH** | New for v1.1 |
 
 **Recommended Title (30 chars):**
-`ClipSlim - Image Compressor` (28 chars)
+`ClipSlim - Clipboard Optimizer` (30 chars) -- KEEP CURRENT
+
+**Rationale:** The current title already owns the "clipboard optimizer" niche with zero MAS competition. Changing it now would sacrifice the ranking equity built since March 21. The new v1.1 features are better served through subtitle and keyword field updates.
 
 **Recommended Subtitle (30 chars):**
-Option A: `Clipboard Image Compression` (28 chars) -- emphasizes unique feature
-Option B: `Auto Clipboard & PDF Optimizer` (31 chars -- 1 char over, needs trimming)
-Option C: `Auto Image & PDF Optimizer` (27 chars) -- captures PDF keyword
+`Image & PDF Compressor for Mac` (30 chars) -- KEEP CURRENT
 
-**Recommendation:** Option A for launch. "Clipboard" is ClipSlim's strongest differentiator with near-zero competition. Revisit after 30 days based on impression data from App Store Connect.
+**Rationale:** Still the strongest subtitle. It covers "image", "PDF", "compressor", and "Mac" without repeating title words. The new AVIF/Shortcuts features are better captured in the keyword field.
 
 ---
 
-## Secondary Keywords (Use in Keyword Field)
+## Secondary Keywords (100-character Keyword Field)
 
-Apple's 100-character keyword field. Use commas, no spaces after commas, no duplicates of title/subtitle words.
-
-**Recommended Keyword Field (100 chars):**
+### Updated Keyword Field for v1.1 (99/100 chars):
 ```
-png,jpg,jpeg,reduce,file,size,batch,photo,resize,optimize,menubar,folder,watch,automatic,pdf,shrink
+compress,png,jpeg,resize,batch,shrink,menubar,photo,avif,heic,webp,shortcuts,metadata,quick,action
 ```
 (99 characters)
 
-**Alternate keyword field (privacy-focused):**
+### Changes from v1.0 Keyword Field:
+```diff
+- compress,png,jpeg,resize,batch,shrink,menubar,photo,converter,heic,screenshot,bulk,pdf,filesize
++ compress,png,jpeg,resize,batch,shrink,menubar,photo,avif,heic,webp,shortcuts,metadata,quick,action
 ```
-png,jpg,jpeg,reduce,file,size,batch,photo,resize,optimize,menubar,folder,watch,automatic,offline
-```
-(96 characters)
 
-| # | Keyword | Est. Monthly Search Vol | Competition | Relevance | Notes |
-|---|---------|------------------------|-------------|-----------|-------|
-| 7 | **png** | 8,000-12,000 | MODERATE | 0.90 | Format-specific, Zipic/Optimage target this |
-| 8 | **jpg** / **jpeg** | 6,000-10,000 | MODERATE | 0.85 | JPEGmini dominates JPEG-specific |
-| 9 | **reduce file size** | 4,000-7,000 | LOW-MODERATE | 0.95 | High intent keyword |
-| 10 | **batch** | 3,000-5,000 | LOW | 0.80 | Squash, Zipic emphasize batch |
-| 11 | **photo compress** | 4,000-6,000 | MODERATE | 0.85 | Common phrasing |
-| 12 | **resize** | 6,000-10,000 | HIGH | 0.75 | Core feature |
-| 13 | **optimize** | 3,000-5,000 | LOW-MODERATE | 0.95 | Core function |
-| 14 | **menubar** | 1,000-2,000 | LOW | 0.95 | Clop also uses menubar, but still low competition |
-| 15 | **folder watch** | 500-1,000 | VERY LOW (Zipic, Compresto offer this but few target the keyword) | 0.95 | Unique feature |
-| 16 | **automatic** | 2,000-4,000 | LOW | 0.95 | Key differentiator -- Clop is the only real competitor here |
-| 17 | **shrink** | 1,000-2,000 | LOW | 0.80 | Casual user language |
-| 18 | **pdf** | 5,000-8,000 | MODERATE | 0.90 | Clop, Compresto compete here |
-| 19 | **offline** | 1,000-2,000 | LOW | 0.85 | Privacy angle -- all top competitors process locally |
+| Removed | Reason | Replaced With | Reason |
+|---------|--------|---------------|--------|
+| converter | Low specificity, covered by format names | avif | New format, very low competition |
+| screenshot | Moderate value, not a v1.1 focus | webp | Supported format, search demand |
+| bulk | Synonym of "batch" (redundant) | shortcuts | New Shortcuts.app integration |
+| pdf | Already in subtitle | metadata | New selective metadata feature |
+| filesize | Compound word, uncertain indexing | quick,action | Finder Quick Action feature |
+
+### Full Keyword Breakdown:
+
+| # | Keyword | Search Intent | v1.1 Relevance |
+|---|---------|--------------|-----------------|
+| 7 | compress | "compress image mac" | Core action |
+| 8 | png | "png compressor" | Format-specific |
+| 9 | jpeg | "jpeg optimizer" | Format-specific |
+| 10 | resize | "image resize mac" | Core feature |
+| 11 | batch | "batch image optimizer" | Folder watcher + drop zone |
+| 12 | shrink | "shrink image file size" | Casual user language |
+| 13 | menubar | "menubar utility mac" | UX differentiator |
+| 14 | photo | "photo compressor" | Broader audience |
+| 15 | avif | "avif converter mac" | **NEW** - very low competition |
+| 16 | heic | "heic converter mac" | iPhone format conversion |
+| 17 | webp | "webp converter mac" | Web developer audience |
+| 18 | shortcuts | "shortcuts mac automation" | **NEW** - Shortcuts.app integration |
+| 19 | metadata | "image metadata editor" | **NEW** - selective metadata control |
+| 20 | quick | Combined with "action" for Finder Quick Action | **NEW** |
+| 21 | action | Combined with "quick" for Finder Quick Action | **NEW** |
 
 ---
 
-## Long-Tail Keywords (Low Competition, High Intent)
+## Long-Tail Keywords (v1.1 Additions)
 
-Use in description body and marketing materials. These represent search queries where ClipSlim can rank highly.
+These are NEW long-tail opportunities opened by v1.1 features. All previous long-tail keywords from v1.0 research remain valid.
 
 | # | Keyword Phrase | Competition | Relevance | Opportunity |
 |---|---------------|-------------|-----------|-------------|
-| 20 | **clipboard image optimization** | ZERO on MAS (Clop is off-store only competitor) | 1.00 | HUGE |
-| 21 | **automatic clipboard compression** | ZERO on MAS | 1.00 | HUGE |
-| 22 | **folder watcher image compression** | VERY LOW (Zipic, Compresto have feature but don't target keyword) | 0.95 | HUGE |
-| 23 | **auto compress clipboard** | ZERO on MAS | 1.00 | HUGE |
-| 24 | **menubar image compressor** | VERY LOW (Clop is menubar but markets differently) | 0.95 | HIGH |
-| 25 | **local image compression mac** | VERY LOW (all competitors process locally but few say it) | 0.90 | HIGH |
-| 26 | **compress images without quality loss** | LOW (common concern, Optimage targets this) | 0.90 | MODERATE |
-| 27 | **reduce image file size mac** | LOW-MODERATE | 0.95 | MODERATE |
-| 28 | **offline image compressor** | VERY LOW | 0.90 | HIGH |
-| 29 | **compress images for email** | LOW | 0.85 | HIGH |
-| 30 | **compress images for web** | LOW-MODERATE (Optimage, ImageOptim target web use case) | 0.90 | MODERATE |
-| 31 | **shrink image size mac** | LOW | 0.90 | HIGH |
-| 32 | **image optimizer mac free** | LOW (ImageOptim dominates "free" but not on MAS) | 0.85 | HIGH |
-| 33 | **compress pdf without losing quality** | LOW | 0.90 | HIGH |
-| 34 | **drag and drop image compressor** | LOW (many have feature, few target keyword) | 0.85 | MODERATE |
-| 35 | **privacy image compressor no upload** | VERY LOW | 0.90 | HIGH |
+| 36 | **avif image converter mac** | VERY LOW (2 apps, 0 ratings) | 0.95 | HUGE |
+| 37 | **avif encoder mac** | ZERO on MAS | 1.00 | HUGE |
+| 38 | **convert to avif mac** | ZERO on MAS | 1.00 | HUGE |
+| 39 | **image comparison before after** | LOW | 0.80 | MODERATE |
+| 40 | **strip exif data mac** | LOW | 0.85 | HIGH |
+| 41 | **remove gps from photo mac** | LOW | 0.90 | HIGH |
+| 42 | **image metadata remover mac** | LOW | 0.85 | HIGH |
+| 43 | **shortcuts image automation** | VERY LOW | 0.90 | HIGH |
+| 44 | **finder quick action image** | VERY LOW | 0.85 | MODERATE |
+| 45 | **clipboard history images mac** | LOW (clipboard managers exist) | 0.75 | MODERATE |
+| 46 | **webp converter mac free** | LOW (few free MAS options) | 0.90 | HIGH |
+| 47 | **ssim quality image** | ZERO on MAS | 0.70 | NICHE |
+| 48 | **context-aware optimization** | ZERO on MAS | 0.85 | NICHE |
+| 49 | **app-to-preset mapping** | ZERO on MAS | 0.80 | NICHE |
 
 ---
 
-## Competitor Title & Keyword Strategy Analysis
+## Keyword Difficulty Tiers (Updated for v1.1)
 
-### Mac App Store Competitors (from iTunes API, 84 apps)
+### Tier 1: Easy Wins (target immediately)
+- clipboard optimizer / clipboard compression (ZERO MAS competition) -- existing
+- avif converter mac (2 apps, 0 ratings) -- **NEW**
+- avif encoder (ZERO MAS) -- **NEW**
+- strip exif / metadata remover (few target this keyword) -- **NEW**
+- auto compress clipboard (ZERO MAS) -- existing
+- menubar image compressor -- existing
 
-```
-"image"      in 35 titles (42%) -- SATURATED, but essential
-"compress"   in 19 titles (23%) -- COMMON, include as modifier
-"clipboard"  in 20 titles (24%) -- clipboard managers, NOT compressors
-"resize"     in 12 titles (14%) -- MODERATE
-"photo"      in  9 titles (11%) -- photo-focused tools
-"optim"      in  7 titles  (8%) -- less saturated than compress
-"png"        in  6 titles  (7%) -- format-specific niche
-"batch"      in  5 titles  (6%) -- differentiator
-"mac"        in  2 titles  (2%) -- surprisingly underused
-```
+### Tier 2: Moderate Competition (rank within 1-3 months)
+- webp converter mac (3+ apps but weak) -- **NEW**
+- shortcuts image automation -- **NEW**
+- pdf compressor -- existing
+- file size reducer -- existing
+- offline image compressor -- existing
 
-### Off-Store Competitors (from web research, 2026-03-16)
-
-| Competitor | Title / Tagline | Keywords Targeted |
-|------------|----------------|-------------------|
-| **Clop** | "Image, video, PDF and clipboard optimiser" | clipboard, optimiser, image, video, pdf |
-| **Squash** | "Powerful Batch Photo Editor for Mac" | batch, photo, editor, mac |
-| **ImageOptim** | "Better Save for Web" | save for web, image, lossless, compression |
-| **Zipic** | "Best Image Compression App for Mac" | image, compression, mac, compress |
-| **Optimage** | "Automatically compress images without losing quality" | compress, images, quality, automatic |
-| **Compresto** | "Video, Image & PDF Compression for macOS" | video, image, pdf, compression, macOS |
-| **JPEGmini** | "Photo Compression Software" | photo, compression, jpeg |
-
-**Key Insight:** NO competitor on the Mac App Store combines "clipboard" + "compress/optimize" in their title. Clop does this off-store but is not a MAS competitor. ClipSlim owns this intersection on the MAS entirely.
+### Tier 3: High Competition (long-term, need rating volume)
+- image compressor -- existing
+- image optimizer -- existing
+- compress images -- existing
+- photo compressor -- existing
 
 ---
 
-## Keyword Difficulty Tiers
+## v1.1 Feature-to-Keyword Mapping
 
-### Tier 1: Easy Wins (target immediately -- near-zero MAS competition)
-- clipboard optimizer / clipboard compression
-- auto compress clipboard
-- menubar image compressor
-- folder watcher image
-- automatic clipboard optimization
-
-### Tier 2: Moderate Competition (worth targeting, can rank within 1-3 months)
-- pdf compressor (Clop, Compresto compete but mostly off-store)
-- batch image resize (Squash competes but positioned as "editor")
-- file size reducer
-- image shrink
-- offline image compressor
-- photo resize mac
-
-### Tier 3: High Competition (long-term targets, need ratings volume)
-- image compressor (Zipic, Optimage, Compresto, many MAS apps)
-- image optimizer (ImageOptim dominates mindshare)
-- compress images (generic, high volume but saturated)
-- photo compressor (JPEGmini, Squash)
-
----
-
-## Description Keyword Density Targets
-
-Based on competitor analysis (MAS apps + off-store competitors):
-
-**Must include in description (2-3 times each):**
-- "image compression" / "compress images"
-- "file size" / "reduce file size"
-- "clipboard" (in context of automatic optimization)
-- "menu bar" / "menubar"
-- "drag and drop"
-- "png" and "jpg"/"jpeg"
-- "high quality" / "quality"
-- "pdf" (compression context)
-
-**Differentiation phrases to include (1-2 times each):**
-- "automatic clipboard optimization" (Clop does this, but zero MAS competitors do)
-- "folder watcher" / "folder monitoring" (Zipic, Compresto have feature but few target keyword)
-- "local processing" / "privacy" / "no cloud"
-- "no data collection" / "offline"
-- "focus mode"
-- "global hotkeys" / "keyboard shortcuts"
-- "dominant color extraction" (unique feature)
-
----
-
-## Platform-Specific Implementation Guide
-
-### Mac App Store
-
-| Field | Max Length | Recommended Content | Keywords Covered |
-|-------|-----------|-------------------|-----------------|
-| **Title** | 30 chars | `ClipSlim - Image Compressor` | image, compressor |
-| **Subtitle** | 30 chars | `Clipboard Image Compression` | clipboard, image, compression |
-| **Keyword Field** | 100 chars | `png,jpg,jpeg,reduce,file,size,batch,photo,resize,optimize,menubar,folder,watch,automatic,pdf,shrink` | 16 additional keywords |
-| **Description** | 4000 chars | See density targets above | All remaining keywords |
-
-### Direct Distribution (Website / Landing Page SEO)
-
-- **Page title:** "ClipSlim -- Automatic Clipboard Image & PDF Compressor for Mac"
-- **H1:** "Compress clipboard images automatically on macOS"
-- **Meta description:** "ClipSlim sits in your menu bar and automatically optimizes images and PDFs on your clipboard. Reduce file sizes with zero effort. 100% local processing, no cloud."
-- **Target landing pages:** "mac image compressor", "clipboard image optimizer", "automatic image compression mac"
-
----
-
-## Search Volume Estimation Methodology
-
-Search volume estimates are based on:
-1. iTunes API result density (more results = higher search volume)
-2. Rating counts of top apps for each term (proxy for download volume)
-3. Cross-reference with web search trends and competitor site traffic indicators
-4. Category-specific multipliers for macOS Utilities (typically 10-20% of iOS volumes)
-5. Competitor positioning analysis (terms competitors invest in = higher value)
-
-**Confidence level:** MODERATE -- actual volumes require Apple Search Ads or Sensor Tower. These estimates provide directional guidance for prioritization.
-
-**Note:** macOS App Store search volumes are significantly lower than iOS. A "High" volume keyword on macOS may correspond to 8-12K monthly searches, whereas the same keyword on iOS could see 50-100K+.
+| v1.1 Feature | Primary Keyword | In Title/Subtitle | In Keyword Field | In Description |
+|-------------|----------------|-------------------|-----------------|----------------|
+| AVIF support | avif, avif converter | No | Yes (avif) | Yes (2-3x) |
+| Comparison slider | before after, compare | No | No (low volume) | Yes (1-2x) |
+| Metadata control | metadata, exif, gps | No | Yes (metadata) | Yes (2-3x) |
+| Clipboard history | clipboard history | No (clipboard in title) | No (limited chars) | Yes (1-2x) |
+| Shortcuts.app | shortcuts, automation | No | Yes (shortcuts) | Yes (2-3x) |
+| Finder Quick Action | quick action, finder | No | Yes (quick, action) | Yes (2-3x) |
+| SSIM quality guard | quality, ssim | No | No (niche) | Yes (1x) |
+| App-to-preset | smart, preset | No | No (niche) | Yes (1x) |
 
 ---
 
 ## Summary
 
-| Category | Count | Top Opportunity |
-|----------|-------|----------------|
-| Primary Keywords | 6 | "clipboard" + "image compressor" combination |
-| Secondary Keywords | 13 | "pdf", "reduce file size", "automatic", "menubar" |
-| Long-Tail Keywords | 16 | "clipboard image optimization" (ZERO MAS competition) |
-| **Total Keywords** | **35** | |
+| Category | v1.0 Count | v1.1 Count | Change |
+|----------|-----------|-----------|--------|
+| Primary Keywords | 6 | 6 | +0 (avif replaces image resize) |
+| Secondary Keywords | 13 | 15 | +2 (avif, webp, shortcuts, metadata, quick, action replace 6) |
+| Long-Tail Keywords | 16 | 30 | +14 new from v1.1 features |
+| **Total Keywords** | **35** | **51** | **+16** |
 
-**Top Recommendation:** ClipSlim occupies a unique position at the intersection of "clipboard tools" and "image/PDF compressors" -- two categories with near-zero overlap on the Mac App Store. Clop is the only real competitor in this niche, and it primarily distributes off-store. Every keyword strategy should reinforce this unique positioning while also competing for high-volume generic terms like "image compressor" through the subtitle and keyword field.
+**Top v1.1 Recommendation:** AVIF is the single biggest keyword opportunity. The Mac App Store has only 2 AVIF-related apps, both with 0 ratings. ClipSlim's native AVIF encoding is a genuine differentiator that can capture an emerging search term as AVIF adoption grows. Lead with AVIF in the What's New, promotional text, and description update.
