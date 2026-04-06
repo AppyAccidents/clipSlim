@@ -161,6 +161,8 @@ final class ImageOptimizer: Sendable {
                 outputData = try encodePNG(image: finalImage, stripMetadata: config.stripMetadata, source: source)
             case .webp:
                 outputData = try encodeWebP(image: finalImage, quality: config.quality, stripMetadata: config.stripMetadata, source: source)
+            case .avif:
+                outputData = try encodeAVIF(image: finalImage, quality: config.quality, stripMetadata: config.stripMetadata, source: source)
             }
 
             let duration = CFAbsoluteTimeGetCurrent() - startTime
@@ -250,6 +252,9 @@ final class ImageOptimizer: Sendable {
             return .webp
         case .png:
             return .png
+        case .avif:
+            // AVIF supports alpha, so no forced override needed
+            return .avif
         }
     }
 
@@ -385,6 +390,40 @@ final class ImageOptimizer: Sendable {
         let data = NSMutableData()
         guard let destination = CGImageDestinationCreateWithData(data as CFMutableData, UTType.webP.identifier as CFString, 1, nil) else {
             // WebP encoding not available — fall back to JPEG
+            return try encodeJPEG(image: image, quality: quality, stripMetadata: stripMetadata, source: source)
+        }
+
+        var options: [CFString: Any] = [
+            kCGImageDestinationLossyCompressionQuality: quality,
+            kCGImageDestinationEmbedThumbnail: false
+        ]
+
+        if stripMetadata {
+            options[kCGImageDestinationOptimizeColorForSharing] = true
+        } else {
+            if let metadata = CGImageSourceCopyMetadataAtIndex(source, 0, nil) {
+                let metadataOptions: [CFString: Any] = [
+                    kCGImageDestinationMergeMetadata: true,
+                    kCGImageDestinationMetadata: metadata
+                ]
+                CGImageDestinationSetProperties(destination, metadataOptions as CFDictionary)
+            }
+        }
+
+        CGImageDestinationAddImage(destination, image, options as CFDictionary)
+
+        guard CGImageDestinationFinalize(destination) else {
+            // Finalization failed — fall back to JPEG
+            return try encodeJPEG(image: image, quality: quality, stripMetadata: stripMetadata, source: source)
+        }
+
+        return data as Data
+    }
+
+    private func encodeAVIF(image: CGImage, quality: Double, stripMetadata: Bool, source: CGImageSource) throws -> Data {
+        let data = NSMutableData()
+        guard let destination = CGImageDestinationCreateWithData(data as CFMutableData, "public.avif" as CFString, 1, nil) else {
+            // AVIF encoding not available — fall back to JPEG
             return try encodeJPEG(image: image, quality: quality, stripMetadata: stripMetadata, source: source)
         }
 
