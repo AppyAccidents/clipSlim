@@ -84,6 +84,8 @@
 		A10000880000000000000088 /* PipelineStepTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000880000000000000088 /* PipelineStepTests.swift */; };
 		A10000890000000000000089 /* ContextAwareServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000890000000000000089 /* ContextAwareServiceTests.swift */; };
 		A10000900000000000000090 /* DuplicateHashService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000900000000000000090 /* DuplicateHashService.swift */; };
+		A10000910000000000000091 /* MetadataPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000910000000000000091 /* MetadataPolicy.swift */; };
+		A10000920000000000000092 /* MetadataPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000920000000000000092 /* MetadataPolicyTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -177,6 +179,8 @@
 		B10000880000000000000088 /* PipelineStepTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PipelineStepTests.swift; sourceTree = "<group>"; };
 		B10000890000000000000089 /* ContextAwareServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextAwareServiceTests.swift; sourceTree = "<group>"; };
 		B10000900000000000000090 /* DuplicateHashService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuplicateHashService.swift; sourceTree = "<group>"; };
+		B10000910000000000000091 /* MetadataPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataPolicy.swift; sourceTree = "<group>"; };
+		B10000920000000000000092 /* MetadataPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataPolicyTests.swift; sourceTree = "<group>"; };
 		F10000010000000000000001 /* ClipSlim.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClipSlim.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F10000020000000000000002 /* ClipSlimTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClipSlimTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -240,6 +244,7 @@
 				B10000870000000000000087 /* RuleEvaluatorTests.swift */,
 				B10000880000000000000088 /* PipelineStepTests.swift */,
 				B10000890000000000000089 /* ContextAwareServiceTests.swift */,
+				B10000920000000000000092 /* MetadataPolicyTests.swift */,
 			);
 			path = ClipSlimTests;
 			sourceTree = "<group>";
@@ -274,6 +279,7 @@
 				B10000690000000000000069 /* PipelineStep.swift */,
 				B10000750000000000000075 /* AppPresetMapping.swift */,
 				B10000790000000000000079 /* FolderRule.swift */,
+				B10000910000000000000091 /* MetadataPolicy.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -571,6 +577,7 @@
 				A10000820000000000000082 /* QuickActionOverlayView.swift in Sources */,
 				A10000830000000000000083 /* SessionLogExporter.swift in Sources */,
 				A10000900000000000000090 /* DuplicateHashService.swift in Sources */,
+				A10000910000000000000091 /* MetadataPolicy.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -589,6 +596,7 @@
 				A10000870000000000000087 /* RuleEvaluatorTests.swift in Sources */,
 				A10000880000000000000088 /* PipelineStepTests.swift in Sources */,
 				A10000890000000000000089 /* ContextAwareServiceTests.swift in Sources */,
+				A10000920000000000000092 /* MetadataPolicyTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
