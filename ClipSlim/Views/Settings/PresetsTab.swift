@@ -77,8 +77,7 @@ struct PresetsTab: View {
                 )
                 .disabled(viewModel.settings.selectedPreset != .custom)
 
-                Toggle("Strip Metadata (EXIF/GPS)", isOn: viewModel.settings.customStripMetadataBinding)
-                    .disabled(viewModel.settings.selectedPreset != .custom)
+                metadataPolicySection
 
                 Toggle("Allow Transparency Loss", isOn: viewModel.settings.customAllowTransparencyLossBinding)
                     .disabled(viewModel.settings.selectedPreset != .custom)
@@ -101,6 +100,75 @@ struct PresetsTab: View {
         }
         .font(VibeCheckTheme.Typography.caption)
         .foregroundColor(VibeCheckTheme.Colors.textTertiary)
+    }
+
+    private var metadataPolicySection: some View {
+        let policy = viewModel.settings.currentMetadataPolicy
+        let isCustom = viewModel.settings.selectedPreset == .custom
+
+        return VStack(alignment: .leading, spacing: VibeCheckTheme.Spacing.xs) {
+            Picker("Metadata", selection: Binding(
+                get: { policy.mode },
+                set: { newMode in
+                    var updated = policy
+                    updated.mode = newMode
+                    if newMode == .stripAll {
+                        updated = .stripAll
+                    } else if newMode == .keepAll {
+                        updated = .keepAll
+                    }
+                    viewModel.settings.setMetadataPolicy(updated)
+                }
+            )) {
+                Text("Strip All").tag(MetadataPolicy.Mode.stripAll)
+                Text("Keep All").tag(MetadataPolicy.Mode.keepAll)
+                Text("Selective").tag(MetadataPolicy.Mode.selective)
+            }
+            .pickerStyle(.segmented)
+            .disabled(!isCustom)
+
+            if policy.mode == .selective {
+                VStack(alignment: .leading, spacing: 4) {
+                    Toggle("Keep Copyright", isOn: Binding(
+                        get: { policy.keepCopyright },
+                        set: { val in
+                            var updated = policy
+                            updated.keepCopyright = val
+                            viewModel.settings.setMetadataPolicy(updated)
+                        }
+                    ))
+                    Toggle("Keep Author", isOn: Binding(
+                        get: { policy.keepAuthor },
+                        set: { val in
+                            var updated = policy
+                            updated.keepAuthor = val
+                            viewModel.settings.setMetadataPolicy(updated)
+                        }
+                    ))
+                    Toggle("Strip GPS / Location", isOn: Binding(
+                        get: { policy.stripGPS },
+                        set: { val in
+                            var updated = policy
+                            updated.stripGPS = val
+                            viewModel.settings.setMetadataPolicy(updated)
+                        }
+                    ))
+                    Toggle("Strip Camera Info (EXIF)", isOn: Binding(
+                        get: { policy.stripCameraInfo },
+                        set: { val in
+                            var updated = policy
+                            updated.stripCameraInfo = val
+                            viewModel.settings.setMetadataPolicy(updated)
+                        }
+                    ))
+                }
+                .font(VibeCheckTheme.Typography.caption)
+                .disabled(!isCustom)
+                .padding(.leading, VibeCheckTheme.Spacing.sm)
+            }
+
+            VibeHintText(text: "Controls which metadata is preserved in optimized images.")
+        }
     }
 
     private var editableQualityBinding: Binding<Double> {

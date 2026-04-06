@@ -141,6 +141,7 @@ final class ProcessingCoordinator {
             let finalStripMetadata = enabledSteps.contains(.stripMetadata) ? stripMetadata : false
             let finalFormat = enabledSteps.contains(.convertFormat) ? effectiveFormat : nil
 
+            let effectiveMetadataPolicy: MetadataPolicy = finalStripMetadata ? settings.currentMetadataPolicy : .keepAll
             let config = ImageOptimizer.OptimizationConfig(
                 quality: finalQuality,
                 maxDimension: finalMaxDimension,
@@ -149,7 +150,8 @@ final class ProcessingCoordinator {
                 preferredFormat: settings.preferredOutputFormat,
                 preserveAlphaByForcingPNG: settings.preserveAlphaByForcingPNG,
                 outputFormatOverride: finalFormat,
-                targetDimensions: targetDimensions
+                targetDimensions: targetDimensions,
+                metadataPolicy: effectiveMetadataPolicy
             )
             let cacheKey = cacheKeyFor(hash: sourceHash, config: config)
 
@@ -185,7 +187,8 @@ final class ProcessingCoordinator {
                         preferredFormat: settings.preferredOutputFormat,
                         preserveAlphaByForcingPNG: settings.preserveAlphaByForcingPNG,
                         outputFormatOverride: alternateFormat,
-                        targetDimensions: targetDimensions
+                        targetDimensions: targetDimensions,
+                        metadataPolicy: effectiveMetadataPolicy
                     )
                     let alternateKey = cacheKeyFor(hash: sourceHash, config: alternateConfig)
 

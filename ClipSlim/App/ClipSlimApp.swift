@@ -40,10 +40,21 @@ struct ClipSlimApp: App {
         .defaultSize(width: 600, height: 400)
 
         Window("Clipboard History", id: "clipboard-history") {
-            ClipboardHistoryView()
-                .modelContainer(modelContainer)
+            ClipboardHistoryView(
+                onRestoreOriginal: { entry in
+                    viewModel.restoreOriginalFromHistory(entry)
+                },
+                onRestoreOptimized: { entry in
+                    viewModel.restoreOptimizedFromHistory(entry)
+                },
+                onClearAll: {
+                    viewModel.clearAllHistory()
+                }
+            )
+            .environment(viewModel)
+            .modelContainer(modelContainer)
         }
-        .defaultSize(width: 480, height: 400)
+        .defaultSize(width: 520, height: 440)
 
     }
 }

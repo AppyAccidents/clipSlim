@@ -40,4 +40,16 @@ final class FormatSelectorTests: XCTestCase {
         let result = selector.recommendFormat(classification: .screenshot, hasAlpha: false, config: config)
         XCTAssertEqual(result, .jpeg)
     }
+
+    func testPhotoNoAlphaAVIFPreferredReturnsAVIF() {
+        let config = FormatSelector.FormatSelectorConfig(smartFormatEnabled: true, webpPreferred: false, avifPreferred: true)
+        let result = selector.recommendFormat(classification: .photo, hasAlpha: false, config: config)
+        XCTAssertEqual(result, .avif)
+    }
+
+    func testAVIFPreferredOverWebP() {
+        let config = FormatSelector.FormatSelectorConfig(smartFormatEnabled: true, webpPreferred: true, avifPreferred: true)
+        let result = selector.recommendFormat(classification: .photo, hasAlpha: false, config: config)
+        XCTAssertEqual(result, .avif, "AVIF should take priority over WebP when both preferred")
+    }
 }

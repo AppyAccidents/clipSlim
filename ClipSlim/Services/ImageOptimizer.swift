@@ -25,6 +25,7 @@ final class ImageOptimizer: Sendable {
         let preserveAlphaByForcingPNG: Bool
         let outputFormatOverride: ImageFormat?
         let targetDimensions: (width: Int, height: Int)?
+        let metadataPolicy: MetadataPolicy
 
         init(from settings: AppSettings, outputFormatOverride: ImageFormat? = nil) {
             self.quality = settings.currentQuality
@@ -35,6 +36,7 @@ final class ImageOptimizer: Sendable {
             self.preserveAlphaByForcingPNG = settings.preserveAlphaByForcingPNG
             self.outputFormatOverride = outputFormatOverride
             self.targetDimensions = nil
+            self.metadataPolicy = settings.currentMetadataPolicy
         }
 
         init(
@@ -45,7 +47,8 @@ final class ImageOptimizer: Sendable {
             preferredFormat: ImageFormat = .jpeg,
             preserveAlphaByForcingPNG: Bool = true,
             outputFormatOverride: ImageFormat? = nil,
-            targetDimensions: (width: Int, height: Int)? = nil
+            targetDimensions: (width: Int, height: Int)? = nil,
+            metadataPolicy: MetadataPolicy = .stripAll
         ) {
             self.quality = quality
             self.maxDimension = maxDimension
@@ -55,6 +58,7 @@ final class ImageOptimizer: Sendable {
             self.preserveAlphaByForcingPNG = preserveAlphaByForcingPNG
             self.outputFormatOverride = outputFormatOverride
             self.targetDimensions = targetDimensions
+            self.metadataPolicy = metadataPolicy
         }
     }
 
@@ -156,11 +160,13 @@ final class ImageOptimizer: Sendable {
             let outputData: Data
             switch outputFormat {
             case .jpeg:
-                outputData = try encodeJPEG(image: finalImage, quality: config.quality, stripMetadata: config.stripMetadata, source: source)
+                outputData = try encodeJPEG(image: finalImage, quality: config.quality, config: config, source: source)
             case .png:
-                outputData = try encodePNG(image: finalImage, stripMetadata: config.stripMetadata, source: source)
+                outputData = try encodePNG(image: finalImage, config: config, source: source)
             case .webp:
-                outputData = try encodeWebP(image: finalImage, quality: config.quality, stripMetadata: config.stripMetadata, source: source)
+                outputData = try encodeWebP(image: finalImage, quality: config.quality, config: config, source: source)
+            case .avif:
+                outputData = try encodeAVIF(image: finalImage, quality: config.quality, config: config, source: source)
             }
 
             let duration = CFAbsoluteTimeGetCurrent() - startTime
@@ -250,6 +256,9 @@ final class ImageOptimizer: Sendable {
             return .webp
         case .png:
             return .png
+        case .avif:
+            // AVIF supports alpha, so no forced override needed
+            return .avif
         }
     }
 
@@ -318,7 +327,36 @@ final class ImageOptimizer: Sendable {
         return false
     }
 
-    private func encodeJPEG(image: CGImage, quality: Double, stripMetadata: Bool, source: CGImageSource) throws -> Data {
+    private func filteredMetadata(from source: CGImageSource, policy: MetadataPolicy) -> [CFString: Any]? {
+        guard let rawProps = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any] else {
+            return nil
+        }
+
+        var filtered = rawProps
+
+        if policy.shouldStripGPS {
+            filtered.removeValue(forKey: kCGImagePropertyGPSDictionary)
+        }
+
+        if policy.shouldStripCameraInfo {
+            filtered.removeValue(forKey: kCGImagePropertyExifDictionary)
+            filtered.removeValue(forKey: kCGImagePropertyMakerAppleDictionary)
+        }
+
+        if !policy.shouldKeepCopyright && !policy.shouldKeepAuthor {
+            filtered.removeValue(forKey: kCGImagePropertyIPTCDictionary)
+            filtered.removeValue(forKey: kCGImagePropertyTIFFDictionary)
+        } else if var iptc = filtered[kCGImagePropertyIPTCDictionary] as? [CFString: Any] {
+            if !policy.shouldKeepCopyright {
+                iptc.removeValue(forKey: kCGImagePropertyIPTCCopyrightNotice)
+            }
+            filtered[kCGImagePropertyIPTCDictionary] = iptc
+        }
+
+        return filtered
+    }
+
+    private func encodeJPEG(image: CGImage, quality: Double, config: OptimizationConfig, source: CGImageSource) throws -> Data {
         let data = NSMutableData()
         guard let destination = CGImageDestinationCreateWithData(data as CFMutableData, UTType.jpeg.identifier as CFString, 1, nil) else {
             throw OptimizationError.encodingFailed
@@ -329,8 +367,20 @@ final class ImageOptimizer: Sendable {
             kCGImageDestinationEmbedThumbnail: false
         ]
 
-        if stripMetadata {
+        if config.metadataPolicy.effectiveStripMetadata {
             options[kCGImageDestinationOptimizeColorForSharing] = true
+        } else if config.metadataPolicy.requiresSelectiveFiltering {
+            if let filtered = filteredMetadata(from: source, policy: config.metadataPolicy) {
+                var mergedOptions = options
+                for (key, value) in filtered {
+                    mergedOptions[key] = value
+                }
+                CGImageDestinationAddImage(destination, image, mergedOptions as CFDictionary)
+                guard CGImageDestinationFinalize(destination) else {
+                    throw OptimizationError.encodingFailed
+                }
+                return data as Data
+            }
         } else {
             if let metadata = CGImageSourceCopyMetadataAtIndex(source, 0, nil) {
                 let metadataOptions: [CFString: Any] = [
@@ -350,7 +400,7 @@ final class ImageOptimizer: Sendable {
         return data as Data
     }
 
-    private func encodePNG(image: CGImage, stripMetadata: Bool, source: CGImageSource) throws -> Data {
+    private func encodePNG(image: CGImage, config: OptimizationConfig, source: CGImageSource) throws -> Data {
         let data = NSMutableData()
         guard let destination = CGImageDestinationCreateWithData(data as CFMutableData, UTType.png.identifier as CFString, 1, nil) else {
             throw OptimizationError.encodingFailed
@@ -360,8 +410,20 @@ final class ImageOptimizer: Sendable {
             kCGImageDestinationEmbedThumbnail: false
         ]
 
-        if stripMetadata {
+        if config.metadataPolicy.effectiveStripMetadata {
             options[kCGImageDestinationOptimizeColorForSharing] = true
+        } else if config.metadataPolicy.requiresSelectiveFiltering {
+            if let filtered = filteredMetadata(from: source, policy: config.metadataPolicy) {
+                var mergedOptions = options
+                for (key, value) in filtered {
+                    mergedOptions[key] = value
+                }
+                CGImageDestinationAddImage(destination, image, mergedOptions as CFDictionary)
+                guard CGImageDestinationFinalize(destination) else {
+                    throw OptimizationError.encodingFailed
+                }
+                return data as Data
+            }
         } else {
             if let metadata = CGImageSourceCopyMetadataAtIndex(source, 0, nil) {
                 let metadataOptions: [CFString: Any] = [
@@ -381,11 +443,11 @@ final class ImageOptimizer: Sendable {
         return data as Data
     }
 
-    private func encodeWebP(image: CGImage, quality: Double, stripMetadata: Bool, source: CGImageSource) throws -> Data {
+    private func encodeWebP(image: CGImage, quality: Double, config: OptimizationConfig, source: CGImageSource) throws -> Data {
         let data = NSMutableData()
         guard let destination = CGImageDestinationCreateWithData(data as CFMutableData, UTType.webP.identifier as CFString, 1, nil) else {
             // WebP encoding not available — fall back to JPEG
-            return try encodeJPEG(image: image, quality: quality, stripMetadata: stripMetadata, source: source)
+            return try encodeJPEG(image: image, quality: quality, config: config, source: source)
         }
 
         var options: [CFString: Any] = [
@@ -393,8 +455,21 @@ final class ImageOptimizer: Sendable {
             kCGImageDestinationEmbedThumbnail: false
         ]
 
-        if stripMetadata {
+        if config.metadataPolicy.effectiveStripMetadata {
             options[kCGImageDestinationOptimizeColorForSharing] = true
+        } else if config.metadataPolicy.requiresSelectiveFiltering {
+            if let filtered = filteredMetadata(from: source, policy: config.metadataPolicy) {
+                var mergedOptions = options
+                for (key, value) in filtered {
+                    mergedOptions[key] = value
+                }
+                CGImageDestinationAddImage(destination, image, mergedOptions as CFDictionary)
+                guard CGImageDestinationFinalize(destination) else {
+                    // Finalization failed — fall back to JPEG
+                    return try encodeJPEG(image: image, quality: quality, config: config, source: source)
+                }
+                return data as Data
+            }
         } else {
             if let metadata = CGImageSourceCopyMetadataAtIndex(source, 0, nil) {
                 let metadataOptions: [CFString: Any] = [
@@ -409,7 +484,54 @@ final class ImageOptimizer: Sendable {
 
         guard CGImageDestinationFinalize(destination) else {
             // Finalization failed — fall back to JPEG
-            return try encodeJPEG(image: image, quality: quality, stripMetadata: stripMetadata, source: source)
+            return try encodeJPEG(image: image, quality: quality, config: config, source: source)
+        }
+
+        return data as Data
+    }
+
+    private func encodeAVIF(image: CGImage, quality: Double, config: OptimizationConfig, source: CGImageSource) throws -> Data {
+        let data = NSMutableData()
+        guard let destination = CGImageDestinationCreateWithData(data as CFMutableData, ImageFormat.avif.utType as CFString, 1, nil) else {
+            // AVIF encoding not available — fall back to JPEG
+            return try encodeJPEG(image: image, quality: quality, config: config, source: source)
+        }
+
+        var options: [CFString: Any] = [
+            kCGImageDestinationLossyCompressionQuality: quality,
+            kCGImageDestinationEmbedThumbnail: false
+        ]
+
+        if config.metadataPolicy.effectiveStripMetadata {
+            options[kCGImageDestinationOptimizeColorForSharing] = true
+        } else if config.metadataPolicy.requiresSelectiveFiltering {
+            if let filtered = filteredMetadata(from: source, policy: config.metadataPolicy) {
+                var mergedOptions = options
+                for (key, value) in filtered {
+                    mergedOptions[key] = value
+                }
+                CGImageDestinationAddImage(destination, image, mergedOptions as CFDictionary)
+                guard CGImageDestinationFinalize(destination) else {
+                    // Finalization failed — fall back to JPEG
+                    return try encodeJPEG(image: image, quality: quality, config: config, source: source)
+                }
+                return data as Data
+            }
+        } else {
+            if let metadata = CGImageSourceCopyMetadataAtIndex(source, 0, nil) {
+                let metadataOptions: [CFString: Any] = [
+                    kCGImageDestinationMergeMetadata: true,
+                    kCGImageDestinationMetadata: metadata
+                ]
+                CGImageDestinationSetProperties(destination, metadataOptions as CFDictionary)
+            }
+        }
+
+        CGImageDestinationAddImage(destination, image, options as CFDictionary)
+
+        guard CGImageDestinationFinalize(destination) else {
+            // Finalization failed — fall back to JPEG
+            return try encodeJPEG(image: image, quality: quality, config: config, source: source)
         }
 
         return data as Data

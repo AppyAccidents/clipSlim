@@ -92,6 +92,7 @@ final class AppSettings {
     var customMaxDimension: Int { didSet { defaults.set(customMaxDimension, forKey: Keys.customMaxDimension) } }
     var customStripMetadata: Bool { didSet { defaults.set(customStripMetadata, forKey: Keys.customStripMetadata) } }
     var customAllowTransparencyLoss: Bool { didSet { defaults.set(customAllowTransparencyLoss, forKey: Keys.customAllowTransparencyLoss) } }
+    var metadataPolicyData: String { didSet { defaults.set(metadataPolicyData, forKey: Keys.metadataPolicyData) } }
 
     var maxFileSizeMB: Int { didSet { defaults.set(maxFileSizeMB, forKey: Keys.maxFileSizeMB) } }
     var launchAtLogin: Bool { didSet { defaults.set(launchAtLogin, forKey: Keys.launchAtLogin) } }
@@ -124,6 +125,7 @@ final class AppSettings {
     // F2: Smart Format
     var smartFormatEnabled: Bool { didSet { defaults.set(smartFormatEnabled, forKey: Keys.smartFormatEnabled) } }
     var webpPreferred: Bool { didSet { defaults.set(webpPreferred, forKey: Keys.webpPreferred) } }
+    var avifPreferred: Bool { didSet { defaults.set(avifPreferred, forKey: Keys.avifPreferred) } }
 
     // F4: Pipeline Steps
     var enabledPipelineStepsRaw: String { didSet { defaults.set(enabledPipelineStepsRaw, forKey: Keys.enabledPipelineStepsRaw) } }
@@ -152,6 +154,7 @@ final class AppSettings {
         static let customMaxDimension = "customMaxDimension"
         static let customStripMetadata = "customStripMetadata"
         static let customAllowTransparencyLoss = "customAllowTransparencyLoss"
+        static let metadataPolicyData = "metadataPolicyData"
         static let maxFileSizeMB = "maxFileSizeMB"
         static let launchAtLogin = "launchAtLogin"
         static let saveToDisk = "saveToDisk"
@@ -178,6 +181,7 @@ final class AppSettings {
         static let dropZoneVisibleOnLaunch = "dropZoneVisibleOnLaunch"
         static let smartFormatEnabled = "smartFormatEnabled"
         static let webpPreferred = "webpPreferred"
+        static let avifPreferred = "avifPreferred"
         static let enabledPipelineStepsRaw = "enabledPipelineStepsRaw"
         static let developerModeEnabled = "developerModeEnabled"
         static let qualityGuardEnabled = "qualityGuardEnabled"
@@ -203,6 +207,7 @@ final class AppSettings {
         customMaxDimension = defaults.object(forKey: Keys.customMaxDimension) as? Int ?? 1920
         customStripMetadata = defaults.object(forKey: Keys.customStripMetadata) as? Bool ?? true
         customAllowTransparencyLoss = defaults.object(forKey: Keys.customAllowTransparencyLoss) as? Bool ?? false
+        metadataPolicyData = defaults.string(forKey: Keys.metadataPolicyData) ?? ""
 
         maxFileSizeMB = defaults.object(forKey: Keys.maxFileSizeMB) as? Int ?? 50
         launchAtLogin = defaults.object(forKey: Keys.launchAtLogin) as? Bool ?? false
@@ -236,6 +241,7 @@ final class AppSettings {
 
         smartFormatEnabled = defaults.object(forKey: Keys.smartFormatEnabled) as? Bool ?? false
         webpPreferred = defaults.object(forKey: Keys.webpPreferred) as? Bool ?? false
+        avifPreferred = defaults.object(forKey: Keys.avifPreferred) as? Bool ?? false
         enabledPipelineStepsRaw = defaults.string(forKey: Keys.enabledPipelineStepsRaw) ?? PipelineStep.allCases.map(\.rawValue).joined(separator: ",")
         developerModeEnabled = defaults.object(forKey: Keys.developerModeEnabled) as? Bool ?? false
         qualityGuardEnabled = defaults.object(forKey: Keys.qualityGuardEnabled) as? Bool ?? true
@@ -335,6 +341,22 @@ final class AppSettings {
         selectedPreset == .custom ? customStripMetadata : selectedPreset.stripMetadata
     }
 
+    var currentMetadataPolicy: MetadataPolicy {
+        if !metadataPolicyData.isEmpty,
+           let data = metadataPolicyData.data(using: .utf8),
+           let policy = try? JSONDecoder().decode(MetadataPolicy.self, from: data) {
+            return policy
+        }
+        return MetadataPolicy.fromLegacy(stripMetadata: currentStripMetadata)
+    }
+
+    func setMetadataPolicy(_ policy: MetadataPolicy) {
+        if let data = try? JSONEncoder().encode(policy),
+           let string = String(data: data, encoding: .utf8) {
+            metadataPolicyData = string
+        }
+    }
+
     var currentAllowTransparencyLoss: Bool {
         selectedPreset == .custom ? customAllowTransparencyLoss : selectedPreset.allowTransparencyLoss
     }
@@ -374,6 +396,9 @@ final class AppSettings {
     }
     var webpPreferredBinding: Binding<Bool> {
         Binding(get: { self.webpPreferred }, set: { self.webpPreferred = $0 })
+    }
+    var avifPreferredBinding: Binding<Bool> {
+        Binding(get: { self.avifPreferred }, set: { self.avifPreferred = $0 })
     }
     var developerModeEnabledBinding: Binding<Bool> {
         Binding(get: { self.developerModeEnabled }, set: { self.developerModeEnabled = $0 })

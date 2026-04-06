@@ -200,6 +200,30 @@ final class ImageOptimizerTests: XCTestCase {
         XCTAssertFalse(ImageOptimizer.requiresVisibleTransparencyCheck(config: overridePNGConfig))
     }
     
+    func testOptimizeToAVIF() async throws {
+        guard let pngData = makeTestPNG(width: 200, height: 200) else {
+            XCTFail("Failed to create test PNG")
+            return
+        }
+        let config = ImageOptimizer.OptimizationConfig(
+            quality: 0.75,
+            maxDimension: 1920,
+            stripMetadata: true,
+            allowTransparencyLoss: false,
+            preferredFormat: .jpeg,
+            preserveAlphaByForcingPNG: true,
+            outputFormatOverride: .avif
+        )
+        let (optimizedData, result) = try await optimizer.optimize(data: pngData, config: config)
+        XCTAssertFalse(optimizedData.isEmpty, "AVIF output should not be empty")
+        XCTAssertEqual(result.format, .avif, "Output format should be AVIF")
+    }
+
+    func testAVIFFormatProperties() {
+        XCTAssertEqual(ImageFormat.avif.fileExtension, "avif")
+        XCTAssertEqual(ImageFormat.avif.utType, "public.avif")
+    }
+
     func testEmptyDataThrows() async {
         let config = ImageOptimizer.OptimizationConfig()
         do {
@@ -221,6 +245,35 @@ final class ImageOptimizerTests: XCTestCase {
         }
     }
     
+    func testStripAllMetadata() async throws {
+        guard let pngData = makeTestPNG() else {
+            XCTFail("Failed to create test PNG")
+            return
+        }
+        let config = ImageOptimizer.OptimizationConfig(
+            quality: 0.85,
+            maxDimension: 1920,
+            metadataPolicy: .stripAll
+        )
+        let (optimizedData, _) = try await optimizer.optimize(data: pngData, config: config)
+        XCTAssertFalse(optimizedData.isEmpty)
+    }
+
+    func testKeepAllMetadata() async throws {
+        guard let pngData = makeTestPNG() else {
+            XCTFail("Failed to create test PNG")
+            return
+        }
+        let config = ImageOptimizer.OptimizationConfig(
+            quality: 0.85,
+            maxDimension: 1920,
+            stripMetadata: false,
+            metadataPolicy: .keepAll
+        )
+        let (optimizedData, _) = try await optimizer.optimize(data: pngData, config: config)
+        XCTAssertFalse(optimizedData.isEmpty)
+    }
+
     func testSavingsCalculation() {
         let result = OptimizationResult(
             originalSize: 1000,

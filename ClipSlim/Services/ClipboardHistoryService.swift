@@ -83,6 +83,17 @@ final class ClipboardHistoryService {
         pb.setData(data, forType: pbType)
     }
 
+    func clearAll() {
+        let descriptor = FetchDescriptor<ClipboardHistoryEntry>()
+        guard let all = try? modelContext.fetch(descriptor) else { return }
+        for entry in all {
+            if let path = entry.originalFileURL { try? FileManager.default.removeItem(atPath: path) }
+            if let path = entry.optimizedFileURL { try? FileManager.default.removeItem(atPath: path) }
+            modelContext.delete(entry)
+        }
+        try? modelContext.save()
+    }
+
     private func cleanup() {
         let descriptor = FetchDescriptor<ClipboardHistoryEntry>(
             sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
