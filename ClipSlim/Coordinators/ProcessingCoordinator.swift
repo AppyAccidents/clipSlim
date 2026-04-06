@@ -619,6 +619,18 @@ final class ProcessingCoordinator {
                         savingsPercent: pdfResult.savingsPercentage
                     ))
 
+                case .video:
+                    dropZoneService.updateItem(id: itemID, state: .failed("Video optimization coming soon"))
+                    continue
+
+                case .gif:
+                    dropZoneService.updateItem(id: itemID, state: .failed("GIF optimization coming soon"))
+                    continue
+
+                case .svg:
+                    dropZoneService.updateItem(id: itemID, state: .failed("SVG optimization coming soon"))
+                    continue
+
                 case .image, nil:
                     let data = try Data(contentsOf: url)
                     let config = ImageOptimizer.OptimizationConfig(from: settings)

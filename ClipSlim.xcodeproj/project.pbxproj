@@ -89,6 +89,11 @@
 		A10000930000000000000093 /* ComparisonSliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000930000000000000093 /* ComparisonSliderView.swift */; };
 		A10000940000000000000094 /* OptimizeImageIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000940000000000000094 /* OptimizeImageIntent.swift */; };
 		A10000950000000000000095 /* ShortcutsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000950000000000000095 /* ShortcutsProvider.swift */; };
+		A10000960000000000000096 /* VideoOptimizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000960000000000000096 /* VideoOptimizer.swift */; };
+		A10000970000000000000097 /* GIFOptimizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000970000000000000097 /* GIFOptimizer.swift */; };
+		A10000980000000000000098 /* FileTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000980000000000000098 /* FileTypeTests.swift */; };
+		A10000990000000000000099 /* VideoOptimizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000990000000000000099 /* VideoOptimizerTests.swift */; };
+		A100009A000000000000009A /* GIFOptimizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100009A000000000000009A /* GIFOptimizerTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -187,6 +192,11 @@
 		B10000930000000000000093 /* ComparisonSliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComparisonSliderView.swift; sourceTree = "<group>"; };
 		B10000940000000000000094 /* OptimizeImageIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimizeImageIntent.swift; sourceTree = "<group>"; };
 		B10000950000000000000095 /* ShortcutsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutsProvider.swift; sourceTree = "<group>"; };
+		B10000960000000000000096 /* VideoOptimizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoOptimizer.swift; sourceTree = "<group>"; };
+		B10000970000000000000097 /* GIFOptimizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GIFOptimizer.swift; sourceTree = "<group>"; };
+		B10000980000000000000098 /* FileTypeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTypeTests.swift; sourceTree = "<group>"; };
+		B10000990000000000000099 /* VideoOptimizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoOptimizerTests.swift; sourceTree = "<group>"; };
+		B100009A000000000000009A /* GIFOptimizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GIFOptimizerTests.swift; sourceTree = "<group>"; };
 		F10000010000000000000001 /* ClipSlim.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClipSlim.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F10000020000000000000002 /* ClipSlimTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClipSlimTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -252,6 +262,9 @@
 				B10000880000000000000088 /* PipelineStepTests.swift */,
 				B10000890000000000000089 /* ContextAwareServiceTests.swift */,
 				B10000920000000000000092 /* MetadataPolicyTests.swift */,
+				B10000980000000000000098 /* FileTypeTests.swift */,
+				B10000990000000000000099 /* VideoOptimizerTests.swift */,
+				B100009A000000000000009A /* GIFOptimizerTests.swift */,
 			);
 			path = ClipSlimTests;
 			sourceTree = "<group>";
@@ -313,6 +326,8 @@
 				B10000800000000000000080 /* RuleEvaluator.swift */,
 				B10000830000000000000083 /* SessionLogExporter.swift */,
 				B10000900000000000000090 /* DuplicateHashService.swift */,
+				B10000960000000000000096 /* VideoOptimizer.swift */,
+				B10000970000000000000097 /* GIFOptimizer.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -598,6 +613,8 @@
 				A10000910000000000000091 /* MetadataPolicy.swift in Sources */,
 				A10000940000000000000094 /* OptimizeImageIntent.swift in Sources */,
 				A10000950000000000000095 /* ShortcutsProvider.swift in Sources */,
+				A10000960000000000000096 /* VideoOptimizer.swift in Sources */,
+				A10000970000000000000097 /* GIFOptimizer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -617,6 +634,9 @@
 				A10000880000000000000088 /* PipelineStepTests.swift in Sources */,
 				A10000890000000000000089 /* ContextAwareServiceTests.swift in Sources */,
 				A10000920000000000000092 /* MetadataPolicyTests.swift in Sources */,
+				A10000980000000000000098 /* FileTypeTests.swift in Sources */,
+				A10000990000000000000099 /* VideoOptimizerTests.swift in Sources */,
+				A100009A000000000000009A /* GIFOptimizerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -531,6 +531,48 @@ final class AppSettings {
         return decoded
     }
 
+    // MARK: - Video/GIF Settings (v2.0 stubs — full UI in Task 8-10)
+
+    var videoCodecRaw: String {
+        UserDefaults.standard.string(forKey: "videoCodecRaw") ?? "H.264"
+    }
+
+    var videoQuality: Double {
+        let val = UserDefaults.standard.double(forKey: "videoQuality")
+        return val > 0 ? val : 0.7
+    }
+
+    var videoMaxResolution: Int {
+        let val = UserDefaults.standard.integer(forKey: "videoMaxResolution")
+        return val > 0 ? val : 1080
+    }
+
+    var videoStripMetadata: Bool {
+        if UserDefaults.standard.object(forKey: "videoStripMetadata") != nil {
+            return UserDefaults.standard.bool(forKey: "videoStripMetadata")
+        }
+        return true
+    }
+
+    var gifMaxColors: Int {
+        let val = UserDefaults.standard.integer(forKey: "gifMaxColors")
+        return val > 0 ? val : 256
+    }
+
+    var gifFrameSkip: Int {
+        UserDefaults.standard.integer(forKey: "gifFrameSkip")
+    }
+
+    var gifMaxDimension: Int {
+        let val = UserDefaults.standard.integer(forKey: "gifMaxDimension")
+        return val > 0 ? val : 480
+    }
+
+    var videoToGifFPS: Int {
+        let val = UserDefaults.standard.integer(forKey: "videoToGifFPS")
+        return val > 0 ? val : 10
+    }
+
     private static func normalizeLegacyPresetRawValue(_ raw: String) -> String {
         switch raw {
         case "Web":
