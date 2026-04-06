@@ -19,6 +19,8 @@ final class AppViewModel {
     let tipStore = TipStore()
     let processingCoordinator = ProcessingCoordinator()
     let hotkeyCoordinator = HotkeyCoordinator()
+    let quickResizePanelService = QuickResizePanelService()
+    let quickCropPanelService = QuickCropPanelService()
     let contextAwareService = ContextAwareService()
 
     private(set) var events: [OptimizationEvent] = []
@@ -68,9 +70,8 @@ final class AppViewModel {
         setupDropZoneActions()
         setupFrontmostAppTracking()
         notificationService.requestAuthorization()
-        hotkeyCoordinator.onCopyOptimized = { [weak self] in self?.copyLastOptimized() }
-        hotkeyCoordinator.onCopyOriginal = { [weak self] in self?.copyLastOriginal() }
-        hotkeyCoordinator.register(viewModelPtr: Unmanaged.passUnretained(self).toOpaque())
+        setupShortcutActions()
+        hotkeyCoordinator.register(bindings: settings.shortcutBindings)
         Task { @MainActor in
             self.startServices()
         }
@@ -186,6 +187,8 @@ final class AppViewModel {
             frontmostAppObserver = nil
         }
         hotkeyCoordinator.unregister()
+        quickResizePanelService.shutdown()
+        quickCropPanelService.shutdown()
         hasSetupFrontmostTracking = false
         hasSetupClipboardWatcher = false
         hasSetupFolderWatcher = false
@@ -497,6 +500,104 @@ final class AppViewModel {
 
     func toggleDropZone() {
         dropZoneService.toggle()
+    }
+
+    func reloadShortcutBindings() {
+        hotkeyCoordinator.unregister()
+        hotkeyCoordinator.register(bindings: settings.shortcutBindings)
+    }
+
+    // MARK: - Shortcut Actions
+
+    private func setupShortcutActions() {
+        hotkeyCoordinator.onCopyOptimized = { [weak self] in self?.copyLastOptimized() }
+        hotkeyCoordinator.onCopyOriginal = { [weak self] in self?.copyLastOriginal() }
+
+        hotkeyCoordinator.onAction = { [weak self] action in
+            guard let self else { return }
+            switch action {
+            case .copyOptimized:
+                self.copyLastOptimized()
+            case .copyOriginal:
+                self.copyLastOriginal()
+            case .toggleDropZone:
+                self.dropZoneService.toggle()
+            case .quickResize:
+                self.quickResizePanelService.show()
+            case .quickCrop:
+                self.quickCropPanelService.show()
+            case .pasteAndOptimize:
+                self.pasteAndOptimize()
+            case .clipboardToGIF:
+                Logger.shared.app("Clipboard-to-GIF shortcut triggered")
+            }
+        }
+
+        quickResizePanelService.onApply = { [weak self] width, height in
+            guard let self else { return }
+            self.resizeClipboardImage(width: width, height: height)
+        }
+
+        quickCropPanelService.onApply = { [weak self] shape, size in
+            guard let self else { return }
+            self.cropClipboardImage(shape: shape, size: size)
+        }
+    }
+
+    private func pasteAndOptimize() {
+        guard let imageData = clipboardWatcher.readImageFromPasteboard() else {
+            Logger.shared.app("Paste & Optimize: no image on clipboard")
+            return
+        }
+        Task {
+            await processingCoordinator.processImageData(
+                imageData,
+                source: .clipboard,
+                fileName: nil,
+                outputFormatOverride: nil,
+                targetDimensions: nil,
+                sourceBundleID: nil
+            )
+        }
+    }
+
+    private func resizeClipboardImage(width: Int, height: Int) {
+        guard let imageData = clipboardWatcher.readImageFromPasteboard() else {
+            Logger.shared.app("Quick Resize: no image on clipboard")
+            return
+        }
+        Task {
+            await processingCoordinator.processImageData(
+                imageData,
+                source: .clipboard,
+                fileName: nil,
+                outputFormatOverride: nil,
+                targetDimensions: (width: width, height: height),
+                sourceBundleID: nil
+            )
+        }
+    }
+
+    private func cropClipboardImage(shape: CropShape, size: Int) {
+        guard let imageData = clipboardWatcher.readImageFromPasteboard() else {
+            Logger.shared.app("Quick Crop: no image on clipboard")
+            return
+        }
+        Task {
+            do {
+                let croppedData: Data
+                switch shape {
+                case .square:
+                    croppedData = try ImageOptimizer.shared.cropToSquare(data: imageData, side: size)
+                case .circle:
+                    croppedData = try ImageOptimizer.shared.cropToCircle(data: imageData, radius: size / 2)
+                }
+                clipboardWatcher.writeToPasteboard(data: croppedData, format: .png)
+                Logger.shared.app("Quick Crop applied: \(shape.rawValue) \(size)px")
+            } catch {
+                Logger.shared.error("Quick Crop failed: \(error.localizedDescription)")
+            }
+        }
     }
 
     // MARK: - Private Setup

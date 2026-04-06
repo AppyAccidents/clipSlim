@@ -4,59 +4,121 @@ import Carbon.HIToolbox
 @MainActor
 final class HotkeyCoordinator {
 
-    private var hotKeyRef1: EventHotKeyRef?
-    private var hotKeyRef2: EventHotKeyRef?
+    private var hotKeyRefs: [ShortcutAction: EventHotKeyRef] = [:]
     private var hasRegistered = false
 
+    var onAction: ((ShortcutAction) -> Void)?
+
+    // Legacy callbacks — kept for backward compat until AppViewModel is updated in Task 6
     var onCopyOptimized: (() -> Void)?
     var onCopyOriginal: (() -> Void)?
 
     private let log = Logger.shared
 
-    func register(viewModelPtr: UnsafeMutableRawPointer) {
-        guard !hasRegistered else { return }
+    func register(bindings: ShortcutBindingsStore) {
+        unregister()
         hasRegistered = true
 
-        var eventType = EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed))
+        var eventType = EventTypeSpec(
+            eventClass: OSType(kEventClassKeyboard),
+            eventKind: UInt32(kEventHotKeyPressed)
+        )
 
-        InstallEventHandler(GetApplicationEventTarget(), { _, event, userData -> OSStatus in
-            guard let event, let userData else { return OSStatus(eventNotHandledErr) }
-            var hotKeyID = EventHotKeyID()
-            GetEventParameter(event, EventParamName(kEventParamDirectObject), EventParamType(typeEventHotKeyID), nil, MemoryLayout<EventHotKeyID>.size, nil, &hotKeyID)
+        InstallEventHandler(
+            GetApplicationEventTarget(),
+            { _, event, userData -> OSStatus in
+                guard let event, let userData else { return OSStatus(eventNotHandledErr) }
+                var hotKeyID = EventHotKeyID()
+                GetEventParameter(
+                    event,
+                    EventParamName(kEventParamDirectObject),
+                    EventParamType(typeEventHotKeyID),
+                    nil,
+                    MemoryLayout<EventHotKeyID>.size,
+                    nil,
+                    &hotKeyID
+                )
 
-            let coordinator = Unmanaged<HotkeyCoordinator>.fromOpaque(userData).takeUnretainedValue()
+                let coordinator = Unmanaged<HotkeyCoordinator>.fromOpaque(userData).takeUnretainedValue()
 
-            DispatchQueue.main.async {
-                switch hotKeyID.id {
-                case 1:
-                    coordinator.onCopyOptimized?()
-                case 2:
-                    coordinator.onCopyOriginal?()
-                default:
-                    break
+                DispatchQueue.main.async {
+                    if let action = ShortcutAction.allCases.first(where: { $0.hotKeyID == hotKeyID.id }) {
+                        coordinator.onAction?(action)
+                        // Legacy callback bridge
+                        switch action {
+                        case .copyOptimized: coordinator.onCopyOptimized?()
+                        case .copyOriginal: coordinator.onCopyOriginal?()
+                        default: break
+                        }
+                    }
                 }
+                return noErr
+            },
+            1,
+            &eventType,
+            Unmanaged.passUnretained(self).toOpaque(),
+            nil
+        )
+
+        for action in ShortcutAction.allCases {
+            let binding = bindings.binding(for: action)
+            let hotKeyID = EventHotKeyID(signature: action.hotKeySignature, id: action.hotKeyID)
+            var ref: EventHotKeyRef?
+            let status = RegisterEventHotKey(
+                binding.keyCode,
+                binding.modifiers,
+                hotKeyID,
+                GetApplicationEventTarget(),
+                0,
+                &ref
+            )
+            if status == noErr, let ref {
+                hotKeyRefs[action] = ref
+            } else {
+                log.error("Failed to register hotkey for \(action.displayName): status \(status)")
             }
-            return noErr
-        }, 1, &eventType, Unmanaged.passUnretained(self).toOpaque(), nil)
+        }
 
-        let hotKeyID1 = EventHotKeyID(signature: OSType(0x434C5031), id: 1)
-        RegisterEventHotKey(UInt32(kVK_ANSI_1), UInt32(optionKey), hotKeyID1, GetApplicationEventTarget(), 0, &hotKeyRef1)
+        let registered = hotKeyRefs.keys.map(\.displayName).joined(separator: ", ")
+        log.app("Global hotkeys registered: \(registered)")
+    }
 
-        let hotKeyID2 = EventHotKeyID(signature: OSType(0x434C5032), id: 2)
-        RegisterEventHotKey(UInt32(kVK_ANSI_2), UInt32(optionKey), hotKeyID2, GetApplicationEventTarget(), 0, &hotKeyRef2)
-
-        log.app("Global hotkeys registered: Option+1 (optimized), Option+2 (original)")
+    /// Legacy register method — bridges to new system using default bindings.
+    func register(viewModelPtr: UnsafeMutableRawPointer) {
+        register(bindings: ShortcutBindingsStore())
     }
 
     func unregister() {
-        if let hotKeyRef1 {
-            UnregisterEventHotKey(hotKeyRef1)
-            self.hotKeyRef1 = nil
+        for (_, ref) in hotKeyRefs {
+            UnregisterEventHotKey(ref)
         }
-        if let hotKeyRef2 {
-            UnregisterEventHotKey(hotKeyRef2)
-            self.hotKeyRef2 = nil
-        }
+        hotKeyRefs.removeAll()
         hasRegistered = false
+    }
+
+    /// Re-register a single action with a new binding without tearing down the entire set.
+    func updateBinding(_ binding: ShortcutBinding, for action: ShortcutAction) {
+        // Unregister old
+        if let oldRef = hotKeyRefs.removeValue(forKey: action) {
+            UnregisterEventHotKey(oldRef)
+        }
+
+        // Register new
+        let hotKeyID = EventHotKeyID(signature: action.hotKeySignature, id: action.hotKeyID)
+        var ref: EventHotKeyRef?
+        let status = RegisterEventHotKey(
+            binding.keyCode,
+            binding.modifiers,
+            hotKeyID,
+            GetApplicationEventTarget(),
+            0,
+            &ref
+        )
+        if status == noErr, let ref {
+            hotKeyRefs[action] = ref
+            log.app("Updated hotkey for \(action.displayName): \(binding.displayString)")
+        } else {
+            log.error("Failed to update hotkey for \(action.displayName): status \(status)")
+        }
     }
 }

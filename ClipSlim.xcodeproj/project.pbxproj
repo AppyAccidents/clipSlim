@@ -97,6 +97,11 @@
 		A100009B000000000000009B /* SVGOptimizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100009B000000000000009B /* SVGOptimizer.swift */; };
 		A100009C000000000000009C /* SVGOptimizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100009C000000000000009C /* SVGOptimizerTests.swift */; };
 		A100009D000000000000009D /* LosslessPresetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100009D000000000000009D /* LosslessPresetTests.swift */; };
+		A100009E000000000000009E /* VideoTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100009E000000000000009E /* VideoTab.swift */; };
+		A100009F000000000000009F /* ShortcutAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B100009F000000000000009F /* ShortcutAction.swift */; };
+		A10000A00000000000000A0 /* QuickResizePanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000A00000000000000A0 /* QuickResizePanel.swift */; };
+		A10000A10000000000000A1 /* QuickCropPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000A10000000000000A1 /* QuickCropPanel.swift */; };
+		A10000A20000000000000A2 /* ShortcutActionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000A20000000000000A2 /* ShortcutActionTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -203,6 +208,11 @@
 		B100009B000000000000009B /* SVGOptimizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVGOptimizer.swift; sourceTree = "<group>"; };
 		B100009C000000000000009C /* SVGOptimizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVGOptimizerTests.swift; sourceTree = "<group>"; };
 		B100009D000000000000009D /* LosslessPresetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LosslessPresetTests.swift; sourceTree = "<group>"; };
+		B100009E000000000000009E /* VideoTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTab.swift; sourceTree = "<group>"; };
+		B100009F000000000000009F /* ShortcutAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutAction.swift; sourceTree = "<group>"; };
+		B10000A00000000000000A0 /* QuickResizePanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickResizePanel.swift; sourceTree = "<group>"; };
+		B10000A10000000000000A1 /* QuickCropPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickCropPanel.swift; sourceTree = "<group>"; };
+		B10000A20000000000000A2 /* ShortcutActionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutActionTests.swift; sourceTree = "<group>"; };
 		F10000010000000000000001 /* ClipSlim.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClipSlim.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F10000020000000000000002 /* ClipSlimTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClipSlimTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -273,6 +283,7 @@
 				B100009A000000000000009A /* GIFOptimizerTests.swift */,
 				B100009C000000000000009C /* SVGOptimizerTests.swift */,
 				B100009D000000000000009D /* LosslessPresetTests.swift */,
+				B10000A20000000000000A2 /* ShortcutActionTests.swift */,
 			);
 			path = ClipSlimTests;
 			sourceTree = "<group>";
@@ -308,6 +319,7 @@
 				B10000750000000000000075 /* AppPresetMapping.swift */,
 				B10000790000000000000079 /* FolderRule.swift */,
 				B10000910000000000000091 /* MetadataPolicy.swift */,
+				B100009F000000000000009F /* ShortcutAction.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -360,6 +372,8 @@
 				B10000480000000000000048 /* DropZoneView.swift */,
 				B10000740000000000000074 /* ClipboardHistoryView.swift */,
 				B10000820000000000000082 /* QuickActionOverlayView.swift */,
+				B10000A00000000000000A0 /* QuickResizePanel.swift */,
+				B10000A10000000000000A1 /* QuickCropPanel.swift */,
 				D1000014000000000000000E /* Components */,
 				D1000015000000000000000F /* Settings */,
 			);
@@ -414,6 +428,7 @@
 				B1000021000000000000001B /* PresetsTab.swift */,
 				B1000022000000000000001C /* FolderTab.swift */,
 				B10000490000000000000049 /* PDFTab.swift */,
+				B100009E000000000000009E /* VideoTab.swift */,
 				B10000370000000000000037 /* SupportTab.swift */,
 				B1000023000000000000001D /* AboutTab.swift */,
 				B10000700000000000000070 /* PipelineSection.swift */,
@@ -594,6 +609,10 @@
 				A10000470000000000000047 /* DropZoneService.swift in Sources */,
 				A10000480000000000000048 /* DropZoneView.swift in Sources */,
 				A10000490000000000000049 /* PDFTab.swift in Sources */,
+				A100009E000000000000009E /* VideoTab.swift in Sources */,
+				A100009F000000000000009F /* ShortcutAction.swift in Sources */,
+				A10000A00000000000000A0 /* QuickResizePanel.swift in Sources */,
+				A10000A10000000000000A1 /* QuickCropPanel.swift in Sources */,
 				A10000600000000000000060 /* ProcessingCoordinator.swift in Sources */,
 				A10000610000000000000061 /* SaveCoordinator.swift in Sources */,
 				A10000620000000000000062 /* HotkeyCoordinator.swift in Sources */,
@@ -649,6 +668,7 @@
 				A100009A000000000000009A /* GIFOptimizerTests.swift in Sources */,
 				A100009C000000000000009C /* SVGOptimizerTests.swift in Sources */,
 				A100009D000000000000009D /* LosslessPresetTests.swift in Sources */,
+				A10000A20000000000000A2 /* ShortcutActionTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -90,6 +90,11 @@ final class ClipboardWatcher {
         log.clipboard("Wrote optimized \(format.rawValue) to pasteboard (changeCount: \(lastSeenChangeCount))")
     }
 
+    /// Public convenience to read current image data from the general pasteboard.
+    func readImageFromPasteboard() -> Data? {
+        extractImageData(from: NSPasteboard.general)
+    }
+
     func updateHashTracking(data: Data) {
         let pb = NSPasteboard.general
         lastSeenChangeCount = pb.changeCount
