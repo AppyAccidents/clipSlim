@@ -156,6 +156,9 @@ final class AppSettings {
     // F9: Folder Rules
     var folderRulesData: String { didSet { defaults.set(folderRulesData, forKey: Keys.folderRulesData) } }
 
+    // C1: Watermark
+    var watermarkConfigData: String { didSet { defaults.set(watermarkConfigData, forKey: Keys.watermarkConfigData) } }
+
     // Shortcuts
     var shortcutBindingsData: String { didSet { defaults.set(shortcutBindingsData, forKey: Keys.shortcutBindingsData) } }
 
@@ -207,6 +210,7 @@ final class AppSettings {
         static let qualityGuardThreshold = "qualityGuardThreshold"
         static let appPresetMappingsData = "appPresetMappingsData"
         static let folderRulesData = "folderRulesData"
+        static let watermarkConfigData = "watermarkConfigData"
         static let shortcutBindingsData = "shortcutBindingsData"
         static let renameTemplate = "renameTemplate"
 
@@ -282,6 +286,7 @@ final class AppSettings {
         qualityGuardThreshold = defaults.object(forKey: Keys.qualityGuardThreshold) as? Double ?? 0.90
         appPresetMappingsData = defaults.string(forKey: Keys.appPresetMappingsData) ?? "[]"
         folderRulesData = defaults.string(forKey: Keys.folderRulesData) ?? "[]"
+        watermarkConfigData = defaults.string(forKey: Keys.watermarkConfigData) ?? ""
         shortcutBindingsData = defaults.string(forKey: Keys.shortcutBindingsData) ?? ""
         renameTemplate = defaults.string(forKey: Keys.renameTemplate) ?? "{name}_optimized"
 
@@ -454,6 +459,27 @@ final class AppSettings {
                let string = String(data: data, encoding: .utf8) {
                 shortcutBindingsData = string
             }
+        }
+    }
+
+    // MARK: - Watermark Config
+
+    var currentWatermarkConfig: WatermarkConfig {
+        get {
+            guard !watermarkConfigData.isEmpty,
+                  let data = watermarkConfigData.data(using: .utf8),
+                  let config = try? JSONDecoder().decode(WatermarkConfig.self, from: data) else {
+                return .default
+            }
+            return config
+        }
+        set {
+            guard let data = try? JSONEncoder().encode(newValue),
+                  let string = String(data: data, encoding: .utf8) else {
+                watermarkConfigData = ""
+                return
+            }
+            watermarkConfigData = string
         }
     }
 

@@ -276,6 +276,18 @@ final class ProcessingCoordinator {
                 }
             }
 
+            // C1: Watermark — apply after optimization, before write
+            let watermarkConfig = settings.currentWatermarkConfig
+            if watermarkConfig.enabled && !isForcedTransformation {
+                do {
+                    bestData = try await Task.detached(priority: .utility) {
+                        try WatermarkService.shared.apply(to: bestData, config: watermarkConfig)
+                    }.value
+                } catch {
+                    log.app("Watermark failed: \(error.localizedDescription)")
+                }
+            }
+
             if source == .clipboard {
                 clipboardWatcher.writeToPasteboard(data: bestData, format: bestResult.format)
                 if !isFocusMode {
@@ -435,7 +447,27 @@ final class ProcessingCoordinator {
             lastOptimizedFormat = result.format
             lastOriginalFormat = detectFormat(from: data)
 
-            let outputURL = folderWatcher.outputURL(for: url, format: result.format)
+            let outputURL: URL
+            let renameTemplate = settings.renameTemplate
+            if renameTemplate != "{name}_optimized" && !renameTemplate.isEmpty {
+                let context = RenameContext(
+                    originalName: url.deletingPathExtension().lastPathComponent,
+                    outputExtension: result.format.fileExtension,
+                    date: Date(),
+                    sequenceNumber: 1,
+                    width: result.optimizedDimensions.width,
+                    height: result.optimizedDimensions.height,
+                    formatName: result.format.rawValue.lowercased(),
+                    presetName: settings.selectedPreset.rawValue,
+                    savingsPercent: Int(result.savingsPercentage)
+                )
+                let renamedBase = BatchRenamer.rename(template: renameTemplate, context: context)
+                let parent = url.deletingLastPathComponent()
+                let optimizedDir = parent.appendingPathComponent("Optimized", isDirectory: true)
+                outputURL = optimizedDir.appendingPathComponent("\(renamedBase).\(result.format.fileExtension)")
+            } else {
+                outputURL = folderWatcher.outputURL(for: url, format: result.format)
+            }
             try await Task.detached(priority: .utility) {
                 try FileManager.default.createDirectory(at: outputURL.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
                 try optimizedData.write(to: outputURL, options: .atomic)
@@ -699,9 +731,28 @@ final class ProcessingCoordinator {
                         continue
                     }
 
-                    let nameWithoutExt = url.deletingPathExtension().lastPathComponent
-                    let outputURL = url.deletingLastPathComponent()
-                        .appendingPathComponent("\(nameWithoutExt)-optimized.\(result.format.fileExtension)")
+                    let outputURL: URL
+                    let renameTemplate = settings.renameTemplate
+                    if renameTemplate != "{name}_optimized" && !renameTemplate.isEmpty {
+                        let context = RenameContext(
+                            originalName: url.deletingPathExtension().lastPathComponent,
+                            outputExtension: result.format.fileExtension,
+                            date: Date(),
+                            sequenceNumber: 1,
+                            width: result.optimizedDimensions.width,
+                            height: result.optimizedDimensions.height,
+                            formatName: result.format.rawValue.lowercased(),
+                            presetName: settings.selectedPreset.rawValue,
+                            savingsPercent: Int(result.savingsPercentage)
+                        )
+                        let renamedBase = BatchRenamer.rename(template: renameTemplate, context: context)
+                        outputURL = url.deletingLastPathComponent()
+                            .appendingPathComponent("\(renamedBase).\(result.format.fileExtension)")
+                    } else {
+                        let nameWithoutExt = url.deletingPathExtension().lastPathComponent
+                        outputURL = url.deletingLastPathComponent()
+                            .appendingPathComponent("\(nameWithoutExt)-optimized.\(result.format.fileExtension)")
+                    }
                     try optimizedData.write(to: outputURL, options: .atomic)
 
                     let event = OptimizationEvent(

@@ -73,6 +73,11 @@ struct GeneralTab: View {
                 VibeHintText(text: "Focus mode pauses clipboard optimization when frontmost app matches configured bundle IDs.")
             }
 
+            VibeSettingsCard(title: "Global Shortcuts", icon: "keyboard") {
+                ShortcutsSettingsContent()
+                    .environment(viewModel)
+            }
+
             VibeSettingsCard(title: "Notifications", icon: "bell") {
                 Toggle("Show Notifications", isOn: viewModel.settings.notificationsEnabledBinding)
             }
@@ -142,12 +147,60 @@ struct GeneralTab: View {
                 VibeHintText(text: "Quality Guard warns when SSIM drops below the threshold and offers a choice.")
             }
 
+            VibeSettingsCard(title: "Command Line Tool", icon: "terminal") {
+                HStack {
+                    VStack(alignment: .leading, spacing: VibeCheckTheme.Spacing.xs) {
+                        Text("Install CLI")
+                            .font(VibeCheckTheme.Typography.body)
+                            .foregroundColor(VibeCheckTheme.Colors.textPrimary)
+                        Text(cliInstallStatus)
+                            .font(VibeCheckTheme.Typography.caption)
+                            .foregroundColor(cliInstalled ? VibeCheckTheme.Colors.statusOk : VibeCheckTheme.Colors.textTertiary)
+                    }
+                    Spacer()
+                    Button(cliInstalled ? "Reinstall" : "Install") {
+                        installCLI()
+                    }
+                    .buttonStyle(.bordered)
+                }
+                VibeHintText(text: "Creates a symlink at /usr/local/bin/clipslim so you can run 'clipslim' from any terminal. Requires admin password.")
+            }
+
             VibeSettingsCard(title: "Onboarding", icon: "sparkles") {
                 Button("Run onboarding again") {
                     viewModel.runOnboardingAgain()
                 }
                 .buttonStyle(.bordered)
                 VibeHintText(text: "Run onboarding to re-pick format, folder watching, and save destination.")
+            }
+        }
+    }
+
+    private var cliInstalled: Bool {
+        FileManager.default.fileExists(atPath: "/usr/local/bin/clipslim")
+    }
+
+    private var cliInstallStatus: String {
+        cliInstalled ? "Installed at /usr/local/bin/clipslim" : "Not installed"
+    }
+
+    private func installCLI() {
+        guard let appPath = Bundle.main.executableURL?.deletingLastPathComponent()
+            .appendingPathComponent("clipslim").path else {
+            return
+        }
+
+        // Use AppleScript to get admin privileges for symlink creation
+        let script = """
+        do shell script "ln -sf '\(appPath)' /usr/local/bin/clipslim" with administrator privileges
+        """
+        if let appleScript = NSAppleScript(source: script) {
+            var error: NSDictionary?
+            appleScript.executeAndReturnError(&error)
+            if let error {
+                Logger.shared.error("CLI install failed: \(error)")
+            } else {
+                Logger.shared.app("CLI installed at /usr/local/bin/clipslim")
             }
         }
     }
@@ -162,6 +215,61 @@ struct GeneralTab: View {
 
         if panel.runModal() == .OK, let url = panel.url {
             viewModel.settings.saveFolderPath = url.path
+        }
+    }
+}
+
+private struct ShortcutsSettingsContent: View {
+    @Environment(AppViewModel.self) private var viewModel
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: VibeCheckTheme.Spacing.sm) {
+            ForEach(ShortcutAction.allCases) { action in
+                HStack {
+                    Image(systemName: action.iconName)
+                        .font(.system(size: 11))
+                        .foregroundColor(VibeCheckTheme.Colors.neonCyan)
+                        .frame(width: 20)
+
+                    Text(action.displayName)
+                        .font(VibeCheckTheme.Typography.body)
+                        .foregroundColor(VibeCheckTheme.Colors.textPrimary)
+
+                    Spacer()
+
+                    KeyRecorderView(
+                        action: action,
+                        binding: Binding(
+                            get: {
+                                viewModel.settings.shortcutBindings.binding(for: action)
+                            },
+                            set: { newBinding in
+                                var store = viewModel.settings.shortcutBindings
+                                store.setBinding(newBinding, for: action)
+                                viewModel.settings.shortcutBindings = store
+                            }
+                        ),
+                        onChanged: { newBinding in
+                            viewModel.hotkeyCoordinator.updateBinding(newBinding, for: action)
+                        }
+                    )
+
+                    Button {
+                        var store = viewModel.settings.shortcutBindings
+                        store.setBinding(action.defaultBinding, for: action)
+                        viewModel.settings.shortcutBindings = store
+                        viewModel.hotkeyCoordinator.updateBinding(action.defaultBinding, for: action)
+                    } label: {
+                        Image(systemName: "arrow.counterclockwise")
+                            .font(.system(size: 10))
+                            .foregroundColor(VibeCheckTheme.Colors.textTertiary)
+                    }
+                    .buttonStyle(.plain)
+                    .help("Reset to default")
+                }
+            }
+
+            VibeHintText(text: "Click a shortcut to record a new key combination. Press Esc to cancel recording.")
         }
     }
 }

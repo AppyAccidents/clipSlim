@@ -67,6 +67,40 @@ struct FolderTab: View {
             FolderRulesSection()
                 .environment(viewModel)
 
+            VibeSettingsCard(title: "Output Naming", icon: "textformat") {
+                VStack(alignment: .leading, spacing: VibeCheckTheme.Spacing.sm) {
+                    Text("Rename Template")
+                        .font(VibeCheckTheme.Typography.body)
+                        .foregroundColor(VibeCheckTheme.Colors.textPrimary)
+
+                    TextField("Template", text: viewModel.settings.renameTemplateBinding)
+                        .textFieldStyle(.roundedBorder)
+                        .font(.system(size: 12, design: .monospaced))
+
+                    // Live preview
+                    HStack(spacing: VibeCheckTheme.Spacing.xs) {
+                        Text("Preview:")
+                            .font(VibeCheckTheme.Typography.caption)
+                            .foregroundColor(VibeCheckTheme.Colors.textTertiary)
+                        Text(BatchRenamer.preview(template: viewModel.settings.renameTemplate))
+                            .font(.system(size: 11, weight: .medium, design: .monospaced))
+                            .foregroundColor(VibeCheckTheme.Colors.neonCyan)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                    }
+
+                    // Preset buttons
+                    HStack(spacing: VibeCheckTheme.Spacing.xs) {
+                        renamePresetButton("Default", template: "{name}_optimized")
+                        renamePresetButton("Dated", template: "{name}_{date}_{time}")
+                        renamePresetButton("Full", template: "{name}_{date}_{n}_{width}x{height}")
+                        Spacer()
+                    }
+
+                    VibeHintText(text: "Tokens: {name} {ext} {date} {time} {n} {width} {height} {format} {preset} {savings}. Extension is added automatically.")
+                }
+            }
+
             VibeSettingsCard(title: "Info", icon: "info.circle") {
                 Text("Supported formats: JPEG, PNG, TIFF, BMP, HEIC")
                     .font(VibeCheckTheme.Typography.caption)
@@ -90,5 +124,21 @@ struct FolderTab: View {
                 }
             }
         }
+    }
+
+    private func renamePresetButton(_ label: String, template: String) -> some View {
+        let isSelected = viewModel.settings.renameTemplate == template
+        return Button {
+            viewModel.settings.renameTemplate = template
+        } label: {
+            Text(label)
+                .font(VibeCheckTheme.Typography.caption)
+                .foregroundColor(isSelected ? .white : VibeCheckTheme.Colors.textSecondary)
+                .padding(.horizontal, VibeCheckTheme.Spacing.sm)
+                .padding(.vertical, VibeCheckTheme.Spacing.xs)
+                .background(isSelected ? VibeCheckTheme.Colors.neonOrange : VibeCheckTheme.Colors.surface)
+                .cornerRadius(VibeCheckTheme.CornerRadius.sm)
+        }
+        .buttonStyle(.plain)
     }
 }

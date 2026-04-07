@@ -12,10 +12,21 @@ struct ClipboardHistoryView: View {
     var onClearAll: (() -> Void)?
 
     @State private var showClearConfirmation = false
+    @State private var selectedEntryID: UUID?
+    @State private var searchText: String = ""
+    @FocusState private var searchFieldFocused: Bool
 
     private let columns = [
         GridItem(.adaptive(minimum: 120, maximum: 160), spacing: 8)
     ]
+
+    private var filteredEntries: [ClipboardHistoryEntry] {
+        guard !searchText.isEmpty else { return entries }
+        return entries.filter { entry in
+            entry.format.localizedCaseInsensitiveContains(searchText) ||
+            entry.formattedOriginalSize.localizedCaseInsensitiveContains(searchText)
+        }
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -26,7 +37,7 @@ struct ClipboardHistoryView: View {
             } else {
                 ScrollView {
                     LazyVGrid(columns: columns, spacing: 8) {
-                        ForEach(entries) { entry in
+                        ForEach(filteredEntries) { entry in
                             historyCard(entry)
                         }
                     }
@@ -37,6 +48,37 @@ struct ClipboardHistoryView: View {
         }
         .frame(width: 520, height: 440)
         .background(VibeCheckTheme.Colors.background)
+        .onKeyPress(keys: [.init("f")], phases: .down) { press in
+            if press.modifiers.contains(.command) {
+                searchFieldFocused = true
+                return .handled
+            }
+            return .ignored
+        }
+        .onKeyPress(.escape) {
+            dismiss()
+            return .handled
+        }
+        .onKeyPress(keys: [.return], phases: .down) { press in
+            guard let selectedID = selectedEntryID,
+                  let entry = filteredEntries.first(where: { $0.id == selectedID }) else {
+                return .ignored
+            }
+            if press.modifiers.contains(.shift) {
+                onRestoreOriginal?(entry)
+            } else {
+                onRestoreOptimized?(entry)
+            }
+            return .handled
+        }
+        .onKeyPress(.upArrow) {
+            navigateSelection(direction: -1)
+            return .handled
+        }
+        .onKeyPress(.downArrow) {
+            navigateSelection(direction: 1)
+            return .handled
+        }
         .alert("Clear History?", isPresented: $showClearConfirmation) {
             Button("Cancel", role: .cancel) { }
             Button("Clear All", role: .destructive) {
@@ -48,28 +90,35 @@ struct ClipboardHistoryView: View {
     }
 
     private var headerBar: some View {
-        HStack {
-            Text("Clipboard History")
-                .font(VibeCheckTheme.Typography.headline)
-                .foregroundColor(VibeCheckTheme.Colors.textPrimary)
+        VStack(spacing: VibeCheckTheme.Spacing.xs) {
+            HStack {
+                Text("Clipboard History")
+                    .font(VibeCheckTheme.Typography.headline)
+                    .foregroundColor(VibeCheckTheme.Colors.textPrimary)
 
-            Spacer()
+                Spacer()
 
-            Text("\(entries.count) items")
-                .font(VibeCheckTheme.Typography.caption)
-                .foregroundColor(VibeCheckTheme.Colors.textTertiary)
+                Text("\(filteredEntries.count) items")
+                    .font(VibeCheckTheme.Typography.caption)
+                    .foregroundColor(VibeCheckTheme.Colors.textTertiary)
 
-            if !entries.isEmpty {
-                Button {
-                    showClearConfirmation = true
-                } label: {
-                    Image(systemName: "trash")
-                        .font(.system(size: 11))
-                        .foregroundColor(VibeCheckTheme.Colors.warning)
+                if !entries.isEmpty {
+                    Button {
+                        showClearConfirmation = true
+                    } label: {
+                        Image(systemName: "trash")
+                            .font(.system(size: 11))
+                            .foregroundColor(VibeCheckTheme.Colors.warning)
+                    }
+                    .buttonStyle(.plain)
+                    .help("Clear all history")
                 }
-                .buttonStyle(.plain)
-                .help("Clear all history")
             }
+
+            TextField("Search...", text: $searchText)
+                .textFieldStyle(.roundedBorder)
+                .font(VibeCheckTheme.Typography.caption)
+                .focused($searchFieldFocused)
         }
         .padding(.horizontal, VibeCheckTheme.Spacing.lg)
         .padding(.top, VibeCheckTheme.Spacing.md)
@@ -165,5 +214,30 @@ struct ClipboardHistoryView: View {
         .padding(8)
         .background(VibeCheckTheme.Colors.surface)
         .cornerRadius(VibeCheckTheme.CornerRadius.sm)
+        .overlay(
+            RoundedRectangle(cornerRadius: VibeCheckTheme.CornerRadius.sm)
+                .stroke(
+                    entry.id == selectedEntryID
+                        ? VibeCheckTheme.Colors.neonCyan
+                        : Color.clear,
+                    lineWidth: 2
+                )
+        )
+        .onTapGesture {
+            selectedEntryID = entry.id
+        }
+    }
+
+    private func navigateSelection(direction: Int) {
+        let list = filteredEntries
+        guard !list.isEmpty else { return }
+
+        if let currentID = selectedEntryID,
+           let currentIndex = list.firstIndex(where: { $0.id == currentID }) {
+            let newIndex = max(0, min(list.count - 1, currentIndex + direction))
+            selectedEntryID = list[newIndex].id
+        } else {
+            selectedEntryID = direction > 0 ? list.first?.id : list.last?.id
+        }
     }
 }

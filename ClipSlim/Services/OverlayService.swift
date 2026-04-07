@@ -27,6 +27,27 @@ struct OverlayItem {
     var isDuplicate: Bool = false
     var duplicateOptimizedData: Data?
 
+    // Media-specific overlay data
+    var videoResult: VideoOptimizationResult?
+    var gifResult: GIFOptimizationResult?
+    var svgResult: SVGOptimizationResult?
+
+    enum MediaType {
+        case image
+        case pdf
+        case video
+        case gif
+        case svg
+    }
+
+    var mediaType: MediaType {
+        if videoResult != nil { return .video }
+        if gifResult != nil { return .gif }
+        if svgResult != nil { return .svg }
+        if pdfPageCount != nil { return .pdf }
+        return .image
+    }
+
     init(originalData: Data, optimizedData: Data, result: OptimizationResult, formatOverrideSelection: ImageFormat, sourceAppBundleID: String, pdfPageCount: Int? = nil) {
         self.originalData = originalData
         self.optimizedData = optimizedData

@@ -42,6 +42,18 @@ struct SettingsView: View {
                     Label("PDF", systemImage: "doc.richtext")
                 }
 
+            VideoTab()
+                .environment(viewModel)
+                .tabItem {
+                    Label("Video", systemImage: "film")
+                }
+
+            WatermarkTab()
+                .environment(viewModel)
+                .tabItem {
+                    Label("Watermark", systemImage: "drop.halffull")
+                }
+
             SupportTab()
                 .environment(viewModel)
                 .tabItem {
@@ -53,7 +65,7 @@ struct SettingsView: View {
                     Label("About", systemImage: "info.circle")
                 }
         }
-        .frame(width: 560, height: 660)
+        .frame(width: 560, height: 680)
         .font(VibeCheckTheme.Typography.body)
         .tint(VibeCheckTheme.Colors.neonOrange)
         .padding(VibeCheckTheme.Spacing.sm)
